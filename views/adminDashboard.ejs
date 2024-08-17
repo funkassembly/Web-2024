@@ -8,6 +8,23 @@
 <body>
     
 <h1>Admin Dashboard</h1>
+<!-- Form to create a new rescuer -->
+<h2>Create Rescuer</h2>
+<form action="/createRescuer" method="POST">
+    <input type="text" name="username" placeholder="Rescuer Username" required>
+    <input type="email" name="email" placeholder="Rescuer Email" required>
+    <input type="password" name="password" placeholder="Rescuer Password" required>
+    <button type="submit">Create Rescuer</button>
+</form>
+
+<!-- Form to create a new civilian -->
+<h2>Create Civilian</h2>
+<form action="/createCivilian" method="POST">
+    <input type="text" name="username" placeholder="Civilian Username" required>
+    <input type="email" name="email" placeholder="Civilian Email" required>
+    <input type="password" name="password" placeholder="Civilian Password" required>
+    <button type="submit">Create Civilian</button>
+</form>
 <a href="/logout">Logout</a>
 
 </body>
