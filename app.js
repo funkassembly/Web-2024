@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const authRoutes = require('./routes/auth');
+const { createRescuer } = require('./createRescuer');
+const { createCivilian } = require('./createCivilian');
 const User = require('./models/users_model');
 
 const app = express();
@@ -10,7 +12,21 @@ const app = express();
 mongoose.connect('mongodb://0.0.0.0:27017/web', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    //useCreateIndex: true,
+})
+.then(() => {
+    console.log('MongoDB connected...');
+
+    // Call your functions after the connection is established
+    return createRescuer('rescuerUser', 'rescuer@example.com', 'StrongPass123!');
+})
+.then(() => {
+    return createCivilian('civilianUser', 'civilian@example.com', 'StrongPass123!');
+})
+.then(() => {
+    console.log('All users created successfully');
+})
+.catch(err => {
+    console.error('Error during user creation:', err);
 });
 
 // Middleware
@@ -23,7 +39,7 @@ app.use(session({
 }));
 app.set('view engine', 'ejs');
 
-// Authentication 
+// Authentication Middleware
 const isLoggedIn = (req, res, next) => {
     if (req.session.userId) {
         next();
@@ -62,10 +78,35 @@ const isRescuer = async (req, res, next) => {
 // Routes
 app.use(authRoutes);
 
+// Root route to avoid "Cannot GET /" error
+app.get('/', (req, res) => {
+    res.send('Welcome to the Web Application!');
+});
+
+// Route to create a rescuer (only accessible by admin)
+app.post('/createRescuer', isLoggedIn, isAdmin, async (req, res) => {
+    const { username, email, password } = req.body;
+    try {
+        await createRescuer(username, email, password);
+        res.send('Rescuer created successfully');
+    } catch (err) {
+        res.status(500).send('Error creating rescuer: ' + err.message);
+    }
+});
+
+// Route to create a civilian (only accessible by admin)
+app.post('/createCivilian', isLoggedIn, isAdmin, async (req, res) => {
+    const { username, email, password } = req.body;
+    try {
+        await createCivilian(username, email, password);
+        res.send('Civilian created successfully');
+    } catch (err) {
+        res.status(500).send('Error creating civilian: ' + err.message);
+    }
+});
 
 app.get('/adminDashboard', isLoggedIn, isAdmin, (req, res) => res.send('adminDashboard'));
 app.get('/civilianDashboard', isLoggedIn, isCivilian, (req, res) => res.send('civilianDashboard'));
 app.get('/rescuerDashboard', isLoggedIn, isRescuer, (req, res) => res.send('rescuerDashboard'));
-
 
 app.listen(3000, () => console.log('Server running on port 3000'));
