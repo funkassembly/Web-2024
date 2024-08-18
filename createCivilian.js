@@ -26,3 +26,4 @@ const createCivilian = async (username, email, password) => {
 };
 
 module.exports = { createCivilian };
+
