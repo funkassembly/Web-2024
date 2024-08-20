@@ -9,6 +9,10 @@ const passwordValidator = (password) => {
     return passwordRegex.test(password);
 };
 
+router.get('/', (req, res) => {
+    res.render('login');
+});
+
 router.get('/signup', (req, res) => {
     res.render('signup');
 });
