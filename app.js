@@ -78,9 +78,9 @@ const isRescuer = async (req, res, next) => {
 // Routes
 app.use(authRoutes);
 
-// Root route to avoid "Cannot GET /" error
+// Redirect root route to the login page
 app.get('/', (req, res) => {
-    res.send('Welcome to the Web Application!');
+    res.redirect('/login');
 });
 
 // Route to create a rescuer (only accessible by admin)
