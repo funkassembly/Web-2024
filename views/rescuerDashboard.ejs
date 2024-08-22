@@ -3,12 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Rescuer Dashboard</title>
+    <link rel="stylesheet" href="/styles/rescuerDashboard.css">
 </head>
 <body>
   
 <h1>Rescuer Dashboard</h1>
+<div class="dashboard-container">
+    <div class="map-container">
+        <!-- You can embed your map here -->
+        <iframe src="ranmap.html" width="100%" height="100%" frameborder="0"></iframe>
+    </div>
+    <div class="cargo-container">
+        <button id="cargoButton">Cargo</button>
+        <h3>Requests / Donations</h3>
+        <div id="requestsDonations">
+            <!-- This is where you will dynamically display requests and donations -->
+        </div>
+    </div>
+</div>
 <a href="/logout">Logout</a>
+
+<!-- Optional JavaScript to handle button actions and fetch data -->
+<script>
+    document.getElementById('cargoButton').addEventListener('click', function() {
+        // Logic to handle cargo button click, e.g., fetching data
+        alert('Cargo button clicked!');
+    });
+
+    // Optional: Script to load and display requests/donations dynamically
+    // Example: Fetch data from the server and update the #requestsDonations div
+</script>
 
 </body>
 </html>
