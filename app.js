@@ -8,6 +8,8 @@ const { createCivilian } = require('./createCivilian');
 const User = require('./models/users_model');
 
 const app = express();
+app.use(express.static('maptry'));
+
 
 mongoose.connect('mongodb://0.0.0.0:27017/web', {
     useNewUrlParser: true,
@@ -103,6 +105,12 @@ app.post('/createCivilian', isLoggedIn, isAdmin, async (req, res) => {
     } catch (err) {
         res.status(500).send('Error creating civilian: ' + err.message);
     }
+});
+
+// Updated Rescuer Dashboard Route to Include Username
+app.get('/rescuerDashboard', isLoggedIn, isRescuer, async (req, res) => {
+    const user = await User.findById(req.session.userId);
+    res.render('rescuerDashboard', { username: user.username });
 });
 
 app.get('/adminDashboard', isLoggedIn, isAdmin, (req, res) => res.send('adminDashboard'));
