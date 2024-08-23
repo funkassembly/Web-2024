@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rescuer's Dashboard</title>
     <link rel="stylesheet" href="/styles/rescuerDashboard.css">
+    <link rel="icon" href="/maptry/icons/favicon.ico" type="image/x-icon">
 </head>
 <body>
 
 <div class="header-links">
-    <a href="#" id="instructionsLink" class="left-link">Instructions</a>
+    <a href="#" id="instructionsLink" class="left-link">Οδηγίες</a>
     <a href="/logout" class="right-link">Logout</a>
 </div>
 
@@ -17,20 +18,21 @@
 <div id="instructionsModal" class="modal">
     <div class="modal-content">
         <span class="close">&times;</span>
-        <h2>Instructions</h2>
-        <p>Here you can provide detailed instructions for the rescuer on how to use the dashboard, drag and drop the marker, etc.</p>
+        <h2>Οδηγίες</h2>
+        <p>1. Σύρε το <img src="\maptry\icons\transport.png" style="width: 3%; height: 3%;"> στην Τοποθεσία σου.</p>
+        <p>2. Επέλεξε μέχρι 4 πολίτες για να εξυπηρετήσεις.</p>
     
     </div>
 </div>
 
-<h1>Rescuer's Dashboard</h1>
+<h1>Dashboard Διασώστη</h1>
 <div class="dashboard-container">
     <div class="map-container">
         <iframe id="mapIframe" src="/maptry/rescuerMap.html" width="100%" height="100%" frameborder="0"></iframe>
     </div>
     <div class="cargo-container">
-        <button id="cargoButton">Cargo</button>
-        <h3>Requests / Donations</h3>
+        <button id="cargoButton">Τρέχον Φορτίο</button>
+        <h3>Αιτήματα / Προσφορές</h3>
         <div id="requestsDonations"></div>
     </div>
 </div>
