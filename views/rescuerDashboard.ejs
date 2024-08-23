@@ -19,7 +19,21 @@
         <div id="requestsDonations"></div>
     </div>
 </div>
-<a href="/logout">Logout</a>
+
+<div class="header-links">
+    <a href="/logout">Logout</a>
+    <a href="#" id="instructionsLink">Instructions</a>
+</div>
+<!-- The Modal -->
+<div id="instructionsModal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Instructions</h2>
+        <p>Here you can provide detailed instructions for the rescuer on how to use the dashboard, drag and drop the marker, etc.</p>
+        <!-- Add more instructional content as needed -->
+    </div>
+</div>
 
 <script>
     document.getElementById('cargoButton').addEventListener('click', function() {
