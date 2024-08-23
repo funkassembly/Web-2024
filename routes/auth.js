@@ -52,10 +52,11 @@ router.post('/login', async (req, res) => {
             $or: [{ email: login }, { username: login }]
         });
 
-        if (!user || !(await user.correctPassword(password, user.password))) {
+        if (!user || !(await bcrypt.compare(password, user.password))) {
             return res.render('login', { error: 'Incorrect email or password' });
         }
 
+        // Set the userId in the session after successful login
         req.session.userId = user._id;
 
         if (user.role === 'admin') {

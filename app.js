@@ -8,7 +8,7 @@ const { createCivilian } = require('./createCivilian');
 const User = require('./models/users_model');
 
 const app = express();
-app.use(express.static('maptry'));
+app.use(express.static('public'));
 
 
 mongoose.connect('mongodb://0.0.0.0:27017/web', {
@@ -107,14 +107,23 @@ app.post('/createCivilian', isLoggedIn, isAdmin, async (req, res) => {
     }
 });
 
-// Updated Rescuer Dashboard Route to Include Username
 app.get('/rescuerDashboard', isLoggedIn, isRescuer, async (req, res) => {
-    const user = await User.findById(req.session.userId);
-    res.render('rescuerDashboard', { username: user.username });
+    try {
+        const user = await User.findById(req.session.userId);
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
+
+        console.log('Rescuer username:', user.username); // Debugging line to check if username is retrieved
+
+        res.render('rescuerDashboard', { username: user.username }); // Passing username to the template
+    } catch (error) {
+        console.error('Error retrieving user:', error);
+        res.status(500).send('Internal Server Error');
+    }
 });
 
 app.get('/adminDashboard', isLoggedIn, isAdmin, (req, res) => res.send('adminDashboard'));
 app.get('/civilianDashboard', isLoggedIn, isCivilian, (req, res) => res.send('civilianDashboard'));
-app.get('/rescuerDashboard', isLoggedIn, isRescuer, (req, res) => res.send('rescuerDashboard'));
 
 app.listen(3000, () => console.log('Server running on port 3000'));
