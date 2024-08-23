@@ -99,20 +99,23 @@ a {
     cursor: pointer;
 }
 
-/* Adjust the header-links to ensure the logout and instructions links are properly aligned */
 .header-links {
-    position: absolute;
+    width: 100%;
+    position: relative;
     top: 20px;
-    right: 50px;
 }
 
-.header-links a {
-    margin-left: 20px;
+.header-links .left-link {
+    position: absolute;
+    left: 20px;
     text-decoration: none;
     color: #333;
 }
 
-#instructionsLink {
-    margin-left: 10px;
+.header-links .right-link {
+    position: absolute;
+    right: 20px;
+    text-decoration: none;
+    color: #333;
 }
 

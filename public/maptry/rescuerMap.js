@@ -1,53 +1,42 @@
-document.addEventListener("DOMContentLoaded", function() {
-// Define the custom icon
-    const RescuerIcon = L.icon({
-        iconUrl: '/maptry/transport.png',
-        iconSize: [30, 30],
-        iconAnchor: [15, 30],
-        popupAnchor: [0, -30]
-    });
+// map init
+const map = L.map('map').setView([38.2462420, 21.7350847], 16);
+        
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+maxZoom: 19,
+attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+}).addTo(map);
 
-    // Add a draggable marker to the map
-    var marker = L.marker([38.24600, 21.73500], {
-        icon: RescuerIcon,
-        draggable: true
-    }).addTo(map);
+// General Storage Marker
+const dbIcon = L.icon({
+    iconUrl: 'dbicon_blue.png', 
+    iconSize: [30, 30],
+    iconAnchor: [15,8],
+    popupAnchor: [0, 0]
+});
 
-    // Display a popup when the marker is clicked
-    marker.bindPopup('Drag me to your location').openPopup();
+var marker = L.marker([38.24600, 21.73500], {icon: dbIcon}).addTo(map);
 
-    // Event listener for when the marker is dragged and dropped
-    marker.on('dragend', function(event) {
-        var position = marker.getLatLng();
-        console.log('Marker dropped at position: ', position.lat, position.lng);
-        // You can send the position to the server or use it as needed
-        alert('Position updated to: ' + position.lat + ', ' + position.lng);
-    });
+marker.bindPopup('Γενική Αποθήκη').openPopup(); 
 
+// Rescuer draggable marker
+const RescuerIcon = L.icon({
+    iconUrl: '/maptry/transport.png',
+    iconSize: [30, 30],
+    iconAnchor: [15, 30],
+    popupAnchor: [0, -30]
+});
 
-    // Get the modal
-    var modal = document.getElementById("instructionsModal");
+var marker = L.marker([38.24600, 21.73500], {
+    icon: RescuerIcon,
+    draggable: true
+}).addTo(map);
 
-    // Get the button that opens the modal
-    var btn = document.getElementById("instructionsLink");
+marker.bindPopup('Drag me to your location').openPopup();
 
-    // Get the <span> element that closes the modal
-    var span = document.getElementsByClassName("close")[0];
-
-    // When the user clicks on the button, open the modal
-    btn.onclick = function() {
-        modal.style.display = "block";
-    }
-
-    // When the user clicks on <span> (x), close the modal
-    span.onclick = function() {
-        modal.style.display = "none";
-    }
-
-    // When the user clicks anywhere outside of the modal, close it
-    window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    }
+// Event listener for when the marker is dragged and dropped
+marker.on('dragend', function(event) {
+    var position = marker.getLatLng();
+    console.log('Marker dropped at position: ', position.lat, position.lng);
+    // You can send the position to the server or use it as needed
+    alert('Position updated to: ' + position.lat + ', ' + position.lng);
 });
