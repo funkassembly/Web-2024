@@ -91,7 +91,16 @@ function updateLoadButtonState() {
     }, '*');
 }
 
-window.updateLoadButtonState();
+// Initially set the Load button state based on the initial position
+updateLoadButtonState();
+
+// Update Load button state whenever the rescuer marker is dragged
+markerRescuer.on('drag', function() {
+    updateLoadButtonState();
+});
+
+// Export the updateLoadButtonState function to the global window object
+window.updateLoadButtonState = updateLoadButtonState;
 
 // Event listener for when the marker is dragged and dropped
 markerRescuer.on('dragend', function(event) {
