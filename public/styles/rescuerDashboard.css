@@ -37,6 +37,20 @@ body {
     height: 100%;
 }
 
+/* Styles for inactive state of Load button */
+#loadButton.inactive {
+    background-color: #ddd; /* Light gray color to indicate inactive state */
+    color: #888; /* Gray text color */
+    cursor: not-allowed; /* Not clickable */
+}
+
+/* Styles for active state of Load button */
+#loadButton.active {
+    background-color: #4CAF50; /* Green color to indicate active state */
+    color: white;
+    cursor: pointer; /* Clickable */
+}
+
 #cargoButton {
     padding: 10px 20px;
     font-size: 16px;
@@ -136,4 +150,48 @@ a {
     margin-bottom: 5px;
 }
 
+/* #filters {
 
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    width: auto;
+    height: auto;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    z-index: 10000;
+    border-radius: 5px;
+
+} */
+
+.filter-button {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    padding: 10px 20px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 10001; 
+}
+
+/* Initially hide the filter container */
+.filter-container {
+    display: none; /* Hidden by default */
+    position: absolute;
+    bottom: 50px;
+    left: 10px;
+    width: auto;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 10000; 
+}
+
+/* Adjust the filter container when it's visible */
+.filter-container.visible {
+    display: block; /* Show when visible */
+}

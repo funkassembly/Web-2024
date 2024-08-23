@@ -6,6 +6,7 @@ maxZoom: 19,
 attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(map);
 
+// Markers Init
 // General Storage Marker
 const StorageIcon = L.icon({
     iconUrl: 'icons/Storage.png', 
@@ -13,11 +14,6 @@ const StorageIcon = L.icon({
     iconAnchor: [15,8],
     popupAnchor: [0, 0]
 });
-
-var markerStorage = L.marker([38.24600, 21.73500], {icon: StorageIcon}).addTo(map);
-
-markerStorage.bindPopup('Γενική Αποθήκη').openPopup(); 
-
 // Rescuer draggable marker
 const RescuerIcon = L.icon({
     iconUrl: 'icons/transport.png',
@@ -25,21 +21,6 @@ const RescuerIcon = L.icon({
     iconAnchor: [15, 30],
     popupAnchor: [0, -30]
 });
-
-var markerRescuer = L.marker([38.24600, 21.73500], {
-    icon: RescuerIcon,
-    draggable: true
-}).addTo(map);
-
-markerRescuer.bindPopup('Σύρε με στην τοποθεσία σου!').openPopup();
-
-// Event listener for when the marker is dragged and dropped
-markerRescuer.on('dragend', function(event) {
-    var position = markerRescuer.getLatLng();
-    console.log('Rescuer\'s location: ', position.lat, position.lng);
-    
-});
-
 const FoodIcon = L.icon({
     iconUrl: 'icons/food.png',
     iconSize: [20, 20],
@@ -78,7 +59,49 @@ const peopleServedIcon = L.icon({
 });
 
 
-// DummyMarkers with categories
+var markerStorage = L.marker([38.24600, 21.73500], {icon: StorageIcon}).addTo(map);
+markerStorage.bindPopup('Γενική Αποθήκη').openPopup(); 
+
+var markerRescuer = L.marker([38.24600, 21.73500], {
+    icon: RescuerIcon,
+    draggable: true
+}).addTo(map);
+markerRescuer.bindPopup('Σύρε με στην τοποθεσία σου!').openPopup();
+
+
+// Function to calculate the distance between two LatLng points in meters
+function calculateDistance(latlng1, latlng2) {
+    return map.distance(latlng1, latlng2);
+}
+
+// Function to update the Load button state based on distance
+function updateLoadButtonState() {
+    const storageLatLng = markerStorage.getLatLng();
+    const rescuerLatLng = markerRescuer.getLatLng();
+    console.log('Storage Location:', storageLatLng);
+    console.log('Rescuer Location:', rescuerLatLng);
+
+    const distance = calculateDistance(storageLatLng, rescuerLatLng);
+    console.log(`Calculated Distance: ${distance} meters`);
+
+    // Send a message to the parent window with the distance info
+    window.parent.postMessage({
+        type: 'updateLoadButtonState',
+        distance: distance
+    }, '*');
+}
+
+window.updateLoadButtonState();
+
+// Event listener for when the marker is dragged and dropped
+markerRescuer.on('dragend', function(event) {
+    var position = markerRescuer.getLatLng();
+    console.log('Rescuer\'s location: ', position.lat, position.lng);
+});
+
+
+
+// DummyMarkers with categories ! TO CHANGE: *** GET FROM DB *** !
 const Dummymarkers = [
     // Pending category with medical subcategory
     L.marker([38.24600, 21.73600], {
@@ -86,32 +109,28 @@ const Dummymarkers = [
         mainCategory: 'pending',
         subCategory: 'medical'
     }).bindPopup('Pending Medical Assistance'),
-
     // Pending category with food subcategory
     L.marker([38.24400, 21.73300], {
         icon: createCombinedIcon('icons/peoplePending.png', 'icons/food.png'),
         mainCategory: 'pending',
         subCategory: 'food'
     }).bindPopup('Pending Food Supplies'),
-
     // Served category with shelter subcategory
     L.marker([38.24500, 21.73500], {
         icon: createCombinedIcon('icons/peopleServed.png', 'icons/shelter.png'),
         mainCategory: 'served',
         subCategory: 'shelter'
     }).bindPopup('Served Shelter'),
-
-    // Add more markers as needed...
+    // Pending category with donate subcategory
+    L.marker([38.24600, 21.73800], {
+        icon: createCombinedIcon('icons/peoplePending.png', 'icons/donate.png'),
+        mainCategory: 'pending',
+        subCategory: 'donate'
+    }).bindPopup('Pending Donate'),
 ];
 
 
 console.log('Markers initialized:', Dummymarkers.length);
-
-// Add markers to the map
-// Dummymarkers.forEach(marker => {
-//     marker.addTo(map);
-//     console.log('Marker added:', marker);
-// });
 
 function createCombinedIcon(mainCategoryIconUrl, subCategoryIconUrl) {
     return L.divIcon({
@@ -124,9 +143,7 @@ function createCombinedIcon(mainCategoryIconUrl, subCategoryIconUrl) {
         className: ''
     });
 }
-window.applyFilters = function(activeMainFilters, activeSubFilters) {
-    // const activeMainFilters = Array.from(document.querySelectorAll('.main-filter:checked')).map(cb => cb.value);
-    // const activeSubFilters = Array.from(document.querySelectorAll('.sub-filter:checked')).map(cb => cb.value);
+window.applyFilters = function(activeMainFilters=[], activeSubFilters=[]) {
 
     Dummymarkers.forEach(marker => {
         const markerMainCategory = marker.options.mainCategory;
@@ -152,3 +169,8 @@ document.querySelectorAll('.main-filter, .sub-filter').forEach(cb => {
 
 // Apply initial filters
 applyFilters();
+
+
+
+// Export the updateLoadButtonState function to the global window object
+window.updateLoadButtonState = updateLoadButtonState;

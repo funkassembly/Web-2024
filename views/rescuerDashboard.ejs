@@ -19,8 +19,15 @@
         <div class="modal-content">
             <span class="close">&times;</span>
             <h2>Οδηγίες</h2>
-            <p>1. Σύρε το <img src="maptry\icons\transport.png" style="width: 3%; height: 3%;"> στην Τοποθεσία σου.</p>
-            <p>2. Επέλεξε μέχρι 4 πολίτες για να εξυπηρετήσεις.</p>
+            <p>1. Σύρε το όχημα <img src="maptry\icons\transport.png" style="width: 3%; height: 3%;"> στην Τοποθεσία σου.</p>
+            <p>2. Επέλεξε το κουμπί 'Φόρτωσε' όταν βρίσκεσαι σε απόσταση μέχρι 100m από τη Γενική Αποθήκη για την παραλαβή προμηθειών.</p>
+            <p>3. Επέλεξε μέχρι 4 πολίτες <img src="maptry\icons\peoplePending.png" style="width: 3%; height: 3%;"> για να εξυπηρετήσεις.</p>
+            <p>4. Για να επιθεωρήσεις το τρέχον φορτίο του οχήματος επέλεξε το κουμπί 'Τρέχον Φορτίο'.</p>
+            <p>5. Υπομνήματα Χάρτη: </p>
+            <p>    *<img src="maptry\icons\medical.png" style="width: 2%; height: 2%;">: Ιατρικά Αγαθά</p>
+            <p>    *<img src="maptry\icons\food.png" style="width: 2%; height: 2%;">: Φαγητό</p>
+            <p>    *<img src="maptry\icons\shelter.png" style="width: 2%; height: 2%;">: Εξοπλισμός Στέγασης</p>
+            <p>    *<img src="maptry\icons\donate.png" style="width: 2%; height: 2%;">: Δωρεά Αγαθών</p>
         
         </div>
     </div>
@@ -33,12 +40,16 @@
         </div>
 
         <div class="cargo-container">
+            <button id="loadButton" class="inactive">Load</button>
             <button id="cargoButton">Τρέχον Φορτίο</button>
             <h3>Αιτήματα / Προσφορές</h3>
             <div id="requestsDonations"></div>
         </div>
     </div>
-    <div id="filters">
+
+    <button id="filterToggleButton" class="filter-button">Φίλτρα Χάρτη</button>
+
+    <div id="filters" class="filter-container">
         <h3>Εξυπηρέτηση</h3>
         
         <label>
@@ -58,6 +69,9 @@
         </label>
         <label>
             <input type="checkbox" class="sub-filter" value="shelter"> Εξοπλισμός Στέγασης
+        </label>
+        <label>
+            <input type="checkbox" class="sub-filter" value="donate"> Προσφορά Αγαθών
         </label>
     </div>
 
@@ -96,32 +110,67 @@
             console.log('Modal, link, or close button not found.');
         }
 
+
         document.addEventListener("DOMContentLoaded", function(){
-        const iframe = document.getElementById('mapIframe');
-        iframe.onload = function() {
-            // Assign the applyFilters function to the iframe
-            const iframeWindow = iframe.contentWindow;
+            
+            const filterToggleButton = document.getElementById('filterToggleButton');
+            const filterContainer = document.getElementById('filters');
 
-            // Initially check the desired filters
-            document.querySelectorAll('.main-filter[value="pending"], .sub-filter[value="medical"], .sub-filter[value="food"], .sub-filter[value="shelter"]').forEach(cb => {
-                cb.checked = true;
+            // Toggle filter visibility on button click
+            filterToggleButton.addEventListener('click', function() {
+                filterContainer.classList.toggle('visible');
             });
 
-            // Ensure filters are applied when iframe is loaded
-            const activeMainFilters = Array.from(document.querySelectorAll('.main-filter:checked')).map(cb => cb.value);
-            const activeSubFilters = Array.from(document.querySelectorAll('.sub-filter:checked')).map(cb => cb.value);
-            iframeWindow.applyFilters(activeMainFilters, activeSubFilters);
+            const iframe = document.getElementById('mapIframe');
+            iframe.onload = function() {
+                const iframeWindow = iframe.contentWindow;
 
-            // Add event listeners for live filtering
-            document.querySelectorAll('.main-filter, .sub-filter').forEach(cb => {
-                cb.addEventListener('change', function() {
-                    const activeMainFilters = Array.from(document.querySelectorAll('.main-filter:checked')).map(cb => cb.value);
-                    const activeSubFilters = Array.from(document.querySelectorAll('.sub-filter:checked')).map(cb => cb.value);
-                    iframeWindow.applyFilters(activeMainFilters, activeSubFilters);
+                // Initially check the desired filters
+                document.querySelectorAll('.main-filter[value="pending"], .sub-filter[value="medical"], .sub-filter[value="food"], .sub-filter[value="shelter"], .sub-filter[value="donate"]').forEach(cb => {
+                    cb.checked = true;
                 });
-            });
-        };
-    });
+
+                // Handle messages from the iframe
+                window.addEventListener('message', function(event) {
+                    if (event.data.type === 'updateLoadButtonState') {
+                        const loadButton = document.getElementById('loadButton');
+                        console.log('Load Button:', loadButton);
+                        const distance = event.data.distance;
+                        console.log('Distance: ', distance);
+
+                        if (loadButton) {
+                            if (distance <= 100) {
+                                loadButton.classList.remove('inactive');
+                                loadButton.classList.add('active');
+                                loadButton.disabled = false;
+                                console.log('Button Activated');
+                            } else {
+                                loadButton.classList.remove('active');
+                                loadButton.classList.add('inactive');
+                                loadButton.disabled = true;
+                                console.log('Button Deactivated');
+                            }
+                        } else {
+                            console.log('Load button not found in the DOM');
+                        }
+                    }
+                });
+
+                // Ensure filters are applied when iframe is loaded
+                const activeMainFilters = Array.from(document.querySelectorAll('.main-filter:checked')).map(cb => cb.value);
+                const activeSubFilters = Array.from(document.querySelectorAll('.sub-filter:checked')).map(cb => cb.value);
+                iframeWindow.applyFilters(activeMainFilters, activeSubFilters);
+
+                // Add event listeners for live filtering
+                document.querySelectorAll('.main-filter, .sub-filter').forEach(cb => {
+                    cb.addEventListener('change', function() {
+                        const activeMainFilters = Array.from(document.querySelectorAll('.main-filter:checked')).map(cb => cb.value);
+                        const activeSubFilters = Array.from(document.querySelectorAll('.sub-filter:checked')).map(cb => cb.value);
+                        iframeWindow.applyFilters(activeMainFilters, activeSubFilters);
+                    });
+                });
+            };
+        });
     </script>
 
 </body>
