@@ -27,41 +27,67 @@ body {
 
 /* Right side for the cargo and other details */
 .dashboard-container .cargo-container {
-    flex: 1;                /* Take up less space */
+    flex: 1;                
     display: flex;
     flex-direction: column;
-    align-items: center;
     padding: 2px;
     background-color: #f5f5f5; /* Slight background color for distinction */
     border-radius: 5px;
     height: 100%;
-}
-
-/* Styles for inactive state of Load button */
-#loadButton.inactive {
-    background-color: #ddd; /* Light gray color to indicate inactive state */
-    color: #888; /* Gray text color */
-    cursor: not-allowed; /* Not clickable */
-}
-
-/* Styles for active state of Load button */
-#loadButton.active {
-    background-color: #4CAF50; /* Green color to indicate active state */
-    color: white;
-    cursor: pointer; /* Clickable */
+    position: relative; /* Ensure absolute positioning for child elements */
 }
 
 #cargoButton {
+    align-self: flex-start; /* Align the cargo button to the left */
     padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
     margin-bottom: 20px;
 }
 
+.right-buttons {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.right-buttons button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    width: 100px; /* Ensures both buttons are of the same width */
+}
+
+/* Styles for inactive state of Load and Unload buttons */
+#loadButton.inactive, #unloadButton.inactive {
+    background-color: #ddd; /* Light gray color to indicate inactive state */
+    color: #888; /* Gray text color */
+    cursor: not-allowed; /* Not clickable */
+}
+
+/* Styles for active state of Load and Unload buttons */
+#loadButton.active, #unloadButton.active {
+    color: white;
+    cursor: pointer; /* Clickable */
+}
+
+#loadButton.active {
+    background-color: #4CAF50; /* Green color to indicate active state */
+}
+
+#unloadButton.active {
+    background-color: #f44336; /* Red color to indicate active state */
+}
+
 #requestsDonations {
     width: 100%;
     height: 100%;
     overflow-y: auto;
+    margin-top: 60px; /* Adjusted for space under the buttons */
 }
 
 h3 {
@@ -149,20 +175,6 @@ a {
     display: block;
     margin-bottom: 5px;
 }
-
-/* #filters {
-
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-    width: auto;
-    height: auto;
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    z-index: 10000;
-    border-radius: 5px;
-
-} */
 
 .filter-button {
     position: absolute;

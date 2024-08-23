@@ -40,8 +40,11 @@
         </div>
 
         <div class="cargo-container">
-            <button id="loadButton" class="inactive">Load</button>
             <button id="cargoButton">Τρέχον Φορτίο</button>
+            <div class="right-buttons">
+                <button id="loadButton" class="inactive">Load</button>
+                <button id="unloadButton" class="inactive">Unload</button>
+            </div>
             <h3>Αιτήματα / Προσφορές</h3>
             <div id="requestsDonations"></div>
         </div>
@@ -134,6 +137,7 @@
                 window.addEventListener('message', function(event) {
                     if (event.data.type === 'updateLoadButtonState') {
                         const loadButton = document.getElementById('loadButton');
+                        const unloadButton = document.getElementById('unloadButton');
                         console.log('Load Button:', loadButton);
                         const distance = event.data.distance;
                         console.log('Distance: ', distance);
@@ -143,11 +147,17 @@
                                 loadButton.classList.remove('inactive');
                                 loadButton.classList.add('active');
                                 loadButton.disabled = false;
+                                unloadButton.classList.remove('inactive');
+                                unloadButton.classList.add('active');
+                                unloadButton.disabled = false;
                                 console.log('Button Activated');
                             } else {
                                 loadButton.classList.remove('active');
                                 loadButton.classList.add('inactive');
                                 loadButton.disabled = true;
+                                unloadButton.classList.remove('active');
+                                unloadButton.classList.add('inactive');
+                                unloadButton.disabled = true;
                                 console.log('Button Deactivated');
                             }
                         } else {
