@@ -108,10 +108,10 @@ const Dummymarkers = [
 console.log('Markers initialized:', Dummymarkers.length);
 
 // Add markers to the map
-Dummymarkers.forEach(marker => {
-    marker.addTo(map);
-    console.log('Marker added:', marker);
-});
+// Dummymarkers.forEach(marker => {
+//     marker.addTo(map);
+//     console.log('Marker added:', marker);
+// });
 
 function createCombinedIcon(mainCategoryIconUrl, subCategoryIconUrl) {
     return L.divIcon({
@@ -124,9 +124,9 @@ function createCombinedIcon(mainCategoryIconUrl, subCategoryIconUrl) {
         className: ''
     });
 }
-function applyFilters() {
-    const activeMainFilters = Array.from(document.querySelectorAll('.main-filter:checked')).map(cb => cb.value);
-    const activeSubFilters = Array.from(document.querySelectorAll('.sub-filter:checked')).map(cb => cb.value);
+window.applyFilters = function(activeMainFilters, activeSubFilters) {
+    // const activeMainFilters = Array.from(document.querySelectorAll('.main-filter:checked')).map(cb => cb.value);
+    // const activeSubFilters = Array.from(document.querySelectorAll('.sub-filter:checked')).map(cb => cb.value);
 
     Dummymarkers.forEach(marker => {
         const markerMainCategory = marker.options.mainCategory;
@@ -138,11 +138,12 @@ function applyFilters() {
 
         if (showMarker) {
             marker.addTo(map);
-        } else {
+        } 
+        else {
             map.removeLayer(marker);
         }
     });
-}
+};
 
 // Attach event listeners to filters
 document.querySelectorAll('.main-filter, .sub-filter').forEach(cb => {

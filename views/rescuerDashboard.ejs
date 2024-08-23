@@ -69,33 +69,59 @@
 
         // Instructions Modal
         var modal = document.getElementById("instructionsModal");
-            var link = document.getElementById("instructionsLink");
-            var span = document.getElementsByClassName("close")[0];
+        var link = document.getElementById("instructionsLink");
+        var span = document.getElementsByClassName("close")[0];
 
-            // Check if the modal, link, and close elements exist before adding event listeners
-            if (modal && link && span) {
-                // When the user clicks on the link, open the modal
-                link.addEventListener('click', function(event) {
-                    event.preventDefault();
-                    modal.style.display = "block";
-                });
+        // Check if the modal, link, and close elements exist before adding event listeners
+        if (modal && link && span) {
+            // When the user clicks on the link, open the modal
+            link.addEventListener('click', function(event) {
+                event.preventDefault();
+                modal.style.display = "block";
+            });
 
-                // When the user clicks on <span> (x), close the modal
-                span.onclick = function() {
+            // When the user clicks on <span> (x), close the modal
+            span.onclick = function() {
+                modal.style.display = "none";
+            }
+
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function(event) {
+                if (event.target == modal) {
                     modal.style.display = "none";
                 }
-
-                // When the user clicks anywhere outside of the modal, close it
-                window.onclick = function(event) {
-                    if (event.target == modal) {
-                        modal.style.display = "none";
-                    }
-                }
-            } 
-            else {
-                console.log('Modal, link, or close button not found.');
             }
-        
+        } 
+        else {
+            console.log('Modal, link, or close button not found.');
+        }
+
+        document.addEventListener("DOMContentLoaded", function(){
+        const iframe = document.getElementById('mapIframe');
+        iframe.onload = function() {
+            // Assign the applyFilters function to the iframe
+            const iframeWindow = iframe.contentWindow;
+
+            // Initially check the desired filters
+            document.querySelectorAll('.main-filter[value="pending"], .sub-filter[value="medical"], .sub-filter[value="food"], .sub-filter[value="shelter"]').forEach(cb => {
+                cb.checked = true;
+            });
+
+            // Ensure filters are applied when iframe is loaded
+            const activeMainFilters = Array.from(document.querySelectorAll('.main-filter:checked')).map(cb => cb.value);
+            const activeSubFilters = Array.from(document.querySelectorAll('.sub-filter:checked')).map(cb => cb.value);
+            iframeWindow.applyFilters(activeMainFilters, activeSubFilters);
+
+            // Add event listeners for live filtering
+            document.querySelectorAll('.main-filter, .sub-filter').forEach(cb => {
+                cb.addEventListener('change', function() {
+                    const activeMainFilters = Array.from(document.querySelectorAll('.main-filter:checked')).map(cb => cb.value);
+                    const activeSubFilters = Array.from(document.querySelectorAll('.sub-filter:checked')).map(cb => cb.value);
+                    iframeWindow.applyFilters(activeMainFilters, activeSubFilters);
+                });
+            });
+        };
+    });
     </script>
 
 </body>
