@@ -8,7 +8,7 @@ attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreet
 
 // General Storage Marker
 const StorageIcon = L.icon({
-    iconUrl: '/maptry/icons/Storage.png', 
+    iconUrl: 'icons/Storage.png', 
     iconSize: [30, 30],
     iconAnchor: [15,8],
     popupAnchor: [0, 0]
@@ -20,8 +20,8 @@ markerStorage.bindPopup('Γενική Αποθήκη').openPopup();
 
 // Rescuer draggable marker
 const RescuerIcon = L.icon({
-    iconUrl: '/maptry/icons/transport.png',
-    iconSize: [30, 30],
+    iconUrl: 'icons/transport.png',
+    iconSize: [35, 35],
     iconAnchor: [15, 30],
     popupAnchor: [0, -30]
 });
@@ -41,51 +41,69 @@ markerRescuer.on('dragend', function(event) {
 });
 
 const FoodIcon = L.icon({
-    iconUrl: '/maptry/icons/food.png',
-    iconSize: [30, 30],
+    iconUrl: 'icons/food.png',
+    iconSize: [20, 20],
     iconAnchor: [15, 30],
     popupAnchor: [0, -30]
 });
 const MedicalIcon = L.icon({
-    iconUrl: '/maptry/icons/medical.png',
-    iconSize: [30, 30],
+    iconUrl: 'icons/medical.png',
+    iconSize: [20, 20],
+    iconAnchor: [15, 30],
+    popupAnchor: [0, -30]
+});
+const ShelterIcon = L.icon({
+    iconUrl: 'icons/shelter.png',
+    iconSize: [20, 20],
     iconAnchor: [15, 30],
     popupAnchor: [0, -30]
 });
 const DonateIcon = L.icon({
-    iconUrl: '/maptry/icons/donate.png',
-    iconSize: [30, 30],
+    iconUrl: 'icons/donate.png',
+    iconSize: [20, 20],
     iconAnchor: [15, 30],
     popupAnchor: [0, -30]
 });
 const peoplePendingIcon = L.icon({
-    iconUrl: '/maptry/icons/peoplePending.png',
+    iconUrl: 'icons/peoplePending.png',
     iconSize: [30, 30],
     iconAnchor: [15, 30],
     popupAnchor: [0, -30]
 });
 const peopleServedIcon = L.icon({
-    iconUrl: '/maptry/icons/peopleServed.png',
-    iconSize: [30, 30],
-    iconAnchor: [15, 30],
-    popupAnchor: [0, -30]
-});
-const ShelterIcon = L.icon({
-    iconUrl: '/maptry/icons/shelter.png',
+    iconUrl: 'icons/peopleServed.png',
     iconSize: [30, 30],
     iconAnchor: [15, 30],
     popupAnchor: [0, -30]
 });
 
-// Create markers with categories
+
+// DummyMarkers with categories
 const Dummymarkers = [
-    L.marker([38.24600, 21.73500], { icon: FoodIcon, category: 'food' }).bindPopup('Τρόφιμα'),
-    L.marker([38.24500, 21.73400], { icon: MedicalIcon, category: 'medical' }).bindPopup('Ιατρικός Εξοπλισμός'),
-    L.marker([38.24700, 21.73600], { icon: ShelterIcon, category: 'shelter' }).bindPopup('Στέγαση'),
-    L.marker([38.24700, 21.73600], { icon: peoplePendingIcon, category: 'requests' }).bindPopup('Ανάγκη'),
-    L.marker([38.24700, 21.73600], { icon: DonateIcon, category: 'donations' }).bindPopup('Προσφορά'),
-    L.marker([38.24700, 21.73600], { icon: peopleServedIcon, category: 'beingServed' }).bindPopup('Σε εξέλιξη')
+    // Pending category with medical subcategory
+    L.marker([38.24600, 21.73600], {
+        icon: createCombinedIcon('icons/peoplePending.png', 'icons/medical.png'),
+        mainCategory: 'pending',
+        subCategory: 'medical'
+    }).bindPopup('Pending Medical Assistance'),
+
+    // Pending category with food subcategory
+    L.marker([38.24400, 21.73300], {
+        icon: createCombinedIcon('icons/peoplePending.png', 'icons/food.png'),
+        mainCategory: 'pending',
+        subCategory: 'food'
+    }).bindPopup('Pending Food Supplies'),
+
+    // Served category with shelter subcategory
+    L.marker([38.24500, 21.73500], {
+        icon: createCombinedIcon('icons/peopleServed.png', 'icons/shelter.png'),
+        mainCategory: 'served',
+        subCategory: 'shelter'
+    }).bindPopup('Served Shelter'),
+
+    // Add more markers as needed...
 ];
+
 
 console.log('Markers initialized:', Dummymarkers.length);
 
@@ -95,31 +113,39 @@ Dummymarkers.forEach(marker => {
     console.log('Marker added:', marker);
 });
 
-// Function to filter markers
-function applyFilters() {
-    const activeFilters = Array.from(document.querySelectorAll('.filter:checked')).map(cb => cb.value);
-    
-    // Check if no filters are selected
-    if (activeFilters.length === 0) {
-        // If no filters are selected, keep all markers on the map
-        Dummymarkers.forEach(marker => {
-            marker.addTo(map);
-            console.log('Marker displayed:', marker.options.category);
-        });
-    } else {
-        Dummymarkers.forEach(marker => {
-            if (activeFilters.includes(marker.options.category)) {
-                marker.addTo(map);
-                console.log('Marker displayed:', marker.options.category);
-            } else {
-                map.removeLayer(marker);
-                console.log('Marker removed:', marker.options.category);
-            }
-        });
-    }
+function createCombinedIcon(mainCategoryIconUrl, subCategoryIconUrl) {
+    return L.divIcon({
+        html: `
+            <div style="position: relative; width: 30px; height: 30px;">
+                <img src="${mainCategoryIconUrl}" style="width: 100%; height: 100%;">
+                <img src="${subCategoryIconUrl}" style="width: 15px; height: 15px; position: absolute; top: 0; right: 0;">
+            </div>
+        `,
+        className: ''
+    });
 }
-// Add event listeners to the filters
-document.querySelectorAll('.filter').forEach(cb => {
+function applyFilters() {
+    const activeMainFilters = Array.from(document.querySelectorAll('.main-filter:checked')).map(cb => cb.value);
+    const activeSubFilters = Array.from(document.querySelectorAll('.sub-filter:checked')).map(cb => cb.value);
+
+    Dummymarkers.forEach(marker => {
+        const markerMainCategory = marker.options.mainCategory;
+        const markerSubCategory = marker.options.subCategory;
+
+        const showMarker =
+            (activeMainFilters.length === 0 || activeMainFilters.includes(markerMainCategory)) &&
+            (activeSubFilters.length === 0 || activeSubFilters.includes(markerSubCategory));
+
+        if (showMarker) {
+            marker.addTo(map);
+        } else {
+            map.removeLayer(marker);
+        }
+    });
+}
+
+// Attach event listeners to filters
+document.querySelectorAll('.main-filter, .sub-filter').forEach(cb => {
     cb.addEventListener('change', applyFilters);
 });
 

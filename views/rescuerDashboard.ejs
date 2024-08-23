@@ -9,82 +9,94 @@
 </head>
 <body>
 
-<div class="header-links">
-    <a href="#" id="instructionsLink" class="left-link">Οδηγίες</a>
-    <a href="/logout" class="right-link">Logout</a>
-</div>
-
-<!-- The Modal -->
-<div id="instructionsModal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>Οδηγίες</h2>
-        <p>1. Σύρε το <img src="\maptry\icons\transport.png" style="width: 3%; height: 3%;"> στην Τοποθεσία σου.</p>
-        <p>2. Επέλεξε μέχρι 4 πολίτες για να εξυπηρετήσεις.</p>
-    
-    </div>
-</div>
-
-<h1>Dashboard Διασώστη</h1>
-<div class="dashboard-container">
-    
-    <div class="map-container">
-        <iframe id="mapIframe" src="/maptry/rescuerMap.html" width="100%" height="100%" frameborder="0"></iframe>
+    <div class="header-links">
+        <a href="#" id="instructionsLink" class="left-link">Οδηγίες</a>
+        <a href="/logout" class="right-link">Logout</a>
     </div>
 
-    <div class="cargo-container">
-        <button id="cargoButton">Τρέχον Φορτίο</button>
-        <h3>Αιτήματα / Προσφορές</h3>
-        <div id="requestsDonations"></div>
+    <!-- The Modal -->
+    <div id="instructionsModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Οδηγίες</h2>
+            <p>1. Σύρε το <img src="maptry\icons\transport.png" style="width: 3%; height: 3%;"> στην Τοποθεσία σου.</p>
+            <p>2. Επέλεξε μέχρι 4 πολίτες για να εξυπηρετήσεις.</p>
+        
+        </div>
     </div>
-</div>
-<div class="filter-container">
-    <h3>Φίλτρα</h3>
-    <label><input type="checkbox" class="filter" value="food" checked> Τρόφιμα</label>
-    <label><input type="checkbox" class="filter" value="medical" checked> Φάρμακα</label>
-    <label><input type="checkbox" class="filter" value="shelter" checked> Στέγαση</label>
-    <label><input type="checkbox" class="filter" value="requests" checked> Αιτήματα</label>
-    <label><input type="checkbox" class="filter" value="donations" checked> Προσφορές</label>
-    <label><input type="checkbox" class="filter" value="beingServed" checked> Εξυπηρετούνται Τώρα!</label>
-</div>
+
+    <h1>Dashboard Διασώστη</h1>
+    <div class="dashboard-container">
+        
+        <div class="map-container">
+            <iframe id="mapIframe" src="/maptry/rescuerMap.html" width="100%" height="100%" frameborder="0"></iframe>
+        </div>
+
+        <div class="cargo-container">
+            <button id="cargoButton">Τρέχον Φορτίο</button>
+            <h3>Αιτήματα / Προσφορές</h3>
+            <div id="requestsDonations"></div>
+        </div>
+    </div>
+    <div id="filters">
+        <h3>Εξυπηρέτηση</h3>
+        
+        <label>
+            <input type="checkbox" class="main-filter" value="pending"> Πολίτες εν Αναμονή
+        </label>
+        <label>
+            <input type="checkbox" class="main-filter" value="served"> Πολίτες που Εξυπηρετούνται
+        </label>
+
+        <h4>Είδος Προϊόντος</h4>
+        
+        <label>
+            <input type="checkbox" class="sub-filter" value="medical"> Ιατρικός Εξοπλισμός
+        </label>
+        <label>
+            <input type="checkbox" class="sub-filter" value="food"> Φαγητό
+        </label>
+        <label>
+            <input type="checkbox" class="sub-filter" value="shelter"> Εξοπλισμός Στέγασης
+        </label>
+    </div>
 
 
+    <script>
+        document.getElementById('cargoButton').addEventListener('click', function() {
+            alert('Cargo button clicked!');
+        });
 
-<script>
-    document.getElementById('cargoButton').addEventListener('click', function() {
-        alert('Cargo button clicked!');
-    });
+        // Instructions Modal
+        var modal = document.getElementById("instructionsModal");
+            var link = document.getElementById("instructionsLink");
+            var span = document.getElementsByClassName("close")[0];
 
-    // Instructions Modal
-    var modal = document.getElementById("instructionsModal");
-        var link = document.getElementById("instructionsLink");
-        var span = document.getElementsByClassName("close")[0];
+            // Check if the modal, link, and close elements exist before adding event listeners
+            if (modal && link && span) {
+                // When the user clicks on the link, open the modal
+                link.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    modal.style.display = "block";
+                });
 
-        // Check if the modal, link, and close elements exist before adding event listeners
-        if (modal && link && span) {
-            // When the user clicks on the link, open the modal
-            link.addEventListener('click', function(event) {
-                event.preventDefault();
-                modal.style.display = "block";
-            });
-
-            // When the user clicks on <span> (x), close the modal
-            span.onclick = function() {
-                modal.style.display = "none";
-            }
-
-            // When the user clicks anywhere outside of the modal, close it
-            window.onclick = function(event) {
-                if (event.target == modal) {
+                // When the user clicks on <span> (x), close the modal
+                span.onclick = function() {
                     modal.style.display = "none";
                 }
+
+                // When the user clicks anywhere outside of the modal, close it
+                window.onclick = function(event) {
+                    if (event.target == modal) {
+                        modal.style.display = "none";
+                    }
+                }
+            } 
+            else {
+                console.log('Modal, link, or close button not found.');
             }
-        } 
-        else {
-            console.log('Modal, link, or close button not found.');
-        }
-    
-</script>
+        
+    </script>
 
 </body>
 </html>
