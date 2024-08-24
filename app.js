@@ -5,6 +5,7 @@ const session = require('express-session');
 const authRoutes = require('./routes/auth');
 const { createRescuer } = require('./createRescuer');
 const { createCivilian } = require('./createCivilian');
+const createProducts = require('./createProduct'); // Import the product creation script
 const User = require('./models/users_model');
 
 const app = express();
@@ -15,16 +16,13 @@ mongoose.connect('mongodb://0.0.0.0:27017/web', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 })
-.then(() => {
+.then(async () => {
     console.log('MongoDB connected...');
 
     // Call your functions after the connection is established
-    return createRescuer('rescuerUser', 'rescuer@example.com', 'StrongPass123!');
-})
-.then(() => {
-    return createCivilian('civilianUser', 'civilian@example.com', 'StrongPass123!');
-})
-.then(() => {
+    await createRescuer('rescuerUser', 'rescuer@example.com', 'StrongPass123!');
+    await createCivilian('civilianUser', 'civilian@example.com', 'StrongPass123!');
+    await createProducts();
     console.log('All users created successfully');
 })
 .catch(err => {
