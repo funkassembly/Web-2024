@@ -60,7 +60,63 @@ const peopleServedIcon = L.icon({
 
 
 var markerStorage = L.marker([38.24600, 21.73500], {icon: StorageIcon}).addTo(map);
-markerStorage.bindPopup('Γενική Αποθήκη').openPopup(); 
+
+markerStorage.on('click', async function() {
+    const distance = calculateDistance(markerStorage.getLatLng(), markerRescuer.getLatLng());
+    if (distance <= 100) {
+        try {
+            const response = await fetch('/getProducts');
+            if (!response.ok) {
+                throw new Error('Failed to fetch products');
+            }
+            const products = await response.json();
+
+            // Send a message to the parent document to show the modal and populate it
+            window.parent.postMessage({
+                type: 'showProductModal',
+                products: products
+            }, '*');
+        } catch (error) {
+            console.error('Error fetching or displaying products:', error);
+        }
+    }
+});
+
+
+//             const productModal = document.getElementById('productModal');
+//             if (productModal) {
+//                 console.log('productModal found:', productModal);
+//             } else {
+//                 console.error('productModal element not found');
+//             }
+
+//             const productTable = document.getElementById('productTable');
+//             if (productTable) {
+//                 console.log('productTable found:', productTable);
+//             } else {
+//                 console.error('productTable element not found');
+            
+//             }
+
+//             productTable.innerHTML = '<tr><th>Product Name</th><th>Category</th><th>Details</th></tr>';
+
+//             products.forEach(product => {
+//                 const row = productTable.insertRow();
+//                 row.insertCell(0).innerText = product.name;
+//                 row.insertCell(1).innerText = product.category;
+//                 row.insertCell(2).innerText = product.details.map(detail => `${detail.detail_name}: ${detail.detail_value}`).join(', ');
+//             });
+
+//             // Show the modal
+//             document.getElementById('productModal').style.display = 'block';
+//         } catch (error) {
+//             console.error('Error fetching or displaying products:', error);
+//         }
+//     }
+// });
+
+
+
 
 var markerRescuer = L.marker([38.24600, 21.73500], {
     icon: RescuerIcon,

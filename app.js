@@ -7,6 +7,7 @@ const { createRescuer } = require('./createRescuer');
 const { createCivilian } = require('./createCivilian');
 const createProducts = require('./createProduct'); // Import the product creation script
 const User = require('./models/users_model');
+const Product = require('./models/product_model'); 
 
 const app = express();
 app.use(express.static('public'));
@@ -168,7 +169,16 @@ app.post('/updateRescuerLocation', isLoggedIn, isRescuer, async (req, res) => {
     }
 });
 
-
+// Route to fetch products from the general storage
+app.get('/getProducts', async (req, res) => {
+    try {
+        const products = await Product.find({});
+        res.json(products);
+    } catch (error) {
+        console.error('Error fetching products:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
 
 app.get('/adminDashboard', isLoggedIn, isAdmin, (req, res) => res.send('adminDashboard'));
 app.get('/civilianDashboard', isLoggedIn, isCivilian, (req, res) => res.send('civilianDashboard'));
