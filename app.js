@@ -156,7 +156,7 @@ app.post('/updateRescuerLocation', isLoggedIn, isRescuer, async (req, res) => {
             return res.status(400).json({ success: false, error: 'Invalid coordinates' });
         }
 
-        user.location.coordinates = [lng, lat]; // Note: MongoDB stores coordinates as [longitude, latitude]
+        user.location.coordinates = [lat, lng]; 
         console.log('Updated User Location:', user.location.coordinates);
         await user.save();
         console.log('User after save:', user);

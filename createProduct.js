@@ -13,7 +13,12 @@ async function createProducts() {
                 console.error('Invalid product data:', product);
                 continue; // Skip this product
             }
-
+            // Check if the product already exists in the database
+            const existingProduct = await Product.findOne({ id: product.id });
+            if (existingProduct) {
+                console.log(`Product with ID ${product.id} already exists, skipping.`);
+                continue; // Skip if the product already exists
+            }
             const newProduct = new Product({
                 id: product.id,
                 name: product.name,
@@ -22,9 +27,10 @@ async function createProducts() {
             });
 
             await newProduct.save();
+            console.log(`Product with ID ${product.id} added to the database.`);
         }
 
-        console.log('Products successfully added to the database');
+        console.log('Product processing completed.');
     } catch (error) {
         console.error('Error creating products:', error);
     }
