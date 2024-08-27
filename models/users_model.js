@@ -6,7 +6,11 @@ const userSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    role: { type: String, enum: ['admin', 'civilian', 'rescuer'], required: true }
+    role: { type: String, enum: ['admin', 'civilian', 'rescuer'], required: true },
+    location: {
+        type: { type: String, enum: ['Point'], default: 'Point' },
+        coordinates: { type: [Number], default: [38.24600, 21.73500] }, // Default coordinates
+    },
 });
 
 // Encrypt password 
@@ -19,6 +23,8 @@ userSchema.pre('save', async function (next) {
 userSchema.methods.correctPassword = async function (candidatePassword, userPassword) {
     return await bcrypt.compare(candidatePassword, userPassword);
 };
+// Indexing the location for geospatial queries
+userSchema.index({ location: '2dsphere' });
 
 
 // Models

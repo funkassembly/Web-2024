@@ -31,13 +31,23 @@ router.get('/rescuerDashboard', (req, res) => {
 
 router.post('/signup', async (req, res) => {
     const { username, email, password, role } = req.body;
-
+    
     if (!passwordValidator(password)) {
         return res.render('signup', { error: 'Password does not meet security requirements.' });
     }
-
+    const hashedPassword = await bcrypt.hash(password, 12);
     try {
-        const newUser = await User.create({ username, email, password, role });
+        const defaultLocation = {
+            type: 'Point',
+            coordinates: [38.24600, 21.73500] // Note: Coordinates are stored as [longitude, latitude]
+        };
+        const newUser = await User.create({ 
+            username, 
+            email, 
+            password: hashedPassword, 
+            role,
+            location: defaultLocation
+        });
         res.redirect('/login');
     } catch (err) {
         res.render('signup', { error: 'Error in signup: ' + err.message });
@@ -76,6 +86,7 @@ router.get('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/login');
 });
+
 
 
 module.exports = router;

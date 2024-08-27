@@ -106,6 +106,24 @@ window.updateLoadButtonState = updateLoadButtonState;
 markerRescuer.on('dragend', function(event) {
     var position = markerRescuer.getLatLng();
     console.log('Rescuer\'s location: ', position.lat, position.lng);
+
+     // Send an AJAX request to update the rescuer's location in the database
+     fetch('/updateRescuerLocation', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ lat: position.lat, lng: position.lng })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('Location updated successfully.');
+        } else {
+            console.error('Failed to update location:', data.error);
+        }
+    })
+    .catch(error => console.error('Error:', error));
 });
 
 

@@ -9,13 +9,17 @@ const createCivilian = async (username, email, password) => {
             console.log('User with this username or email already exists');
             return;
         }
-
-        const hashedPassword = await bcrypt.hash(password, 12);
+        const defaultLocation = {
+            type: 'Point',
+            coordinates: [38.24600, 21.73500]
+        };
+        // const hashedPassword = await bcrypt.hash(password, 12);
         const civilianUser = new User({
             username,
             email,
-            password: hashedPassword,
+            password: password,
             role: 'civilian',
+            location: defaultLocation,
         });
 
         await civilianUser.save();
