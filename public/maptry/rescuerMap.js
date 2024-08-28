@@ -83,40 +83,6 @@ markerStorage.on('click', async function() {
 });
 
 
-//             const productModal = document.getElementById('productModal');
-//             if (productModal) {
-//                 console.log('productModal found:', productModal);
-//             } else {
-//                 console.error('productModal element not found');
-//             }
-
-//             const productTable = document.getElementById('productTable');
-//             if (productTable) {
-//                 console.log('productTable found:', productTable);
-//             } else {
-//                 console.error('productTable element not found');
-            
-//             }
-
-//             productTable.innerHTML = '<tr><th>Product Name</th><th>Category</th><th>Details</th></tr>';
-
-//             products.forEach(product => {
-//                 const row = productTable.insertRow();
-//                 row.insertCell(0).innerText = product.name;
-//                 row.insertCell(1).innerText = product.category;
-//                 row.insertCell(2).innerText = product.details.map(detail => `${detail.detail_name}: ${detail.detail_value}`).join(', ');
-//             });
-
-//             // Show the modal
-//             document.getElementById('productModal').style.display = 'block';
-//         } catch (error) {
-//             console.error('Error fetching or displaying products:', error);
-//         }
-//     }
-// });
-
-
-
 
 var markerRescuer = L.marker([38.24600, 21.73500], {
     icon: RescuerIcon,
@@ -130,33 +96,31 @@ function calculateDistance(latlng1, latlng2) {
     return map.distance(latlng1, latlng2);
 }
 
-// Function to update the Load button state based on distance
-function updateLoadButtonState() {
+// Function to update the Unload button state based on distance
+function updateUnloadButtonState() {
     const storageLatLng = markerStorage.getLatLng();
     const rescuerLatLng = markerRescuer.getLatLng();
-    console.log('Storage Location:', storageLatLng);
-    console.log('Rescuer Location:', rescuerLatLng);
 
     const distance = calculateDistance(storageLatLng, rescuerLatLng);
-    console.log(`Calculated Distance: ${distance} meters`);
 
-    // Send a message to the parent window with the distance info
+    // Send a message to the parent window with the distance info to enable/disable the Unload button
     window.parent.postMessage({
-        type: 'updateLoadButtonState',
+        type: 'updateUnloadButtonState',
         distance: distance
     }, '*');
 }
 
-// Initially set the Load button state based on the initial position
-updateLoadButtonState();
+// Initially set the Unload button state based on the initial position
+updateUnloadButtonState();
 
-// Update Load button state whenever the rescuer marker is dragged
+// Update Unload button state whenever the rescuer marker is dragged
 markerRescuer.on('drag', function() {
-    updateLoadButtonState();
+    updateUnloadButtonState();
 });
 
-// Export the updateLoadButtonState function to the global window object
-window.updateLoadButtonState = updateLoadButtonState;
+// Export the updateUnloadButtonState function to the global window object
+window.updateUnloadButtonState = updateUnloadButtonState;
+
 
 // Event listener for when the marker is dragged and dropped
 markerRescuer.on('dragend', function(event) {
@@ -184,36 +148,6 @@ markerRescuer.on('dragend', function(event) {
 
 
 
-// DummyMarkers with categories ! TO CHANGE: *** GET FROM DB *** !
-const Dummymarkers = [
-    // Pending category with medical subcategory
-    L.marker([38.24600, 21.73600], {
-        icon: createCombinedIcon('icons/peoplePending.png', 'icons/medical.png'),
-        mainCategory: 'pending',
-        subCategory: 'medical'
-    }).bindPopup('Pending Medical Assistance'),
-    // Pending category with food subcategory
-    L.marker([38.24400, 21.73300], {
-        icon: createCombinedIcon('icons/peoplePending.png', 'icons/food.png'),
-        mainCategory: 'pending',
-        subCategory: 'food'
-    }).bindPopup('Pending Food Supplies'),
-    // Served category with shelter subcategory
-    L.marker([38.24500, 21.73500], {
-        icon: createCombinedIcon('icons/peopleServed.png', 'icons/shelter.png'),
-        mainCategory: 'served',
-        subCategory: 'shelter'
-    }).bindPopup('Served Shelter'),
-    // Pending category with donate subcategory
-    L.marker([38.24600, 21.73800], {
-        icon: createCombinedIcon('icons/peoplePending.png', 'icons/donate.png'),
-        mainCategory: 'pending',
-        subCategory: 'donate'
-    }).bindPopup('Pending Donate'),
-];
-
-
-console.log('Markers initialized:', Dummymarkers.length);
 
 function createCombinedIcon(mainCategoryIconUrl, subCategoryIconUrl) {
     return L.divIcon({
@@ -255,5 +189,3 @@ applyFilters();
 
 
 
-// Export the updateLoadButtonState function to the global window object
-window.updateLoadButtonState = updateLoadButtonState;

@@ -180,6 +180,37 @@ app.get('/getProducts', async (req, res) => {
     }
 });
 
+// Route to save cargo to the database
+app.post('/saveCargo', isLoggedIn, isRescuer, async (req, res) => {
+    try {
+        const userId = req.session.userId;
+        const { cargo } = req.body;
+
+        // Find the rescuer and update their cargo
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        // Validate product IDs in cargo
+        for (const item of cargo) {
+            const product = await Product.findById(item.productId);
+            if (!product) {
+                return res.status(400).json({ success: false, message: 'Invalid product ID' });
+            }
+        }
+
+        // Update the rescuer's cargo
+        user.cargo = cargo;
+        await user.save();
+
+        res.json({ success: true, message: 'Cargo saved successfully' });
+    } catch (error) {
+        console.error('Error saving cargo:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
 app.get('/adminDashboard', isLoggedIn, isAdmin, (req, res) => res.send('adminDashboard'));
 app.get('/civilianDashboard', isLoggedIn, isCivilian, (req, res) => res.send('civilianDashboard'));
 

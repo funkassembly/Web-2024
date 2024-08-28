@@ -19,15 +19,15 @@
         <div class="modal-content">
             <span class="close-modal">&times;</span>
             <h2>Οδηγίες</h2>
-            <p>1. Σύρε το όχημα <img src="maptry\icons\transport.png" style="width: 3%; height: 3%;"> στην Τοποθεσία σου.</p>
+            <p>1. Σύρε το όχημα <img src="maptry/icons/transport.png" style="width: 3%; height: 3%;"> στην Τοποθεσία σου.</p>
             <p>2. Επέλεξε το κουμπί 'Φόρτωση' ή 'Εκφόρτωση' όταν βρίσκεσαι σε απόσταση μέχρι 100m από τη Γενική Αποθήκη για την παραλαβή προμηθειών.</p>
-            <p>3. Επέλεξε μέχρι 4 πολίτες <img src="maptry\icons\peoplePending.png" style="width: 3%; height: 3%;"> για να εξυπηρετήσεις.</p>
+            <p>3. Επέλεξε μέχρι 4 πολίτες <img src="maptry/icons/peoplePending.png" style="width: 3%; height: 3%;"> για να εξυπηρετήσεις.</p>
             <p>4. Για να επιθεωρήσεις το τρέχον φορτίο του οχήματος επέλεξε το κουμπί 'Τρέχον Φορτίο'.</p>
             <p>5. Υπομνήματα Χάρτη: </p>
-            <p>    *<img src="maptry\icons\medical.png" style="width: 2%; height: 2%;">: Ιατρικά Αγαθά</p>
-            <p>    *<img src="maptry\icons\food.png" style="width: 2%; height: 2%;">: Φαγητό</p>
-            <p>    *<img src="maptry\icons\shelter.png" style="width: 2%; height: 2%;">: Εξοπλισμός Στέγασης</p>
-            <p>    *<img src="maptry\icons\donate.png" style="width: 2%; height: 2%;">: Δωρεά Αγαθών</p>
+            <p>    *<img src="maptry/icons/medical.png" style="width: 2%; height: 2%;">: Ιατρικά Αγαθά</p>
+            <p>    *<img src="maptry/icons/food.png" style="width: 2%; height: 2%;">: Φαγητό</p>
+            <p>    *<img src="maptry/icons/shelter.png" style="width: 2%; height: 2%;">: Εξοπλισμός Στέγασης</p>
+            <p>    *<img src="maptry/icons/donate.png" style="width: 2%; height: 2%;">: Δωρεά Αγαθών</p>
         </div>
     </div>
 
@@ -35,6 +35,9 @@
     <div id="productModal" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
+            <div class="modal-buttons">
+                <button id="loadButton" class="inactive">Φόρτωση</button>
+            </div>
             <h2>Available Products in General Storage</h2>
             <div class="product-list">
                 <table id="productTable">
@@ -44,7 +47,6 @@
         </div>
     </div>
 
-
     <h1>Dashboard Διασώστη</h1>
     <div class="dashboard-container">
         
@@ -53,142 +55,195 @@
         </div>
 
         <div class="cargo-container">
-            <button id="cargoButton">Τρέχον Φορτίο</button>
-            <div class="right-buttons">
-                <button id="loadButton" class="inactive">Φόρτωση</button>
-                <button id="unloadButton" class="inactive">Εκφόρτωση</button>
+            <!-- Tabs for switching between Cargo and Tasks -->
+            <div class="tabs">
+                <button class="tab-button active" onclick="openTab('cargoTab')">Cargo</button>
+                <button class="tab-button" onclick="openTab('tasksTab')">Tasks</button>
             </div>
-            <h3>Αιτήματα / Προσφορές</h3>
-            <div id="requestsDonations"></div>
+        
+            <!-- Content for Cargo tab -->
+            <div id="cargoTab" class="tab-content active">
+                <button id="unloadButton" class="inactive">Εκφόρτωση</button>
+                <div id="loadedProducts"></div> <!-- Placeholder for loaded products -->
+            </div>
+        
+            <!-- Content for Tasks tab -->
+            <div id="tasksTab" class="tab-content">
+                <h3>Your tasks will appear here.</h3>
+                <!-- Add any additional content for tasks here -->
+            </div>
         </div>
-    </div>
 
-    <button id="filterToggleButton" class="filter-button">Φίλτρα Χάρτη</button>
+        <button id="filterToggleButton" class="filter-button">Φίλτρα Χάρτη</button>
 
-    <div id="filters" class="filter-container">
-        <h3>Εξυπηρέτηση</h3>
-        
-        <label>
-            <input type="checkbox" class="main-filter" value="pending"> Πολίτες εν Αναμονή
-        </label>
-        <label>
-            <input type="checkbox" class="main-filter" value="served"> Πολίτες που Εξυπηρετούνται
-        </label>
+        <div id="filters" class="filter-container">
+            <h3>Εξυπηρέτηση</h3>
+            
+            <label>
+                <input type="checkbox" class="main-filter" value="pending"> Πολίτες εν Αναμονή
+            </label>
+            <label>
+                <input type="checkbox" class="main-filter" value="served"> Πολίτες που Εξυπηρετούνται
+            </label>
 
-        <h4>Είδος Προϊόντος</h4>
-        
-        <label>
-            <input type="checkbox" class="sub-filter" value="medical"> Ιατρικός Εξοπλισμός
-        </label>
-        <label>
-            <input type="checkbox" class="sub-filter" value="food"> Φαγητό
-        </label>
-        <label>
-            <input type="checkbox" class="sub-filter" value="shelter"> Εξοπλισμός Στέγασης
-        </label>
-        <label>
-            <input type="checkbox" class="sub-filter" value="donate"> Προσφορά Αγαθών
-        </label>
-    </div>
+            <h4>Είδος Προϊόντος</h4>
+            
+            <label>
+                <input type="checkbox" class="sub-filter" value="medical"> Ιατρικός Εξοπλισμός
+            </label>
+            <label>
+                <input type="checkbox" class="sub-filter" value="food"> Φαγητό
+            </label>
+            <label>
+                <input type="checkbox" class="sub-filter" value="shelter"> Εξοπλισμός Στέγασης
+            </label>
+            <label>
+                <input type="checkbox" class="sub-filter" value="donate"> Προσφορά Αγαθών
+            </label>
+        </div>
 
+        <script>
+            function openTab(tabName) {
+                var i, tabcontent, tabbuttons;
 
-    <script>
-        document.getElementById('cargoButton').addEventListener('click', function() {
-            alert('Cargo button clicked!');
-        });
+                // Hide all tab content
+                tabcontent = document.getElementsByClassName("tab-content");
+                for (i = 0; i < tabcontent.length; i++) {
+                    tabcontent[i].style.display = "none";
+                    tabcontent[i].classList.remove('active');
+                }
 
-        // Modal handling
-        document.addEventListener("DOMContentLoaded", function(){
-            const modals = document.querySelectorAll('.modal');
-            const closeButtons = document.querySelectorAll('.close-modal');
+                // Remove the active class from all tab buttons
+                tabbuttons = document.getElementsByClassName("tab-button");
+                for (i = 0; i < tabbuttons.length; i++) {
+                    tabbuttons[i].classList.remove("active");
+                }
 
-            // Open Instructions Modal
-            document.getElementById('instructionsLink').addEventListener('click', function(event) {
-                event.preventDefault();
-                document.getElementById('instructionsModal').style.display = "block";
+                // Show the specific tab content
+                document.getElementById(tabName).style.display = "block";
+                document.getElementById(tabName).classList.add('active');
+
+                // Add the active class to the button that opened the tab
+                event.currentTarget.classList.add("active");
+            }
+
+            // Set default tab to be open on page load
+            document.addEventListener("DOMContentLoaded", function() {
+                openTab('cargoTab');
             });
 
-            // Close modals
-            closeButtons.forEach(closeBtn => {
-                closeBtn.addEventListener('click', function() {
-                    closeBtn.closest('.modal').style.display = 'none';
-                });
-            });
+            // Modal handling
+            document.addEventListener("DOMContentLoaded", function(){
+                const modals = document.querySelectorAll('.modal');
+                const closeButtons = document.querySelectorAll('.close-modal');
 
-            // Close modals when clicking outside of the modal content
-            window.addEventListener('click', function(event) {
-                modals.forEach(modal => {
-                    if (event.target == modal) {
-                        modal.style.display = "none";
-                    }
-                });
-            });
-
-            const filterToggleButton = document.getElementById('filterToggleButton');
-            const filterContainer = document.getElementById('filters');
-
-            // Toggle filter visibility on button click
-            filterToggleButton.addEventListener('click', function() {
-                filterContainer.classList.toggle('visible');
-            });
-
-            const iframe = document.getElementById('mapIframe');
-
-            iframe.onload = function() {
-                const iframeWindow = iframe.contentWindow;
-
-                // Initially check the desired filters
-                document.querySelectorAll('.main-filter[value="pending"], .sub-filter[value="medical"], .sub-filter[value="food"], .sub-filter[value="shelter"], .sub-filter[value="donate"]').forEach(cb => {
-                    cb.checked = true;
+                // Open Instructions Modal
+                document.getElementById('instructionsLink').addEventListener('click', function(event) {
+                    event.preventDefault();
+                    document.getElementById('instructionsModal').style.display = "block";
                 });
 
-                // Handle messages from the iframe
-                window.addEventListener('message', function(event) {
-                    if (event.data.type === 'showProductModal') {
-                        const products = event.data.products;
+                // Close modals
+                closeButtons.forEach(closeBtn => {
+                    closeBtn.addEventListener('click', function() {
+                        closeBtn.closest('.modal').style.display = 'none';
+                    });
+                });
 
-                        const productModal = document.getElementById('productModal');
-                        if (!productModal) {
-                            console.error('productModal element not found');
-                            return;
+                // Close modals when clicking outside of the modal content
+                window.addEventListener('click', function(event) {
+                    modals.forEach(modal => {
+                        if (event.target == modal) {
+                            modal.style.display = "none";
                         }
+                    });
+                });
 
-                        const productTable = document.getElementById('productTable');
-                        if (!productTable) {
-                            console.error('productTable element not found');
-                            return;
-                        }
-                        console.log('productTable found:', productTable);
+                const filterToggleButton = document.getElementById('filterToggleButton');
+                const filterContainer = document.getElementById('filters');
 
-                        productTable.innerHTML = '<tr><th>Product Name</th><th>Category</th><th>Details</th><th>Stock</th><th>Quantity</th><th>Actions</th></tr>';
+                // Toggle filter visibility on button click
+                filterToggleButton.addEventListener('click', function() {
+                    filterContainer.classList.toggle('visible');
+                });
 
-                        products.forEach(product => {
-                            const row = productTable.insertRow();
-                            row.insertCell(0).innerText = product.name;
-                            row.insertCell(1).innerText = product.category;
-                            row.insertCell(2).innerText = product.details.map(detail => `${detail.detail_name}: ${detail.detail_value}`).join(', ');
-                            row.insertCell(3).innerText = product.stock;
+                const iframe = document.getElementById('mapIframe');
 
-                            // Create the quantity input field
-                            const quantityCell = row.insertCell(4);
-                            const quantityInput = document.createElement('input');
-                            quantityInput.type = 'number';
-                            quantityInput.value = 0;
-                            quantityInput.min = 0;
-                            quantityInput.max = product.stock;
-                            quantityInput.style.width = '50px';
-                            quantityCell.appendChild(quantityInput);
+                iframe.onload = function() {
+                    const iframeWindow = iframe.contentWindow;
 
-                            // Create the + and - buttons
-                            const actionsCell = row.insertCell(5);
-                            const incrementButton = document.createElement('button');
-                            incrementButton.innerText = '+';
-                            incrementButton.addEventListener('click', function() {
-                                let currentQuantity = parseInt(quantityInput.value);
-                                if (currentQuantity < product.stock) {
-                                    quantityInput.value = currentQuantity + 1;
+                    // Initially check the desired filters
+                    document.querySelectorAll('.main-filter[value="pending"], .sub-filter[value="medical"], .sub-filter[value="food"], .sub-filter[value="shelter"], .sub-filter[value="donate"]').forEach(cb => {
+                        cb.checked = true;
+                    });
+
+                    // Handle messages from the iframe
+                    window.addEventListener('message', function(event) {
+                        if (event.data.type === 'updateUnloadButtonState') {
+                            const unloadButton = document.getElementById('unloadButton');
+                            const distance = event.data.distance;
+
+                            if (unloadButton) {
+                                if (distance <= 100) {
+                                    unloadButton.classList.remove('inactive');
+                                    unloadButton.classList.add('active');
+                                    unloadButton.disabled = false;
+                                } else {
+                                    unloadButton.classList.remove('active');
+                                    unloadButton.classList.add('inactive');
+                                    unloadButton.disabled = true;
                                 }
-                            });
+                            } else {
+                                console.log('Unload button not found in the DOM');
+                            }
+                        }
+
+                        if (event.data.type === 'showProductModal') {
+                            const products = event.data.products;
+
+                            const productModal = document.getElementById('productModal');
+                            if (!productModal) {
+                                console.error('productModal element not found');
+                                return;
+                            }
+
+                            const productTable = document.getElementById('productTable');
+                            if (!productTable) {
+                                console.error('productTable element not found');
+                                return;
+                            }
+                            console.log('productTable found:', productTable);
+
+                            productTable.innerHTML = '<tr><th>Product Name</th><th>Category</th><th>Details</th><th>Stock</th><th>Quantity</th><th>Actions</th></tr>';
+
+                            products.forEach(product => {
+                                const row = productTable.insertRow();
+                                row.dataset.productId = product._id;
+                                row.insertCell(0).innerText = product.name;
+                                row.insertCell(1).innerText = product.category;
+                                row.insertCell(2).innerText = product.details.map(detail => `${detail.detail_name}: ${detail.detail_value}`).join(', ');
+                                row.insertCell(3).innerText = product.stock;
+
+                                // Create the quantity input field
+                                const quantityCell = row.insertCell(4);
+                                const quantityInput = document.createElement('input');
+                                quantityInput.type = 'number';
+                                quantityInput.value = 0;
+                                quantityInput.min = 0;
+                                quantityInput.max = product.stock;
+                                quantityInput.style.width = '50px';
+                                quantityCell.appendChild(quantityInput);
+
+                                // Create the + and - buttons
+                                const actionsCell = row.insertCell(5);
+                                const incrementButton = document.createElement('button');
+                                incrementButton.innerText = '+';
+                                incrementButton.addEventListener('click', function() {
+                                    let currentQuantity = parseInt(quantityInput.value);
+                                    if (currentQuantity < product.stock) {
+                                        quantityInput.value = currentQuantity + 1;
+                                    }
+                                });
 
                                 const decrementButton = document.createElement('button');
                                 decrementButton.innerText = '-';
@@ -200,59 +255,94 @@
                                 });
                                 actionsCell.appendChild(incrementButton);
                                 actionsCell.appendChild(decrementButton);
+                            });
+
+                            // Show the modal
+                            productModal.style.display = 'block';
+                        }
+                    });
+
+                    // Ensure filters are applied when iframe is loaded
+                    const activeMainFilters = Array.from(document.querySelectorAll('.main-filter:checked')).map(cb => cb.value);
+                    const activeSubFilters = Array.from(document.querySelectorAll('.sub-filter:checked')).map(cb => cb.value);
+                    iframeWindow.applyFilters(activeMainFilters, activeSubFilters);
+
+                    // Add event listeners for live filtering
+                    document.querySelectorAll('.main-filter, .sub-filter').forEach(cb => {
+                        cb.addEventListener('change', function() {
+                            const activeMainFilters = Array.from(document.querySelectorAll('.main-filter:checked')).map(cb => cb.value);
+                            const activeSubFilters = Array.from(document.querySelectorAll('.sub-filter:checked')).map(cb => cb.value);
+                            iframeWindow.applyFilters(activeMainFilters, activeSubFilters);
+                        });
+                    });
+
+                };
+
+                // Handle the load button click
+                document.getElementById('loadButton').addEventListener('click', async function() {
+                    const cargoTab = document.getElementById('cargoTab');
+                    const rows = document.querySelectorAll('#productTable tr');
+                    let cargo = [];
+
+                    rows.forEach((row, index) => {
+                        if (index === 0) return; // Skip header row
+                        const quantityInput = row.querySelector('input[type="number"]');
+                        const quantity = parseInt(quantityInput.value);
+
+                        if (quantity > 0) {
+                            const productId = row.dataset.productId; // Make sure this data attribute exists
+                            cargo.push({ productId: productId, quantity: quantity });
+                        }
+                    });
+
+                    // Save cargo to the database via an AJAX request
+                    try {
+                        const response = await fetch('/saveCargo', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ cargo: cargo })
                         });
 
-                        // Show the modal
-                        productModal.style.display = 'block';
-                    }
-                    if (event.data.type === 'updateLoadButtonState') {
-                        const loadButton = document.getElementById('loadButton');
-                        const unloadButton = document.getElementById('unloadButton');
-                        console.log('Load Button:', loadButton);
-                        const distance = event.data.distance;
-                        console.log('Distance: ', distance);
+                        if (response.ok) {
+                            const data = await response.json();
+                            console.log('Cargo saved successfully:', data);
 
-                        if (loadButton) {
-                            if (distance <= 100) {
-                                loadButton.classList.remove('inactive');
-                                loadButton.classList.add('active');
-                                loadButton.disabled = false;
-                                unloadButton.classList.remove('inactive');
-                                unloadButton.classList.add('active');
-                                unloadButton.disabled = false;
-                                console.log('Button Activated');
-                            } else {
-                                loadButton.classList.remove('active');
-                                loadButton.classList.add('inactive');
-                                loadButton.disabled = true;
-                                unloadButton.classList.remove('active');
-                                unloadButton.classList.add('inactive');
-                                unloadButton.disabled = true;
-                                console.log('Button Deactivated');
-                            }
+                            let loadedProductsHtml = '<h3>Loaded Products:</h3>';
+                            loadedProductsHtml += '<table><tr><th>Product Name</th><th>Category</th><th>Details</th><th>Quantity</th></tr>';
+
+                            cargo.forEach(item => {
+                                const row = Array.from(rows).find(row => row.dataset.productId === item.productId);
+                                if (row) {
+                                    const productName = row.cells[0].innerText;
+                                    const productCategory = row.cells[1].innerText;
+                                    const productDetails = row.cells[2].innerText;
+
+                                    loadedProductsHtml += `<tr>
+                                        <td>${productName}</td>
+                                        <td>${productCategory}</td>
+                                        <td>${productDetails}</td>
+                                        <td>${item.quantity}</td>
+                                    </tr>`;
+                                }
+                            });
+
+                            loadedProductsHtml += '</table>';
+                            cargoTab.innerHTML = loadedProductsHtml + cargoTab.innerHTML;
+
+                            // Optionally, close the modal after loading products
+                            document.getElementById('productModal').style.display = 'none';
                         } else {
-                            console.log('Load button not found in the DOM');
+                            console.error('Failed to save cargo');
                         }
+                    } catch (error) {
+                        console.error('Error saving cargo:', error);
                     }
                 });
 
-                // Ensure filters are applied when iframe is loaded
-                const activeMainFilters = Array.from(document.querySelectorAll('.main-filter:checked')).map(cb => cb.value);
-                const activeSubFilters = Array.from(document.querySelectorAll('.sub-filter:checked')).map(cb => cb.value);
-                iframeWindow.applyFilters(activeMainFilters, activeSubFilters);
+            });
+        </script>
 
-                // Add event listeners for live filtering
-                document.querySelectorAll('.main-filter, .sub-filter').forEach(cb => {
-                    cb.addEventListener('change', function() {
-                        const activeMainFilters = Array.from(document.querySelectorAll('.main-filter:checked')).map(cb => cb.value);
-                        const activeSubFilters = Array.from(document.querySelectorAll('.sub-filter:checked')).map(cb => cb.value);
-                        iframeWindow.applyFilters(activeMainFilters, activeSubFilters);
-                    });
-                });
-
-            };
-        });
-    </script>
-
-</body>
+    </body>
 </html>
