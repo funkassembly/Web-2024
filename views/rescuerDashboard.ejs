@@ -57,8 +57,9 @@
         <div class="cargo-container">
             <!-- Tabs for switching between Cargo and Tasks -->
             <div class="tabs">
-                <button class="tab-button active" onclick="openTab('cargoTab')">Cargo</button>
-                <button class="tab-button" onclick="openTab('tasksTab')">Tasks</button>
+                <button id="cargoTabBtn" class="button-active" onclick="openTab('cargoTab', this)">Cargo</button>
+                <button id="taskTabBtn" class="button-inactive" onclick="openTab('tasksTab', this)">Tasks</button>
+
             </div>
         
             <!-- Content for Cargo tab -->
@@ -103,7 +104,9 @@
         </div>
 
         <script>
-            function openTab(tabName) {
+            function openTab(tabName, element) {
+                console.log('openTab called with tabName:', tabName);
+
                 var i, tabcontent, tabbuttons;
 
                 // Hide all tab content
@@ -114,22 +117,40 @@
                 }
 
                 // Remove the active class from all tab buttons
-                tabbuttons = document.getElementsByClassName("tab-button");
+                tabbuttons = document.querySelectorAll("#cargoTabBtn, #taskTabBtn");
                 for (i = 0; i < tabbuttons.length; i++) {
-                    tabbuttons[i].classList.remove("active");
+                    tabbuttons[i].classList.remove("button-active");
+                    tabbuttons[i].classList.add("button-inactive");
                 }
 
                 // Show the specific tab content
-                document.getElementById(tabName).style.display = "block";
-                document.getElementById(tabName).classList.add('active');
+                var tabContentElement = document.getElementById(tabName);
+                if (tabContentElement) {
+                    tabContentElement.style.display = "block";
+                    tabContentElement.classList.add('active');
+                } else {
+                    console.error('Tab content element not found for:', tabName);
+                }
 
                 // Add the active class to the button that opened the tab
-                event.currentTarget.classList.add("active");
+                if (element) {
+                    element.classList.add("button-active");
+                    element.classList.remove("button-inactive");
+                } else {
+                    console.error('Element is undefined in openTab function');
+                }
             }
 
             // Set default tab to be open on page load
             document.addEventListener("DOMContentLoaded", function() {
-                openTab('cargoTab');
+                console.log('DOMContentLoaded event triggered');
+                
+                var activeTabButton = document.getElementById('cargoTabBtn'); // Default to Cargo tab
+                if (activeTabButton) {
+                    openTab('cargoTab', activeTabButton);
+                } else {
+                    console.error('No tab buttons found');
+                }
             });
 
             // Modal handling
