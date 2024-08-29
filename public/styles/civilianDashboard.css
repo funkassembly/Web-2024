@@ -96,7 +96,8 @@ body {
 .header-links {
     width: 100%;
     position: relative;
-    top: 20px;
+    top: 50px;
+    margin-bottom: 10px;
 }
 
 .header-links .left-link {
@@ -152,6 +153,15 @@ body {
     cursor: pointer;
 }
 
+h1 {
+    
+    margin-bottom: 10px;
+    font-size: 30px;
+    text-align: center;
+    width: 100%;
+}
+
+/* Styling for date and time fields */
 .date-time-container {
     display: flex;
     justify-content: space-between;
@@ -168,6 +178,7 @@ body {
     padding: 5px;
 }
 
+/* Styling for address display */
 .address-display {
     border: 1px solid #ccc;
     padding: 10px;
@@ -176,6 +187,51 @@ body {
     margin-bottom: 10px;
 }
 
-.address-display p {
-    margin: 5px 0;
+.address-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px; /* Adds space between the fields */
+    margin-bottom: 10px;
+}
+
+.address-row label {
+    margin-right: 10px;
+}
+
+.address-row input[type="text"] {
+    flex-grow: 1;
+    padding: 5px;
+}
+
+/* Styling for product selection and delivery date sections */
+.product-delivery-container {
+    margin-top: 15px;
+}
+
+.product-select-container,
+.delivery-date-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.product-select-container label,
+.delivery-date-container label {
+    margin-right: 10px;
+}
+
+.product-select-container select,
+.delivery-date-container input,
+.delivery-date-container select {
+    margin-right: 20px;
+}
+
+/* General styling for dropdowns */
+select {
+    width: 100%; /* Make the dropdowns full-width */
+    padding: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }

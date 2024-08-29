@@ -295,6 +295,36 @@ app.post('/unloadCargo', isLoggedIn, isRescuer, async (req, res) => {
     }
 });
 
+app.get('/getCategories', async (req, res) => {
+    try {
+        // Fetch unique category numbers from the products collection
+        const categories = await Product.distinct('category');
+        res.json(categories); // Send the array of unique categories to the frontend
+    } catch (error) {
+        console.error('Error fetching categories:', error);
+        res.status(500).json({ error: 'Failed to fetch categories' });
+    }
+});
+
+// Route to get products, optionally filtered by category
+app.get('/getProducts', async (req, res) => {
+    try {
+        const { category } = req.query;
+        let products;
+        
+        if (category) {
+            products = await Product.find({ category: category }); // Fetch products filtered by category
+        } else {
+            products = await Product.find(); // Fetch all products
+        }
+        
+        res.json(products);
+    } catch (error) {
+        console.error('Error fetching products:', error);
+        res.status(500).json({ error: 'Failed to fetch products' });
+    }
+});
+
 
 
 app.get('/adminDashboard', isLoggedIn, isAdmin, (req, res) => res.send('adminDashboard'));
