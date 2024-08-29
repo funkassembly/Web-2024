@@ -151,3 +151,31 @@ body {
     text-decoration: none;
     cursor: pointer;
 }
+
+.date-time-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px; /* Adds space between the fields */
+}
+
+.date-time-container label {
+    margin-right: 10px;
+}
+
+.date-time-container input[type="text"] {
+    width: 45%; /* Adjust as necessary */
+    padding: 5px;
+}
+
+.address-display {
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    margin-bottom: 10px;
+}
+
+.address-display p {
+    margin: 5px 0;
+}

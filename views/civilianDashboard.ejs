@@ -69,16 +69,10 @@
                 <button id="historyTabBtn" class="tab-button" onclick="openTab('historyTab', this)">History</button>
             </div>
         
-            <div id="requestTab" class="tab-content active">
-                <h3>Request Essential Items</h3>
-                <form id="requestForm">
-                    <label for="item">Item:</label>
-                    <input type="text" id="item" name="item" required>
-                    
-                    <label for="quantity">Quantity:</label>
-                    <input type="number" id="quantity" name="quantity" min="1" required>
-                    
-                    <button type="submit">Submit Request</button>
+            <div id="requestTab" class="tab-content">
+                <!-- Dynamic Form -->
+                <form id="dynamicForm">
+                    <!-- Content will be populated by JavaScript -->
                 </form>
             </div>
         
@@ -134,12 +128,15 @@
             if (document.getElementById('requestCheckbox').checked) {
                 markerCivilian.setIcon(RequestIcon);
                 document.getElementById('donateCheckbox').checked = false; // Uncheck the donate option
+                generateRequestForm();
             } else if (document.getElementById('donateCheckbox').checked) {
                 markerCivilian.setIcon(DonateIcon);
                 document.getElementById('requestCheckbox').checked = false; // Uncheck the request option
+                generateDonateForm();
             } else {
                 // Default to RequestIcon if neither is selected (could also remove marker if desired)
                 markerCivilian.setIcon(RequestIcon);
+                generateRequestForm();
             }
         }
 
@@ -147,7 +144,123 @@
         document.getElementById('requestCheckbox').addEventListener('change', toggleMarkerIcon);
         document.getElementById('donateCheckbox').addEventListener('change', toggleMarkerIcon);
 
-        
+        // Populate form for Request
+        function generateRequestForm() {
+            const form = document.getElementById('dynamicForm');
+            form.innerHTML = `
+                <h3>Request Essential Items</h3>
+                <div class="date-time-container">
+                    <label for="date">Date:</label>
+                    <input type="text" id="date" name="date" value="${new Date().toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}" readonly>
+                    
+                    <label for="time">Time:</label>
+                    <input type="text" id="time" name="time" value="${new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}" readonly>
+                </div><br><br>
+                <div id="addressDisplay" class="address-display">
+                    <p>Coordinates: Longitude: <span id="longitude">...</span> Latitude: <span id="latitude">...</span></p>
+                    <p>Street: <span id="street">...</span> Number: <span id="number">...</span></p>
+                    <p>City: <span id="city">...</span></p>
+                    <p>Country: <span id="country">...</span></p>
+                    <p>Postal Code: <span id="postalcode">...</span></p>
+                </div><br><br>
+                <label for="category">Category:</label>
+                <select id="category">
+                    <option value="">All Categories</option>
+                    <!-- Populate with categories from database -->
+                </select><br><br>
+                <label for="products">Products:</label>
+                <select id="products">
+                    <!-- Populate with products based on selected category -->
+                </select><br><br>
+                <button type="submit" style="float: left;">Add</button>
+            `;
+            updateAddressPlaceholder(); // Update the address field with the current coordinates
+        }
+
+        // Populate form for Donate
+        function generateDonateForm() {
+            const form = document.getElementById('dynamicForm');
+            form.innerHTML = `
+                <h3>Donate Essential Items</h3>
+                <div class="date-time-container">
+                    <label for="date">Date:</label>
+                    <input type="text" id="date" name="date" value="${new Date().toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}" readonly>
+                    
+                    <label for="time">Time:</label>
+                    <input type="text" id="time" name="time" value="${new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}" readonly>
+                </div><br><br>
+                <div id="addressDisplay" class="address-display">
+                    <p>Coordinates: Longitude: <span id="longitude">...</span> Latitude: <span id="latitude">...</span></p>
+                    <p>Street: <span id="street">...</span> Number: <span id="number">...</span></p>
+                    <p>City: <span id="city">...</span></p>
+                    <p>Country: <span id="country">...</span></p>
+                    <p>Postal Code: <span id="postalcode">...</span></p>
+                </div><br><br>
+                <form method="post" action="" id="item_form">
+                    <label for="itname">Item Name:</label>
+                    <input type="text" name="itname" id="itname" required><br><br>
+                    <label for="itcats">Item Category:</label>
+                    <select name="itcats" id="itcats" required>
+                        <option value="">Select Category</option>
+                        <!-- Populate with categories from database -->
+                    </select><br><br>
+                    <h3>Product Details</h3>
+                    <table id="itemdetails">
+                        <tr>
+                            <td>Item detail name (e.g. "volume")</td>
+                            <td><input name="itdname1" id="itdname1"></td>
+                            <td>Item detail value (e.g. "500ml")</td>
+                            <td><input name="itdvalue1" id="itdvalue1"></td>
+                        </tr>
+                    </table>
+                    <input type="button" value="Add more details" onclick="addDetail()"><br><br>
+                    <input type="button" value="Submit" onclick="send()">
+                </form>
+            `;
+            updateAddressPlaceholder(); // Update the address field with the current coordinates
+        }
+
+        // Make this function async
+        async function updateAddressPlaceholder() {
+            markerCivilian.on('moveend', async function() {
+                const latLng = markerCivilian.getLatLng();
+                document.getElementById('longitude').textContent = latLng.lng.toFixed(6);
+                document.getElementById('latitude').textContent = latLng.lat.toFixed(6);
+
+                // Fetch address details using OpenStreetMap's Nominatim API
+                const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latLng.lat}&lon=${latLng.lng}`;
+                const response = await fetch(url);
+                const data = await response.json();
+
+                // Update the address fields with data from the API
+                document.getElementById('street').textContent = data.address.road || 'N/A';
+                document.getElementById('number').textContent = data.address.house_number || 'N/A';
+                document.getElementById('city').textContent = data.address.city || data.address.town || data.address.village || 'N/A';
+                document.getElementById('country').textContent = data.address.country || 'N/A';
+                document.getElementById('postalcode').textContent = data.address.postcode || 'N/A';
+            });
+        }
+
+        // Add more details for the donate form
+        function addDetail() {
+            const table = document.getElementById('itemdetails');
+            const rowCount = table.rows.length + 1;
+            const row = table.insertRow(-1);
+            row.innerHTML = `
+                <td>Item detail name (e.g. "volume")</td>
+                <td><input name="itdname${rowCount}" id="itdname${rowCount}"></td>
+                <td>Item detail value (e.g. "500ml")</td>
+                <td><input name="itdvalue${rowCount}" id="itdvalue${rowCount}"></td>
+            `;
+        }
+
+        // Handle form submission for the donate form
+        function send() {
+            const form = document.getElementById('item_form');
+            // Perform form submission logic here
+            console.log('Form submitted');
+        }
+
         // Function to open the product modal and populate it with data
         function openProductModal(products) {
             const productTableBody = document.querySelector("#productTable tbody");
@@ -207,6 +320,15 @@
             } else {
                 console.error('No tab buttons found');
             }
+            const requestCheckbox = document.getElementById('requestCheckbox');
+            const donateCheckbox = document.getElementById('donateCheckbox');
+
+            // Check the Request checkbox by default
+            requestCheckbox.checked = true;
+            donateCheckbox.checked = false;
+
+            // Display the Request form by default
+            toggleMarkerIcon();
         });
 
         // Modal handling
