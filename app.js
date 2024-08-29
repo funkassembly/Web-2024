@@ -198,10 +198,18 @@ app.post('/saveCargo', isLoggedIn, isRescuer, async (req, res) => {
             if (!product) {
                 return res.status(400).json({ success: false, message: 'Invalid product ID' });
             }
+             // Check stock availability
+            if (product.stock < item.quantity) {
+                return res.status(400).json({ success: false, message: 'Insufficient stock for product: ' + product.name });
+            }
+
+            // Update product stock
+            product.stock -= item.quantity;
+            await product.save();
         }
 
         // Update the rescuer's cargo
-        user.cargo = cargo;
+        user.cargo.push(...cargo); // Add new items to the existing cargo
         await user.save();
 
         res.json({ success: true, message: 'Cargo saved successfully' });
@@ -210,6 +218,74 @@ app.post('/saveCargo', isLoggedIn, isRescuer, async (req, res) => {
         res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
+
+app.get('/getCargo', isLoggedIn, isRescuer, async (req, res) => {
+    console.log('getCargo route hit');  // Debugging line
+    try {
+        const userId = req.session.userId;
+        const user = await User.findById(userId).populate('cargo.productId'); // Populate to get product details
+
+        if (!user) {
+            console.log('User not found'); 
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+        console.log('Returning user cargo:', user.cargo);
+        res.json({ success: true, cargo: user.cargo });
+    } catch (error) {
+        console.error('Error fetching cargo:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
+app.post('/unloadCargo', isLoggedIn, isRescuer, async (req, res) => {
+    try {
+        const userId = req.session.userId;
+        const { items } = req.body;
+
+        // Find the rescuer
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        for (const item of items) {
+            const { productId, quantity } = item;
+            const cargoItemIndex = user.cargo.findIndex(cargoItem => cargoItem.productId.toString() === productId);
+
+            if (cargoItemIndex === -1) {
+                return res.status(400).json({ success: false, message: 'Product not found in cargo' });
+            }
+
+            const cargoItem = user.cargo[cargoItemIndex];
+
+            if (cargoItem.quantity < quantity) {
+                return res.status(400).json({ success: false, message: `Not enough quantity in cargo for product: ${cargoItem.productId}` });
+            }
+
+            // Deduct the quantity from cargo
+            cargoItem.quantity -= quantity;
+
+            // If the quantity becomes zero, remove the item from the cargo
+            if (cargoItem.quantity === 0) {
+                user.cargo.splice(cargoItemIndex, 1);
+            }
+
+            // Update the stock in general storage
+            const product = await Product.findById(productId);
+            product.stock += quantity;
+            await product.save();
+        }
+
+        await user.save();
+
+        res.json({ success: true, message: 'Cargo updated and products returned to storage.' });
+    } catch (error) {
+        console.error('Error unloading cargo:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
+
 
 app.get('/adminDashboard', isLoggedIn, isAdmin, (req, res) => res.send('adminDashboard'));
 app.get('/civilianDashboard', isLoggedIn, isCivilian, (req, res) => res.send('civilianDashboard'));
