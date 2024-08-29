@@ -206,10 +206,20 @@ app.post('/saveCargo', isLoggedIn, isRescuer, async (req, res) => {
             // Update product stock
             product.stock -= item.quantity;
             await product.save();
+
+            // Update the rescuer's cargo
+            const existingCargoItem = user.cargo.find(cargoItem => cargoItem.productId.toString() === item.productId);
+            if (existingCargoItem) {
+                // If product already exists in cargo, just update the quantity
+                existingCargoItem.quantity += item.quantity;
+            } else {
+                // If product is not in cargo, add it as a new item
+                user.cargo.push({ productId: item.productId, quantity: item.quantity });
+            }
         }
 
         // Update the rescuer's cargo
-        user.cargo.push(...cargo); // Add new items to the existing cargo
+        
         await user.save();
 
         res.json({ success: true, message: 'Cargo saved successfully' });

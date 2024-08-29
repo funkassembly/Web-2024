@@ -8,10 +8,14 @@ const productDetailSchema = new mongoose.Schema({
 
 // Product Schema
 const productSchema = new mongoose.Schema({
-    id: { type: String, required: true, unique: true },
+    // id: { type: String, required: true, unique: true },
     name: { type: String, required: true },
     category: { type: String, required: true },
-    details: [productDetailSchema] // Array of productDetailSchema
+    details: {
+        type: Array,
+        default: []
+    },
+    stock: { type: Number, required: true },
 });
 const Product = mongoose.models.Product || mongoose.model('Product', productSchema);
 

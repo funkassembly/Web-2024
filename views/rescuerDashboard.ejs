@@ -175,6 +175,9 @@
 
             function createCargoRow(item) {
                 const { productId, quantity } = item;
+                console.log('ProductId:', productId);
+                console.log('Product Details:', productId ? productId.details : 'No details available');
+
 
                 return `<tr>
                     <td><input type="checkbox" class="product-checkbox" data-product-id="${productId._id}"></td>
@@ -186,6 +189,10 @@
             }
 
             function populateCargoTab(cargo) {
+                if (!Array.isArray(cargo)) {
+                    console.error('Cargo is not an array or is undefined:', cargo);
+                    return;
+                }
                 const cargoTab = document.getElementById('cargoTab');
 
                 const loadedProductsDiv = document.getElementById('loadedProducts');
@@ -260,6 +267,30 @@
                 });
             }
             
+            function observeCheckboxes() {
+                document.addEventListener("DOMContentLoaded", function() {
+                    const targetNode = document.querySelector('#loadedProducts tbody'); // Assuming checkboxes are within <tbody>
+                      
+                    if (!targetNode) {
+                        console.error("Target node (tbody) not found. Ensure it exists before observing.");
+                        return;
+                    }
+
+                    const config = { childList: true, subtree: true };
+
+                    const callback = function(mutationsList) {
+                        for (let mutation of mutationsList) {
+                            if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                                addCheckboxEventListeners();
+                            }
+                        }
+                    };
+
+                    const observer = new MutationObserver(callback);
+                    observer.observe(targetNode, config);
+                });
+            }
+
 
             function renderProductModal(products) {
                     
@@ -356,7 +387,7 @@
 
                         // Re-render the product modal with updated stock
                         renderProductModal(updatedProducts);
-                        // populateCargoTab(data.cargo);
+                        // populateCargoTab(cargo);
                     
         
                         let tableBody = document.querySelector('#loadedProducts table tbody');
@@ -374,9 +405,9 @@
                         cargo.forEach(item => {
                             const row = Array.from(rows).find(row => row.dataset.productId === item.productId);
                             if (row) {
-                                const productName = row.cells[1].innerText;
-                                const productCategory = row.cells[2].innerText;
-                                const productDetails = row.cells[3].innerText;
+                                const productName = row.cells[0].innerText;
+                                const productCategory = row.cells[1].innerText;
+                                const productDetails = row.cells[2].innerText;
 
                                 const newRowHtml = `<tr>
                                     <td><input type="checkbox" class="product-checkbox" data-product-id="${item.productId}"></td>
@@ -465,6 +496,8 @@
             document.addEventListener("DOMContentLoaded", function(){
                 const modals = document.querySelectorAll('.modal');
                 const closeButtons = document.querySelectorAll('.close-modal');
+                addCheckboxEventListeners();
+                observeCheckboxes();
 
                 // Open Instructions Modal
                 document.getElementById('instructionsLink').addEventListener('click', function(event) {
