@@ -3,15 +3,246 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Civilian's Dashboard</title>
     <link rel="stylesheet" href="/styles/civilianDashboard.css">
     <link rel="icon" href="/maptry/icons/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 </head>
 <body>
-    
-<h1>Civilian Dashboard</h1>
-<a href="/logout">Logout</a>
 
-    
+    <div class="header-links">
+        <a href="#" id="instructionsLink" class="left-link">Instructions</a>
+        <a href="/logout" class="right-link">Logout</a>
+    </div>
+
+    <!-- Instructions Modal -->
+    <div id="instructionsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Instructions</h2>
+            <p>1. Use the map to view your location and nearby resources.</p>
+            <p>2. In the 'Request' tab, specify your needs for essential items.</p>
+            <p>3. In the 'History' tab, view your previous requests and their statuses.</p>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Available Products in General Storage</h2>
+            <div class="product-list">
+                <table id="productTable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Table will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <h1>Dashboard Civilian</h1>
+    <div class="dashboard-container">
+        
+        <div class="map-container" id="map"></div>
+
+        <div class="request-history-container">
+            <div class="checkbox-container">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="requestCheckbox"> Request
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="donateCheckbox"> Donate
+                </label>
+            </div>
+
+            <div class="tabs">
+                <button id="requestTabBtn" class="tab-button active" onclick="openTab('requestTab', this)">Request</button>
+                <button id="historyTabBtn" class="tab-button" onclick="openTab('historyTab', this)">History</button>
+            </div>
+        
+            <div id="requestTab" class="tab-content active">
+                <h3>Request Essential Items</h3>
+                <form id="requestForm">
+                    <label for="item">Item:</label>
+                    <input type="text" id="item" name="item" required>
+                    
+                    <label for="quantity">Quantity:</label>
+                    <input type="number" id="quantity" name="quantity" min="1" required>
+                    
+                    <button type="submit">Submit Request</button>
+                </form>
+            </div>
+        
+            <div id="historyTab" class="tab-content">
+                <h3>Your Request History</h3>
+                <div id="historyContent">
+                    <!-- Populate with request history -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        // Initialize the map
+        const map = L.map('map').setView([38.2462420, 21.7350847], 16);
+        
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        // Marker icons
+        const StorageIcon = L.icon({
+            iconUrl: '/maptry/icons/Storage.png', 
+            iconSize: [30, 30],
+            iconAnchor: [15,8],
+            popupAnchor: [0, 0]
+        });
+        const RequestIcon = L.icon({
+            iconUrl: '/maptry/icons/peoplePending.png',
+            iconSize: [30, 30],
+            iconAnchor: [15, 30],
+            popupAnchor: [0, -30]
+        });
+        const DonateIcon = L.icon({
+            iconUrl: '/maptry/icons/donate.png',
+            iconSize: [20, 20],
+            iconAnchor: [15, 30],
+            popupAnchor: [0, -30]
+        });
+        var markerStorage = L.marker([38.24600, 21.73500], {icon: StorageIcon}).addTo(map);
+        // Civilian marker
+        var markerCivilian = L.marker([38.24600, 21.73500], {
+            icon: RequestIcon,
+            draggable: true
+        }).addTo(map);
+        markerCivilian.bindPopup('Σύρε με στην τοποθεσία σου!').openPopup();
+
+        // Function to toggle the marker icon based on checkbox selection
+        function toggleMarkerIcon() {
+            if (document.getElementById('requestCheckbox').checked) {
+                markerCivilian.setIcon(RequestIcon);
+                document.getElementById('donateCheckbox').checked = false; // Uncheck the donate option
+            } else if (document.getElementById('donateCheckbox').checked) {
+                markerCivilian.setIcon(DonateIcon);
+                document.getElementById('requestCheckbox').checked = false; // Uncheck the request option
+            } else {
+                // Default to RequestIcon if neither is selected (could also remove marker if desired)
+                markerCivilian.setIcon(RequestIcon);
+            }
+        }
+
+        // Event listeners for the checkboxes
+        document.getElementById('requestCheckbox').addEventListener('change', toggleMarkerIcon);
+        document.getElementById('donateCheckbox').addEventListener('change', toggleMarkerIcon);
+
+        
+        // Function to open the product modal and populate it with data
+        function openProductModal(products) {
+            const productTableBody = document.querySelector("#productTable tbody");
+            productTableBody.innerHTML = ""; // Clear previous content
+
+            products.forEach(product => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${product.name}</td>
+                    <td>${product.category}</td>
+                    <td>${product.details.map(detail => `${detail.detail_name}: ${detail.detail_value}`).join(', ')}</td>
+                `;
+                productTableBody.appendChild(row);
+            });
+
+            document.getElementById('productModal').style.display = 'block';
+        }
+
+        // Event listener for the storage marker
+        markerStorage.on('click', async function() {
+            try {
+                const response = await fetch('/getProducts');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch products');
+                }
+                const products = await response.json();
+                openProductModal(products);
+            } catch (error) {
+                console.error('Error fetching or displaying products:', error);
+            }
+        });
+
+        function openTab(tabName, element) {
+            var i, tabcontent, tabbuttons;
+
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+                tabcontent[i].classList.remove('active');
+            }
+
+            tabbuttons = document.querySelectorAll(".tab-button");
+            for (i = 0; i < tabbuttons.length; i++) {
+                tabbuttons[i].classList.remove("active");
+            }
+
+            document.getElementById(tabName).style.display = "block";
+            document.getElementById(tabName).classList.add('active');
+
+            element.classList.add("active");
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            var activeTabButton = document.getElementById('requestTabBtn');
+            if (activeTabButton) {
+                openTab('requestTab', activeTabButton);
+            } else {
+                console.error('No tab buttons found');
+            }
+        });
+
+        // Modal handling
+        document.addEventListener("DOMContentLoaded", function(){
+            const modals = document.querySelectorAll('.modal');
+            const closeButtons = document.querySelectorAll('.close-modal');
+
+            document.getElementById('instructionsLink').addEventListener('click', function(event) {
+                event.preventDefault();
+                document.getElementById('instructionsModal').style.display = "block";
+            });
+
+            closeButtons.forEach(closeBtn => {
+                closeBtn.addEventListener('click', function() {
+                    closeBtn.closest('.modal').style.display = 'none';
+                });
+            });
+
+            window.addEventListener('click', function(event) {
+                modals.forEach(modal => {
+                    if (event.target == modal) {
+                        modal.style.display = "none";
+                    }
+                });
+            });
+
+            // Handle messages from the iframe (map) to open the product modal
+            window.addEventListener('message', async function(event) {
+                if (event.data.type === 'showProductModal') {
+                    const response = await fetch('/getProducts');
+                    const products = await response.json();
+                    openProductModal(products);
+                }
+            });
+        });
+    </script>
+
 </body>
 </html>

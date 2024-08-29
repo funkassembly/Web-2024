@@ -232,7 +232,11 @@
                             return;
                         }
 
-                        const quantity = parseInt(quantityCell.textContent, 10);
+                        let quantity = parseInt(quantityCell.textContent, 10);
+                        if (isNaN(quantity)) {
+                            console.warn('Parsed quantity is NaN, defaulting to 0');
+                            quantity = 0;
+                        }
 
                         if (this.checked) {
                             // Replace quantity text with an input field and buttons
