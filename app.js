@@ -325,6 +325,61 @@ app.get('/getProducts', async (req, res) => {
     }
 });
 
+app.post('/updateCivilianLocation', isLoggedIn, isCivilian, async (req, res) => {
+    console.log("Update location endpoint hit");
+    let { lat, lng } = req.body;
+
+    // Convert lat and lng to numbers
+    lat = parseFloat(lat);
+    lng = parseFloat(lng);
+
+    console.log(`Parsed lat: ${lat}, lng: ${lng}`);
+    try {
+        // Reload the document before updating
+        const user = await User.findById(req.session.userId).exec();
+        if (!user) {
+            return res.status(404).json({ success: false, error: 'User not found' });
+        }
+
+        if (isNaN(lat) || isNaN(lng)) {
+            console.error('Invalid lat or lng values:', lat, lng);
+            return res.status(400).json({ success: false, error: 'Invalid coordinates' });
+        }
+
+        user.location.coordinates = [lat, lng];
+        console.log('Updated User Location:', user.location.coordinates);
+
+        await user.save();
+        console.log('User after save:', user);
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error updating location:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+
+// Route to save a request for a Civilian
+app.post('/saveCivilianRequest', isLoggedIn, isCivilian, async (req, res) => {
+    try {
+        const user = await User.findById(req.session.userId);
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
+
+        // Add the new request to the user's requests array
+        user.requests.push(req.body);
+
+        await user.save();
+        res.json({ success: true, message: 'Request saved successfully' });
+    } catch (error) {
+        console.error('Error saving request:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
 
 
 app.get('/adminDashboard', isLoggedIn, isAdmin, (req, res) => res.send('adminDashboard'));

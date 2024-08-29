@@ -88,6 +88,14 @@
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
+        // Debounce function to limit how often the location update is triggered
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
         // Initialize the map
         const map = L.map('map').setView([38.2462420, 21.7350847], 16);
         
@@ -122,6 +130,35 @@
             draggable: true
         }).addTo(map);
         markerCivilian.bindPopup('Σύρε με στην τοποθεσία σου!').openPopup();
+        
+        // Debounced update function for marker movement
+        const debouncedUpdateAddress = debounce(async function() {
+            const latLng = markerCivilian.getLatLng();
+            try {
+                const response = await fetch('/updateCivilianLocation', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        lat: latLng.lat,
+                        lng: latLng.lng
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    console.log('Location updated successfully');
+                } else {
+                    console.error('Failed to update location');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }, 300); // 300ms debounce delay
+
+        // Attach the debounced update function to the marker's 'moveend' event
+        markerCivilian.on('moveend', debouncedUpdateAddress);
 
         // Function to toggle the marker icon based on checkbox selection
         function toggleMarkerIcon() {
@@ -413,20 +450,46 @@
         async function updateAddressPlaceholder() {
             markerCivilian.on('moveend', async function() {
                 const latLng = markerCivilian.getLatLng();
+                try {
+                    const response = await fetch('/updateCivilianLocation', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            lat: latLng.lat,
+                            lng: latLng.lng
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        console.log('Location updated successfully');
+                    } else {
+                        console.error('Failed to update location');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
                 document.getElementById('longitude').value = latLng.lng.toFixed(6);
                 document.getElementById('latitude').value = latLng.lat.toFixed(6);
 
                 // Fetch address details using OpenStreetMap's Nominatim API
-                const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latLng.lat}&lon=${latLng.lng}`;
-                const response = await fetch(url);
-                const data = await response.json();
+                try {
+                    const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latLng.lat}&lon=${latLng.lng}`;
+                    const response = await fetch(url);
+                    const data = await response.json();
 
-                // Update the address fields with data from the API
-                document.getElementById('street').value = data.address.road || '';
-                document.getElementById('number').value = data.address.house_number || '';
-                document.getElementById('city').value = data.address.city || data.address.town || data.address.village || '';
-                document.getElementById('country').value = data.address.country || '';
-                document.getElementById('postalcode').value = data.address.postcode || '';
+                    // Update the address fields with data from the API
+                    document.getElementById('street').value = data.address.road || '';
+                    document.getElementById('number').value = data.address.house_number || '';
+                    document.getElementById('city').value = data.address.city || data.address.town || data.address.village || '';
+                    document.getElementById('country').value = data.address.country || '';
+                    document.getElementById('postalcode').value = data.address.postcode || '';
+                } catch (error) {
+                    console.error('Error fetching address details:', error);
+                }
             });
         }
 
@@ -467,6 +530,62 @@
 
             document.getElementById('productModal').style.display = 'block';
         }
+
+        document.getElementById('dynamicForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            const requestDetails = {
+                date: document.getElementById('date')?.value || '',
+                time: document.getElementById('time')?.value || '',
+                address: {
+                    longitude: document.getElementById('longitude')?.value || '',
+                    latitude: document.getElementById('latitude')?.value || '',
+                    street: document.getElementById('street')?.value || '',
+                    number: document.getElementById('number')?.value || '',
+                    city: document.getElementById('city')?.value || '',
+                    country: document.getElementById('country')?.value || '',
+                    postalcode: document.getElementById('postalcode')?.value || '',
+                },
+                products: [],
+                deliveryDate: document.getElementById('deliveryDate')?.value || '',
+                deliveryTimeSlot: {
+                    hours: document.getElementById('deliveryHours')?.value || '',
+                    minutes: document.getElementById('deliveryMinutes')?.value || ''
+                }
+            };
+
+            // Collect product information
+            const productElements = document.querySelectorAll('.product-select-container');
+            productElements.forEach(element => {
+                const category = element.querySelector('#category')?.value || '';
+                const product = element.querySelector('#products')?.value || '';
+                const people = element.querySelector('#people')?.value || 0;
+                requestDetails.products.push({ category, product, people });
+            });
+
+            // Send request details to the server
+            fetch('/saveCivilianRequest', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestDetails)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Request saved successfully');
+                    // Optionally clear the form or give feedback to the user
+                } else {
+                    console.error('Failed to save request');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+
 
         // Event listener for the storage marker
         markerStorage.on('click', async function() {
