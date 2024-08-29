@@ -209,6 +209,7 @@ h1 {
     margin-top: 15px;
 }
 
+/* Styling for the product select and delivery date sections */
 .product-select-container,
 .delivery-date-container {
     display: flex;
@@ -234,4 +235,47 @@ select {
     margin-bottom: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
+}
+
+/* Styling for smaller dropdowns */
+.small-select {
+    width: auto;
+    padding: 3px;
+    font-size: 14px; /* Adjust the font size to make the dropdowns smaller */
+    margin-right: 10px; /* Add some space between the dropdowns */
+}
+
+/* Styling for the request button */
+.request-button {
+    float: right; /* Aligns the button to the right */
+    padding: 10px 20px; /* Increases the size of the button */
+    font-size: 16px; /* Makes the text larger */
+    background-color: #4CAF50; /* Green background */
+    color: white; /* White text */
+    border: none; /* Removes the border */
+    border-radius: 5px; /* Adds rounded corners */
+    cursor: pointer; /* Changes the cursor to a pointer on hover */
+    margin-top: 5px; /* Adds space above the button */
+}
+
+.request-button:hover {
+    background-color: #45a049; /* Slightly darker green on hover */
+}
+
+/* Styling for the Add Product button */
+.add-product-button {
+    display: block; /* Ensure the button is block-level */
+    margin-top: 10px; /* Space above the button */
+    margin-left: auto; /* Align the button to the right */
+    padding: 8px 16px; /* Size of the button */
+    font-size: 14px; /* Text size */
+    background-color: #ccc; /* Grey background */
+    color: #333; /* Darker grey text */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+}
+
+.add-product-button:hover {
+    background-color: #bbb; /* Slightly darker grey on hover */
 }
