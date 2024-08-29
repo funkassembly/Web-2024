@@ -284,9 +284,7 @@
                     });
 
                     // Ensure filters are applied when iframe is loaded
-                    const activeMainFilters = Array.from(document.querySelectorAll('.main-filter:checked')).map(cb => cb.value);
-                    const activeSubFilters = Array.from(document.querySelectorAll('.sub-filter:checked')).map(cb => cb.value);
-                    iframeWindow.applyFilters(activeMainFilters, activeSubFilters);
+                    
 
                     // Add event listeners for live filtering
                     document.querySelectorAll('.main-filter, .sub-filter').forEach(cb => {
@@ -325,39 +323,55 @@
                             },
                             body: JSON.stringify({ cargo: cargo })
                         });
+                        const responseText = await response.text();  // Get the raw response text
+                        console.log('Raw response text:', responseText);  // Log it for debugging
+                        // Attempt to parse the response as JSON
+                        const data = JSON.parse(responseText);
+                        console.log('Cargo saved successfully:', data);
 
-                        if (response.ok) {
-                            const data = await response.json();
-                            console.log('Cargo saved successfully:', data);
-
+                        
+        
+                        let tableBody = document.querySelector('#loadedProducts table tbody');
+        
+                        // If the table doesn't exist, create it with headers
+                        if (!tableBody) {
                             let loadedProductsHtml = '<h3>Loaded Products:</h3>';
-                            loadedProductsHtml += '<table><tr><th>Product Name</th><th>Category</th><th>Details</th><th>Quantity</th></tr>';
-
-                            cargo.forEach(item => {
-                                const row = Array.from(rows).find(row => row.dataset.productId === item.productId);
-                                if (row) {
-                                    const productName = row.cells[0].innerText;
-                                    const productCategory = row.cells[1].innerText;
-                                    const productDetails = row.cells[2].innerText;
-
-                                    loadedProductsHtml += `<tr>
-                                        <td>${productName}</td>
-                                        <td>${productCategory}</td>
-                                        <td>${productDetails}</td>
-                                        <td>${item.quantity}</td>
-                                    </tr>`;
-                                }
-                            });
-
-                            loadedProductsHtml += '</table>';
-                            cargoTab.innerHTML = loadedProductsHtml + cargoTab.innerHTML;
-
-                            // Optionally, close the modal after loading products
-                            document.getElementById('productModal').style.display = 'none';
-                        } else {
-                            console.error('Failed to save cargo');
+                            loadedProductsHtml += '<table><thead><tr><th>Product Name</th><th>Category</th><th>Details</th><th>Quantity</th></tr></thead><tbody>';
+                            document.getElementById('loadedProducts').innerHTML = loadedProductsHtml;
+                            tableBody = document.querySelector('#loadedProducts table tbody');
                         }
-                    } catch (error) {
+                            
+
+                        // Append each new product as a row
+                        cargo.forEach(item => {
+                            const row = Array.from(rows).find(row => row.dataset.productId === item.productId);
+                            if (row) {
+                                const productName = row.cells[1].innerText;
+                                const productCategory = row.cells[2].innerText;
+                                const productDetails = row.cells[3].innerText;
+
+                                const newRowHtml = `<tr>
+                                    <td>${productName}</td>
+                                    <td>${productCategory}</td>
+                                    <td>${productDetails}</td>
+                                    <td>${item.quantity}</td>
+                                </tr>`;
+                                
+                                tableBody.insertAdjacentHTML('beforeend', newRowHtml); // Append the new row
+                            } else {
+                                console.warn('No matching row found for productId:', item.productId);  // Debugging aid
+                            }
+                        });
+                        
+
+                        // loadedProductsHtml += '</tbody></table>';
+                        
+
+
+                        // Optionally, close the modal after loading products
+                        document.getElementById('productModal').style.display = 'none';
+                    } 
+                     catch (error) {
                         console.error('Error saving cargo:', error);
                     }
                 });

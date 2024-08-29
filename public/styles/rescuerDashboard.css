@@ -316,3 +316,22 @@ a {
     gap: 10px; /* Add some space between buttons if you add more in the future */
 }
 
+#loadedProducts table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+#loadedProducts th, #loadedProducts td {
+    border: 1px solid black; /* Add borders to table cells */
+    padding: 8px; /* Add padding inside cells */
+    text-align: left; /* Align text to the left */
+    word-wrap: break-word; /* Ensure text wraps within the cell */
+    white-space: normal; /* Allow text wrapping */
+}
+
+#loadedProducts th {
+    background-color: #f2f2f2; /* Light gray background for headers */
+}
+
+

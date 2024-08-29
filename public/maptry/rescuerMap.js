@@ -160,24 +160,6 @@ function createCombinedIcon(mainCategoryIconUrl, subCategoryIconUrl) {
         className: ''
     });
 }
-window.applyFilters = function(activeMainFilters=[], activeSubFilters=[]) {
-
-    Dummymarkers.forEach(marker => {
-        const markerMainCategory = marker.options.mainCategory;
-        const markerSubCategory = marker.options.subCategory;
-
-        const showMarker =
-            (activeMainFilters.length === 0 || activeMainFilters.includes(markerMainCategory)) &&
-            (activeSubFilters.length === 0 || activeSubFilters.includes(markerSubCategory));
-
-        if (showMarker) {
-            marker.addTo(map);
-        } 
-        else {
-            map.removeLayer(marker);
-        }
-    });
-};
 
 // Attach event listeners to filters
 document.querySelectorAll('.main-filter, .sub-filter').forEach(cb => {
@@ -185,7 +167,7 @@ document.querySelectorAll('.main-filter, .sub-filter').forEach(cb => {
 });
 
 // Apply initial filters
-applyFilters();
+
 
 
 
