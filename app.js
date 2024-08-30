@@ -410,6 +410,43 @@ app.get('/getRequestHistory', isLoggedIn, isCivilian, async (req, res) => {
     }
 });
 
+app.get('/getDonationHistory', isLoggedIn, isCivilian, async (req, res) => {
+    try {
+        // Find the user by session ID
+        const user = await User.findById(req.session.userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+        // Ensure donations exist and are an array
+        if (!user.donations || !Array.isArray(user.donations)) {
+            return res.status(404).json({ success: false, message: 'No donations found' });
+        }
+        // Format the donations to include the product names
+        const formattedDonations = user.donations.map(donation => {
+            return {
+                ...donation._doc, // Spread the donation details
+                products: donation.products.map(product => {
+                    return {
+                        ...product, // Attach all product details directly
+                        name: product.name // Directly access the product name
+                    };
+                })
+            };
+        });
+
+        // Sort donations by date in ascending order
+        const sortedDonations = formattedDonations.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        res.json(sortedDonations);
+    } catch (error) {
+        console.error('Error fetching donation history:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+
+
+
 app.delete('/deleteRequest/:id', async (req, res) => {
     try {
         const requestId = req.params.id;
@@ -426,6 +463,30 @@ app.delete('/deleteRequest/:id', async (req, res) => {
         }
     } catch (error) {
         console.error('Error deleting request:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
+app.delete('/deleteDonation/:donationId', async (req, res) => {
+    const { donationId } = req.params;
+
+    try {
+        // Find the user who made the donation
+        const user = await User.findOne({ 'donations._id': donationId });
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'Donation not found.' });
+        }
+
+        // Remove the donation with the given ID
+        user.donations.id(donationId).remove();
+
+        // Save the updated user
+        await user.save();
+
+        res.json({ success: true, message: 'Donation deleted successfully.' });
+    } catch (error) {
+        console.error('Error deleting donation:', error);
         res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });

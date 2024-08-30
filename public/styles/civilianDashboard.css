@@ -8,37 +8,46 @@ body {
     justify-content: center;
     height: 100vh;
     overflow: hidden;
+    background-color: #f0f0f0; /* Light background color */
 }
 
-/* Basic styling for the container and its children */
+/* General styling for container and elements */
 .dashboard-container {
     display: flex;
     justify-content: space-between;
-    height: 100vh; /* Adjust height as needed */
-    width: 100%;
-    padding: 2px;
+    height: 90vh; /* Adjust height to fit the viewport */
+    width: 90%; /* Slightly reduced width for better margins */
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
 }
 
-/* Left side for the map */
-.dashboard-container .map-container {
-    flex: 1; /* 1/3 of the width */
-    margin-right: 2px;
+/* Map container */
+.map-container {
+    flex: 1;
+    margin-right: 20px;
     height: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Right side for the request and history */
-.dashboard-container .request-history-container {
-    flex: 2; /* 2/3 of the width */
+/* Request and history container */
+.request-history-container {
+    flex: 2;
     display: flex;
     flex-direction: column;
-    padding: 2px;
-    background-color: #f5f5f5; /* Slight background color for distinction */
-    border-radius: 5px;
+    padding: 20px;
+    background-color: #f5f5f5;
+    border-radius: 10px;
     height: 100%;
     position: relative;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
 }
 
-/* Styling for the checkbox options */
+/* Checkbox styling */
 .checkbox-container {
     display: flex;
     justify-content: center;
@@ -48,35 +57,41 @@ body {
 .checkbox-label {
     margin: 0 10px;
     font-size: 16px;
+    color: #333;
 }
 
 .checkbox-label input[type="checkbox"] {
     margin-right: 5px;
 }
 
-/* Styling for tabs */
+/* Tab styling */
 .tabs {
     display: flex;
     justify-content: space-between;
     background-color: #f1f1f1;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 2px solid #ddd;
+    border-radius: 10px 10px 0 0;
+    overflow: hidden;
 }
 
 .tab-button {
     flex: 1;
-    padding: 10px;
+    padding: 12px;
     cursor: pointer;
     border: none;
-    background-color: inherit;
+    background-color: #e0e0e0;
     font-size: 16px;
+    text-align: center;
+    transition: background-color 0.3s ease;
 }
 
 .tab-button:hover {
-    background-color: #ddd;
+    background-color: #ccc;
 }
 
 .tab-button.active {
-    background-color: #ccc;
+    background-color: #4CAF50; /* Green background for active tab */
+    color: white;
     font-weight: bold;
 }
 
@@ -87,6 +102,8 @@ body {
     border-top: none;
     overflow-y: auto;
     flex-grow: 1;
+    background-color: #fff;
+    border-radius: 0 0 10px 10px;
 }
 
 .tab-content.active {
@@ -96,37 +113,37 @@ body {
 .header-links {
     width: 100%;
     position: relative;
-    top: 50px;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
+    margin-top: 60px;
+}
+
+.header-links .left-link, .header-links .right-link {
+    position: absolute;
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
 }
 
 .header-links .left-link {
-    position: absolute;
     left: 20px;
-    text-decoration: none;
-    color: #333;
 }
 
 .header-links .right-link {
-    position: absolute;
     right: 20px;
-    text-decoration: none;
-    color: #333;
 }
 
 /* Modal styles */
 .modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1000; /* Ensure it's on top of everything else */
-    padding-top: 100px; /* Location of the box */
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    padding-top: 100px;
     left: 0;
     top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.8); /* Black w/ opacity */
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.8);
 }
 
 .modal-content {
@@ -134,9 +151,9 @@ body {
     margin: auto;
     padding: 20px;
     border: 1px solid #888;
-    width: 80%;
-    z-index: 1001; /* Ensure modal content is above the modal backdrop */
-    position: relative;
+    width: 60%;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .close-modal {
@@ -146,18 +163,17 @@ body {
     font-weight: bold;
 }
 
-.close-modal:hover,
-.close-modal:focus {
+.close-modal:hover, .close-modal:focus {
     color: black;
     text-decoration: none;
     cursor: pointer;
 }
 
 h1 {
-    
     margin-bottom: 10px;
-    font-size: 30px;
+    font-size: 36px;
     text-align: center;
+    color: #000000; /* Black color for the title */
     width: 100%;
 }
 
@@ -166,42 +182,57 @@ h1 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 20px; /* Adds space between the fields */
+    gap: 20px;
 }
 
 .date-time-container label {
     margin-right: 10px;
+    font-weight: bold;
+    color: #555;
 }
 
 .date-time-container input[type="text"] {
-    width: 45%; /* Adjust as necessary */
-    padding: 5px;
+    width: 45%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
 }
 
 /* Styling for address display */
 .address-display {
     border: 1px solid #ccc;
     padding: 10px;
-    border-radius: 5px;
+    border-radius: 10px;
     background-color: #f9f9f9;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
+    width: 80%; /* Adjust width to make the div smaller */
+    margin-left: auto; /* Align to the right */
+    margin-right: auto; /* Center within parent container */
 }
 
 .address-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 20px; /* Adds space between the fields */
-    margin-bottom: 10px;
+    gap: 10px;
+    margin-bottom: 15px;
+    width: 100%; /* Ensure full width inside the address-display */
 }
 
 .address-row label {
     margin-right: 10px;
+    font-weight: bold;
+    color: #555;
 }
 
 .address-row input[type="text"] {
     flex-grow: 1;
-    padding: 5px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    width: 100%; /* Ensure input fields are contained within the div */
 }
 
 /* Styling for product selection and delivery date sections */
@@ -209,114 +240,212 @@ h1 {
     margin-top: 15px;
 }
 
-/* Styling for the product select and delivery date sections */
 .product-select-container,
 .delivery-date-container {
     display: flex;
     align-items: center;
-    margin-bottom: 15px;
+    margin-bottom: 0px;
+    justify-content: space-between; /* Aligns elements to space evenly */
+}
+
+.delivery-date-container {
+    flex-wrap: wrap; /* Allow wrapping for better layout */
 }
 
 .product-select-container label,
 .delivery-date-container label {
     margin-right: 10px;
+    font-weight: bold;
+    color: #555;
 }
 
 .product-select-container select,
 .delivery-date-container input,
 .delivery-date-container select {
     margin-right: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 8px;
+    background-color: #f9f9f9;
 }
 
 /* General styling for dropdowns */
 select {
-    width: 100%; /* Make the dropdowns full-width */
-    padding: 5px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
     border-radius: 5px;
+    background-color: #f9f9f9;
+    transition: background-color 0.3s ease;
+}
+
+select:hover {
+    background-color: #e9e9e9;
 }
 
 /* Styling for smaller dropdowns */
 .small-select {
     width: auto;
-    padding: 3px;
-    font-size: 14px; /* Adjust the font size to make the dropdowns smaller */
-    margin-right: 10px; /* Add some space between the dropdowns */
+    padding: 5px;
+    font-size: 14px;
+    margin-right: 10px;
 }
 
-/* Styling for the request button */
-.request-button {
-    float: right; /* Aligns the button to the right */
-    padding: 10px 20px; /* Increases the size of the button */
-    font-size: 16px; /* Makes the text larger */
-    background-color: #4CAF50; /* Green background */
-    color: white; /* White text */
-    border: none; /* Removes the border */
-    border-radius: 5px; /* Adds rounded corners */
-    cursor: pointer; /* Changes the cursor to a pointer on hover */
-    margin-top: 5px; /* Adds space above the button */
+/* Styling for the request and donate buttons */
+.request-button, .donate-button {
+    float: right;
+    padding: 12px 20px;
+    font-size: 24px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+    align-self: flex-end; /* Align button to the right */
+    margin-left: auto; /* Ensure the button is aligned right */
+    margin-bottom: -60px;
 }
 
-.request-button:hover {
-    background-color: #45a049; /* Slightly darker green on hover */
+.request-button:hover, .donate-button:hover {
+    background-color: #45a049;
 }
 
 /* Styling for the Add Product button */
 .add-product-button {
-    display: block; /* Ensure the button is block-level */
-    margin-top: 10px; /* Space above the button */
-    margin-left: auto; /* Align the button to the right */
-    padding: 8px 16px; /* Size of the button */
-    font-size: 14px; /* Text size */
-    background-color: #ccc; /* Grey background */
-    color: #333; /* Darker grey text */
-    border: none; /* Remove border */
-    border-radius: 5px; /* Rounded corners */
-    cursor: pointer; /* Pointer cursor on hover */
+    display: block;
+    margin-top: 15px;
+    padding: 10px 20px;
+    font-size: 14px;
+    background-color: #ccc;
+    color: #333;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .add-product-button:hover {
-    background-color: #bbb; /* Slightly darker grey on hover */
+    background-color: #bbb;
 }
 
-.request-history-table {
+/* Styling for request and donation tables */
+.history-table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: collapse; /* Ensures borders are collapsed into a single line */
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    overflow: hidden; /* Ensures border-radius works on tables */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow for a clean look */
 }
 
-.request-history-table th, .request-history-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
+.history-table th, .history-table td {
+    border: 1px solid #ddd; /* Border around each cell */
+    padding: 12px; /* Padding inside cells */
+    text-align: left; /* Align text to the left */
 }
 
-.request-history-table th {
-    background-color: #f2f2f2;
-    text-align: left;
+.history-table th {
+    background-color: #4CAF50; /* Green background for table headers */
+    color: white; /* White text for headers */
+    text-transform: uppercase; /* Capitalizes header text */
+    letter-spacing: 1px; /* Adds spacing between letters */
+    font-weight: bold; /* Makes header text bold */
 }
 
-.request-row {
-    cursor: pointer;
+.history-table tr:nth-child(even) {
+    background-color: #f2f2f2; /* Alternate row background color */
+}
+
+.history-table tr:hover {
+    background-color: #e9e9e9; /* Row highlight on hover */
+}
+
+.history-table tr:first-child th:first-child {
+    border-top-left-radius: 5px; /* Round top-left corner */
+}
+
+.history-table tr:first-child th:last-child {
+    border-top-right-radius: 5px; /* Round top-right corner */
+}
+
+.history-table tr:last-child td:first-child {
+    border-bottom-left-radius: 5px; /* Round bottom-left corner */
+}
+
+.history-table tr:last-child td:last-child {
+    border-bottom-right-radius: 5px; /* Round bottom-right corner */
+}
+
+.request-row, .donation-row {
+    cursor: pointer; /* Cursor changes to pointer on hover */
+    transition: background-color 0.3s ease; /* Smooth transition on hover */
 }
 
 .detail-row {
-    background-color: #f9f9f9;
+    background-color: #f9f9f9; /* Slightly different background for detail rows */
+    font-size: 14px; /* Smaller font size for details */
+    color: #555; /* Grey color for text */
 }
 
-/* Styling for the submit button in the donation form */
-.donate-button {
-    float: right; /* Aligns the button to the right */
-    padding: 8px 15px; /* Increases the size of the button */
-    font-size: 16px; /* Makes the text larger */
-    background-color: #4CAF50; /* Green background */
-    color: white; /* White text */
-    border: none; /* Removes the border */
-    border-radius: 5px; /* Adds rounded corners */
-    cursor: pointer; /* Changes the cursor to a pointer on hover */
-    margin-top: 5px; /* Adds space above the button */
-    margin-bottom: 20px;
+.detail-row td {
+    padding: 10px; /* Padding inside detail rows */
+    border-top: 1px solid #ddd; /* Border between the main and detail rows */
 }
 
-.donate-button:hover {
-    background-color: #45a049; /* Slightly darker green on hover */
+/* Styling for table titles */
+.history-table-title {
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #333; /* Dark grey color for title */
+    font-weight: bold;
+}
+
+/* Additional enhancements for mobile responsiveness */
+@media (max-width: 768px) {
+    .history-table th, .history-table td {
+        padding: 10px; /* Smaller padding on mobile */
+        font-size: 14px; /* Smaller font size on mobile */
+    }
+}
+
+/* Additional enhancements for mobile responsiveness */
+@media (max-width: 768px) {
+    .dashboard-container {
+        flex-direction: column;
+        height: auto;
+        width: 100%;
+        padding: 10px;
+    }
+
+    .map-container, .request-history-container {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
+
+    .tab-button {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .date-time-container, .address-row, .product-select-container, .delivery-date-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        width: auto; /* Auto width to prevent overlapping */
+        margin-bottom: 5px; /* Space between elements */
+    }
+
+    .date-time-container input[type="text"], .address-row input[type="text"], select {
+        width: 100%;
+    }
+
+    .request-button, .donate-button {
+        width: 100%;
+        text-align: center;
+        margin-top: 20px;
+    }
 }

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
+
 const userSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
@@ -39,7 +40,7 @@ const userSchema = new mongoose.Schema({
             }
         }
     ],
-    
+
     // Fields specific to Rescuer
     cargo: [
         {
@@ -53,6 +54,38 @@ const userSchema = new mongoose.Schema({
                 required: true
             }
         }
+    ],
+    donations: [
+        {
+            date: String,
+            time: String,
+            address: {
+                longitude: String,
+                latitude: String,
+                street: String,
+                number: String,
+                city: String,
+                country: String,
+                postalcode: String,
+            },
+            products: [
+                {
+                    name: String,
+                    category: String,
+                    details: [
+                        {
+                            name: String,
+                            value: String,
+                        },
+                    ],
+                },
+            ],
+            deliveryDate: String,
+            deliveryTimeSlot: {
+                hours: String,
+                minutes: String,
+            },
+        },
     ],
 });
 
