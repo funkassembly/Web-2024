@@ -661,6 +661,7 @@
 
                     const row = document.createElement('tr');
                     row.classList.add('request-row');
+                    row.setAttribute('data-request-id', request._id); // Add this line
                     row.innerHTML = `
                         <td><input type="checkbox"></td>
                         <td>${index + 1}</td>
@@ -705,6 +706,64 @@
         // Load request history when the History tab is selected
         document.getElementById('historyTabBtn').addEventListener('click', fetchRequestHistory);
 
+        function handleCheckboxChange(checkbox) {
+            const row = checkbox.closest('tr');
+            if (checkbox.checked) {
+                addDeleteButton(row);
+            } else {
+                removeDeleteButton(row);
+            }
+        }
+
+        function addDeleteButton(row) {
+            let deleteButton = row.querySelector('.delete-button');
+            if (!deleteButton) {
+                deleteButton = document.createElement('button');
+                deleteButton.classList.add('delete-button');
+                deleteButton.textContent = '❌';
+                deleteButton.style.color = 'red';
+                deleteButton.style.marginLeft = '10px';
+
+                deleteButton.addEventListener('click', function() {
+                    confirmDelete(row);
+                });
+
+                const cell = document.createElement('td');
+                cell.appendChild(deleteButton);
+                row.appendChild(cell);
+            }
+        }
+
+        function removeDeleteButton(row) {
+            const deleteButton = row.querySelector('.delete-button');
+            if (deleteButton) {
+                deleteButton.parentElement.remove();
+            }
+        }
+
+        async function confirmDelete(row) {
+            const confirmed = confirm("Are you sure you want to delete this request?");
+            if (confirmed) {
+                const requestId = row.getAttribute('data-request-id');
+                try {
+                    const response = await fetch(`/deleteRequest/${requestId}`, {
+                        method: 'DELETE',
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        row.remove();
+                        alert('Request deleted successfully.');
+                    } else {
+                        alert('Failed to delete request.');
+                    }
+                } catch (error) {
+                    console.error('Error deleting request:', error);
+                    alert('An error occurred while deleting the request.');
+                }
+            }
+        }
 
         function openTab(tabName, element) {
             var i, tabcontent, tabbuttons;
@@ -752,6 +811,12 @@
         document.addEventListener("DOMContentLoaded", function(){
             const modals = document.querySelectorAll('.modal');
             const closeButtons = document.querySelectorAll('.close-modal');
+
+            document.getElementById('historyContent').addEventListener('change', function(event) {
+                if (event.target.type === 'checkbox') {
+                    handleCheckboxChange(event.target);
+                }
+            });
 
             document.getElementById('instructionsLink').addEventListener('click', function(event) {
                 event.preventDefault();

@@ -410,6 +410,26 @@ app.get('/getRequestHistory', isLoggedIn, isCivilian, async (req, res) => {
     }
 });
 
+app.delete('/deleteRequest/:id', async (req, res) => {
+    try {
+        const requestId = req.params.id;
+        const user = await User.findOne({ "requests._id": requestId });
+
+        if (user) {
+            // Filter out the request with the matching ID
+            user.requests = user.requests.filter(request => request._id.toString() !== requestId);
+            
+            await user.save(); // Save the updated user document
+            res.json({ success: true });
+        } else {
+            res.status(404).json({ success: false, message: 'Request not found' });
+        }
+    } catch (error) {
+        console.error('Error deleting request:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
 
 
 
