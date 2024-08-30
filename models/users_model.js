@@ -27,8 +27,8 @@ const userSchema = new mongoose.Schema({
             },
             products: [
                 {
+                    product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' }, // Refers to Product model
                     category: String,
-                    product: String,
                     people: Number,
                 }
             ],

@@ -379,6 +379,38 @@ app.post('/saveCivilianRequest', isLoggedIn, isCivilian, async (req, res) => {
     }
 });
 
+app.get('/getRequestHistory', isLoggedIn, isCivilian, async (req, res) => {
+    try {
+        // Find the user and populate the product details within the requests
+        const user = await User.findById(req.session.userId).populate('requests.products.product');
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        // Format the requests to include the product names
+        const formattedRequests = user.requests.map(request => {
+            return {
+                ...request._doc, // Spread the request details
+                products: request.products.map(product => {
+                    return {
+                        ...product._doc,
+                        name: product.product.name // Attach the product name directly
+                    };
+                })
+            };
+        });
+
+        // Sort requests by date in ascending order
+        const sortedRequests = formattedRequests.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        res.json(sortedRequests);
+    } catch (error) {
+        console.error('Error fetching request history:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+});
+
+
 
 
 

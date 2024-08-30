@@ -77,10 +77,13 @@
             </div>
         
             <div id="historyTab" class="tab-content">
-                <h3>Your Request History</h3>
-                <div id="historyContent">
-                    <!-- Populate with request history -->
-                </div>
+                <h3>Your Transaction History</h3>
+                <table id="historyTable">
+                    
+                    <tbody id="historyContent">
+                        <!-- Request rows will be dynamically added here -->
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -547,10 +550,10 @@
                     postalcode: document.getElementById('postalcode')?.value || '',
                 },
                 products: [],
-                deliveryDate: document.getElementById('deliveryDate')?.value || '',
+                deliveryDate: document.getElementById('delivery-date')?.value || '',
                 deliveryTimeSlot: {
-                    hours: document.getElementById('deliveryHours')?.value || '',
-                    minutes: document.getElementById('deliveryMinutes')?.value || ''
+                    hours: document.getElementById('delivery-time-hour')?.value || '',
+                    minutes: document.getElementById('delivery-time-minute')?.value || ''
                 }
             };
 
@@ -600,6 +603,86 @@
                 console.error('Error fetching or displaying products:', error);
             }
         });
+
+        // Fetch and display request history
+        async function fetchRequestHistory() {
+            const historyTab = document.getElementById('historyContent');
+            historyTab.innerHTML = '';
+
+            try {
+                const response = await fetch('/getRequestHistory');
+                const requests = await response.json();
+
+                if (requests.length === 0) {
+                    historyTab.innerHTML = '<p>No requests found.</p>';
+                    return;
+                }
+
+                const table = document.createElement('table');
+                table.classList.add('request-history-table');
+                
+                // Create the table header
+                const headerRow = document.createElement('tr');
+                headerRow.innerHTML = `
+                    <th>#</th>
+                    <th>No</th>
+                    <th>Type</th>
+                    <th>Date</th>
+                    <th>Products</th>
+                    <th>State</th>
+                `;
+                table.appendChild(headerRow);
+
+                // Populate the table rows with request data
+                requests.forEach((request, index) => {
+                    const products = request.products.map(p => `${p.name} (x${p.people})`).join(', ');
+
+                    const row = document.createElement('tr');
+                    row.classList.add('request-row');
+                    row.innerHTML = `
+                        <td><input type="checkbox"></td>
+                        <td>${index + 1}</td>
+                        <td>Request</td>
+                        <td>${request.date}</td>
+                        <td>${products}</td>
+                        <td>To be developed</td>
+                    `;
+                    table.appendChild(row);
+
+                    // Create a hidden row for the expandable content
+                    const detailRow = document.createElement('tr');
+                    detailRow.classList.add('detail-row');
+                    detailRow.style.display = 'none'; // Initially hidden
+                    detailRow.innerHTML = `
+                        <td colspan="6">
+                            <strong>Details:</strong>
+                            <p>Date: ${request.date}</p>
+                            <p>Time: ${request.time}</p>
+                            <p>Address: ${request.address.street} ${request.address.number}, ${request.address.city}, ${request.address.country} - ${request.address.postalcode}</p>
+                            <p>Delivery Date: ${request.deliveryDate}</p>
+                            <p>Delivery Time Slot: ${request.deliveryTimeSlot.hours}:${request.deliveryTimeSlot.minutes}</p>
+                        </td>
+                    `;
+                    table.appendChild(detailRow);
+
+                    // Add a click event listener to the main row to toggle the detail row
+                    row.addEventListener('click', () => {
+                        detailRow.style.display = detailRow.style.display === 'none' ? 'table-row' : 'none';
+                    });
+                });
+
+                historyTab.appendChild(table);
+
+            } catch (error) {
+                console.error('Failed to fetch request history:', error);
+                historyTab.innerHTML = '<p>Failed to load request history.</p>';
+            }
+        }
+
+
+        // Load request history when the History tab is selected
+        document.getElementById('historyTabBtn').addEventListener('click', fetchRequestHistory);
+
 
         function openTab(tabName, element) {
             var i, tabcontent, tabbuttons;
