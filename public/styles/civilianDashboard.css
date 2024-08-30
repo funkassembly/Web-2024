@@ -302,3 +302,21 @@ select {
 .detail-row {
     background-color: #f9f9f9;
 }
+
+/* Styling for the submit button in the donation form */
+.donate-button {
+    float: right; /* Aligns the button to the right */
+    padding: 8px 15px; /* Increases the size of the button */
+    font-size: 16px; /* Makes the text larger */
+    background-color: #4CAF50; /* Green background */
+    color: white; /* White text */
+    border: none; /* Removes the border */
+    border-radius: 5px; /* Adds rounded corners */
+    cursor: pointer; /* Changes the cursor to a pointer on hover */
+    margin-top: 5px; /* Adds space above the button */
+    margin-bottom: 20px;
+}
+
+.donate-button:hover {
+    background-color: #45a049; /* Slightly darker green on hover */
+}

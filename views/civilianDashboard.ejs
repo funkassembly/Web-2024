@@ -444,32 +444,105 @@
                         <label for="postalcode">Postal Code:</label>
                         <input type="text" id="postalcode" readonly>
                     </div>
+                </div>
+                <div class="product-delivery-container">
+                    <h4>Product</h4>
+                    <div class="product-select-container">
+                        <label for="productName">Product Name:</label>
+                        <input type="text" id="productName" name="productName" required>
+                        
+                        <label for="productCategory">Product Category:</label>
+                        <input type="text" id="productCategory" name="productCategory" required>
+                        <button type="button" id="addProductButton" class="add-product-button" onclick="addProductRowDonate()">Add Product</button>
+                    </div>
+                    <h4>Details</h4>
+                    <div id="productDetailsContainer">
+                        <div class="detail-row">
+                            <label for="detailName">Item detail name (e.g. "volume"):</label>
+                            <input type="text" id="detailName" name="detailName">
+                            
+                            <label for="detailValue">Item detail value (e.g. "500ml"):</label>
+                            <input type="text" id="detailValue" name="detailValue">
+                        </div>
+                    </div>
+                    <button type="button" id="addDetailButton" class="add-detail-button" onclick="addDetailRowDonate()">Add Details</button>
+                </div>
+                <div class="delivery-date-container">
+                    <label for="delivery-date">Delivery Date:</label>
+                    <input type="date" id="delivery-date" name="delivery-date">
+                    
+                    <label for="delivery-time-hour">Time Slot:</label>
+                    <select id="delivery-time-hour" name="delivery-time-hour" class="small-select">
+                        ${Array.from({ length: 24 }, (_, i) => `<option value="${i.toString().padStart(2, '0')}">${i.toString().padStart(2, '0')}</option>`).join('')}
+                    </select>
+                    <select id="delivery-time-minute" name="delivery-time-minute" class="small-select">
+                        <option value="00">00</option>
+                        <option value="15">15</option>
+                        <option value="30">30</option>
+                        <option value="45">45</option>
+                    </select>
                 </div><br><br>
-
-                <form method="post" action="" id="item_form">
-                    <label for="itname">Item Name:</label>
-                    <input type="text" name="itname" id="itname" required><br><br>
-                    <label for="itcats">Item Category:</label>
-                    <select name="itcats" id="itcats" required>
-                        <option value="">Select Category</option>
-                        <!-- Populate with categories from database -->
-                    </select><br><br>
-                    <h3>Product Details</h3>
-                    <table id="itemdetails">
-                        <tr>
-                            <td>Item detail name (e.g. "volume")</td>
-                            <td><input name="itdname1" id="itdname1"></td>
-                            <td>Item detail value (e.g. "500ml")</td>
-                            <td><input name="itdvalue1" id="itdvalue1"></td>
-                        </tr>
-                    </table>
-                    <input type="button" value="Add more details" onclick="addDetail()"><br><br>
-                    <input type="button" value="Submit" onclick="send()">
-                </form>
+                <button type="submit" id="donateButton" class="donate-button">Submit</button>
             `;
             updateAddressPlaceholder(); // Update the address field with the current coordinates
             
+            
         }
+
+        function addProductRowDonate() {
+            const container = document.getElementById('productDetailsContainer');
+            if (!container) {
+                console.error('Product details container not found.');
+                return;
+            }
+            // Create a new row for product selection
+            const newDetailRow = document.createElement('div');
+            newDetailRow.classList.add('product-select-container');
+            
+            newDetailRow.innerHTML = `
+                <label for="productName">Product Name:</label>
+                <input type="text" id="productName" name="productName" required>
+                
+                <label for="productCategory">Product Category:</label>
+                <input type="text" name="productCategory" required>
+                <button type="button" class="remove-product-button" onclick="removeProductRowDonate(this)">Remove Product</button>
+            `;
+            
+            // Append the new row to the container
+            container.appendChild(newDetailRow);
+            
+        }
+
+        function removeProductRowDonate(button) {
+            button.closest('.product-select-container').remove();
+        }
+
+        function addDetailRowDonate() {
+            const container = document.getElementById('productDetailsContainer');
+            
+            // Create a new row for product details
+            const newRow = document.createElement('div');
+            newRow.classList.add('detail-row');
+            
+            newRow.innerHTML = `
+                <label for="detailName">Item detail name (e.g. "volume"):</label>
+                <input type="text" id="detailName" name="detailName">
+                
+                <label for="detailValue">Item detail value (e.g. "500ml"):</label>
+                <input type="text" id="detailValue" name="detailValue">
+                <button type="button" class="remove-detail-button" onclick="removeDetailRowDonate(this)">Remove Detail</button>
+            `;
+            
+            // Append the new row to the container
+            container.appendChild(newRow);
+        }
+
+        function removeDetailRowDonate(button) {
+            button.closest('.detail-row').remove();
+        }
+
+
+
 
         // Make this function async
         async function updateAddressPlaceholder() {
