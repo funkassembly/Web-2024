@@ -87,6 +87,31 @@ const userSchema = new mongoose.Schema({
             },
         },
     ],
+    tasks: [{
+        type: {
+            type: String,
+            enum: ['request', 'donation'],
+            required: true
+        },
+        civilianId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User', // Refers to the Civilian model
+            required: true
+        },
+        details: {
+            type: String,
+            required: true
+        },
+        status: {
+            type: String,
+            enum: ['pending', 'completed'],
+            default: 'pending'
+        },
+        createdAt: {
+            type: Date,
+            default: Date.now
+        }
+    }]
 });
 
 // Encrypt password 
@@ -99,6 +124,17 @@ userSchema.pre('save', async function (next) {
 userSchema.methods.correctPassword = async function (candidatePassword, userPassword) {
     return await bcrypt.compare(candidatePassword, userPassword);
 };
+
+// Method to add a task for a rescuer
+userSchema.methods.addTask = async function(type, civilianId, details) {
+    this.tasks.push({
+        type,
+        civilianId,
+        details
+    });
+    await this.save();
+};
+
 // Indexing the location for geospatial queries
 userSchema.index({ location: '2dsphere' });
 

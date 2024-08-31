@@ -533,6 +533,81 @@ app.get('/getUsernameById/:id', async (req, res) => {
     }
 });
 
+app.post('/serveRequest', isLoggedIn, isRescuer, async (req, res) => {
+    try {
+        const rescuerId = req.session.userId;
+        const { type, civilianId, details } = req.body;
+
+        if (!type || !details) {
+            return res.status(400).json({ success: false, message: 'Type and details are required' });
+        }
+
+
+        // Find the rescuer by ID
+        const rescuer = await User.findById(rescuerId);
+        if (!rescuer) {
+            return res.status(404).json({ success: false, message: 'Rescuer not found' });
+        }
+        // Convert details object to a JSON string
+        const detailsString = JSON.stringify(details);
+        
+        // Add the task to the rescuer's tasks
+        rescuer.tasks.push({ type, civilianId, details: detailsString });
+        await rescuer.save();
+
+        res.json({ success: true, message: 'Task added successfully' });
+    } catch (error) {
+        console.error('Error assigning task:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
+// Route to get tasks for the rescuer
+app.get('/getTasks', isLoggedIn, isRescuer, async (req, res) => {
+    try {
+        const user = await User.findById(req.session.userId).populate('tasks.civilianId'); // Populate to get civilian details
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        const tasks = user.tasks.map((task, index) => ({
+            _id: task._id,
+            username: task.civilianId.username, // Get the civilian's username
+            type: task.type,
+            details: task.details
+        }));
+
+        res.json({ success: true, tasks });
+    } catch (error) {
+        console.error('Error fetching tasks:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
+app.delete('/deleteTask/:taskId', isLoggedIn, isRescuer, async (req, res) => {
+    try {
+        const taskId = req.params.taskId;
+        const user = await User.findById(req.session.userId);
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        // Find the task by ID and remove it from the array
+        const taskIndex = user.tasks.findIndex(task => task._id.toString() === taskId);
+        if (taskIndex !== -1) {
+            user.tasks.splice(taskIndex, 1); // Remove the task
+        } else {
+            return res.status(404).json({ success: false, message: 'Task not found' });
+        }
+
+        await user.save();
+        res.json({ success: true, message: 'Task deleted successfully.' });
+    } catch (error) {
+        console.error('Error deleting task:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
 
 
 

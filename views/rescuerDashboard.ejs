@@ -79,7 +79,23 @@
             <!-- Content for Tasks tab -->
             <div id="tasksTab" class="tab-content">
                 <h3>Your tasks will appear here.</h3>
+                <table id="tasksTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>No</th>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Date to be delivered</th>
+                            <th>Time to be delivered</th>
+                            <th></th> <!-- Placeholder for the red X button -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Rows will be populated by JavaScript -->
+                    </tbody>
                 <!-- Add any additional content for tasks here -->
+            </table>
             </div>
         </div>
 
@@ -125,6 +141,8 @@
                 maxZoom: 19,
                 attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                 }).addTo(map);
+
+                fetchTasks(); 
 
                 (async function() {
                     try {
@@ -187,7 +205,7 @@
                                     }
                             
                                 // Add the "Serve" button at the bottom of the popup
-                                popupContent += `<button onclick="serveAction('${civilian._id}', '${civilian.requests.length > 0 ? 'request' : 'donation'}')">Serve</button>`;
+                                popupContent += `<button onclick="serveRequest('${civilian._id}', '${civilian.requests.length > 0 ? 'request' : 'donation'}')">Serve</button>`;
 
                                 // Debugging output to ensure the popup content is correctly generated
                                 console.log("Popup Content for civilian:", popupContent);
@@ -220,6 +238,170 @@
                         return 'Unknown';
                     }
                 }
+
+                async function fetchTasks() {
+                    try {
+                        const response = await fetch('/getTasks');  // Assuming a route '/getTasks' is set up to provide the tasks
+                        const data = await response.json();
+
+                        if (data.success) {
+                            populateTasksTable(data.tasks);
+                        } else {
+                            console.error('Failed to load tasks:', data.message);
+                        }
+                    } catch (error) {
+                        console.error('Error fetching tasks:', error);
+                    }
+                }
+
+                function populateTasksTable(tasks) {
+                    const tasksTableBody = document.querySelector('#tasksTable tbody');
+                    tasksTableBody.innerHTML = '';  // Clear existing rows
+
+                    tasks.forEach((task, index) => {
+                        const row = document.createElement('tr');
+                        row.classList.add('task-row');
+                        row.dataset.taskId = task._id;
+
+                        // Parse the details object
+                        const details = JSON.parse(task.details);
+
+                        // Add checkbox
+                        const checkboxCell = document.createElement('td');
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.dataset.taskIndex = index;
+                        checkboxCell.appendChild(checkbox);
+                        row.appendChild(checkboxCell);
+
+                        // Add number
+                        const noCell = document.createElement('td');
+                        noCell.innerText = index + 1;
+                        row.appendChild(noCell);
+
+                        // Add name (username)
+                        const nameCell = document.createElement('td');
+                        nameCell.innerText = task.username;
+                        row.appendChild(nameCell);
+
+                        // Add type
+                        const typeCell = document.createElement('td');
+                        typeCell.innerText = task.type.charAt(0).toUpperCase() + task.type.slice(1);
+                        row.appendChild(typeCell);
+
+                        // Add date to be delivered
+                        const dateCell = document.createElement('td');
+                        dateCell.innerText = task.details.deliveryDate || 'N/A';
+                        row.appendChild(dateCell);
+
+                        // Add time to be delivered
+                        const timeCell = document.createElement('td');
+                        const timeSlot = details.deliveryTimeSlot || { hours: 'N/A', minutes: 'N/A' };
+                        timeCell.innerText = `${timeSlot.hours}:${timeSlot.minutes}`;
+                        row.appendChild(timeCell);
+
+                        // Add action cell (for red X button)
+                        const actionCell = document.createElement('td');
+                        actionCell.classList.add('action-cell');
+                        row.appendChild(actionCell);
+
+                        // Handle checkbox selection and display delete button
+                        checkbox.addEventListener('change', function() {
+                            const maxTasks = 4;
+                            const checkedCheckboxes = document.querySelectorAll('#tasksTable tbody input[type="checkbox"]:checked');
+
+                            if (checkedCheckboxes.length > maxTasks) {
+                                this.checked = false;
+                                alert(`You can only select up to ${maxTasks} tasks.`);
+                                return;
+                            }
+
+                            if (this.checked) {
+                                const deleteButton = document.createElement('button');
+                                deleteButton.classList.add('delete-button');
+                                deleteButton.innerText = 'X';
+                                deleteButton.style.color = 'red';
+                                actionCell.appendChild(deleteButton);
+
+                                deleteButton.addEventListener('click', function() {
+                                    if (confirm('Are you sure you want to delete this task?')) {
+                                        deleteTask(task._id);
+                                    }
+                                });
+                            } else {
+                                const existingButton = actionCell.querySelector('.delete-button');
+                                if (existingButton) existingButton.remove();
+                            }
+                        });
+
+                        // Handle row expansion to show task details
+                        row.addEventListener('click', function(event) {
+                            if (event.target.type !== 'checkbox') { // Avoid toggling when clicking the checkbox
+                                toggleRowDetails(row, task.details);
+                            }
+                        });
+
+                        tasksTableBody.appendChild(row);
+                    });
+                }
+
+                // Function to toggle the display of task details
+                function toggleRowDetails(row, details) {
+                    const existingDetailsRow = row.nextElementSibling;
+                    if (existingDetailsRow && existingDetailsRow.classList.contains('details-row')) {
+                        existingDetailsRow.remove();
+                    } else {
+                        const detailsRow = document.createElement('tr');
+                        detailsRow.classList.add('details-row');
+                        const detailsCell = document.createElement('td');
+                        detailsCell.colSpan = 7;
+
+                        // Ensure details object contains the necessary properties
+                        const address = details.address || {};
+                        const street = address.street || 'N/A';
+                        const number = address.number || 'N/A';
+                        const city = address.city || 'N/A';
+                        const country = address.country || 'N/A';
+                        const productName = details.productName || 'N/A';
+                        const category = details.category || 'N/A';
+                        const deliveryDate = details.deliveryDate || 'N/A';
+                        const deliveryTimeSlot = details.deliveryTimeSlot || { hours: 'N/A', minutes: 'N/A' };
+
+                        detailsCell.innerHTML = `
+                            <strong>Date Placed:</strong> ${details.datePlaced || 'N/A'}<br>
+                            <strong>Address:</strong> ${street} ${number}, ${city}, ${country}<br>
+                            <strong>Product:</strong> ${productName}<br>
+                            <strong>Category:</strong> ${category}<br>
+                            <strong>Details:</strong> ${details.details ? details.details.join(', ') : 'N/A'}<br>
+                            <strong>Delivery Date:</strong> ${deliveryDate}<br>
+                            <strong>Delivery Time:</strong> ${deliveryTimeSlot.hours}:${deliveryTimeSlot.minutes}
+                        `;
+                        detailsRow.appendChild(detailsCell);
+                        row.insertAdjacentElement('afterend', detailsRow);
+                    }
+                }
+
+
+                // Function to delete a task
+                async function deleteTask(taskId) {
+                    try {
+                        const response = await fetch(`/deleteTask/${taskId}`, {
+                            method: 'DELETE',
+                        });
+
+                        const data = await response.json();
+                        if (data.success) {
+                            alert('Task deleted successfully!');
+                            fetchTasks(); // Refresh tasks after deletion
+                        } else {
+                            alert('Failed to delete task: ' + data.message);
+                        }
+                    } catch (error) {
+                        console.error('Error deleting task:', error);
+                        alert('An error occurred while deleting the task.');
+                    }
+                }
+
 
 
                 (async function() {
@@ -883,18 +1065,24 @@
                 }
             });
 
-            function serveAction(civilianId, actionType) {
+            function serveRequest(civilianId, actionType) {
                 // You can use the civilianId and actionType to make a request to the server
                 // and perform the serving action (e.g., mark the request as served, or the donation as picked up)
                 console.log(`Serving ${actionType} for civilian with ID: ${civilianId}`);
+                const details = {
+                    // Example details object; adjust according to your data structure
+                    productName: 'Product Name',
+                    quantity: 1,
+                    // Add any other relevant details
+                };
 
                 // Example of making an AJAX request to handle the serve action
-                fetch(`/serveAction`, {
+                fetch(`/serveRequest`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ civilianId: civilianId, actionType: actionType })
+                    body: JSON.stringify({ civilianId: civilianId, type: actionType, details: details })
                 })
                 .then(response => response.json())
                 .then(data => {
@@ -910,6 +1098,36 @@
                     alert('An error occurred while serving the action.');
                 });
             }
+
+            document.addEventListener('click', function(event) {
+                if (event.target && event.target.classList.contains('serve-button')) {
+                    const civilianId = event.target.getAttribute('data-civilian-id');
+                    const type = event.target.getAttribute('data-type');
+                    const details = event.target.getAttribute('data-details'); // Adjust as needed to get the appropriate details
+
+                    fetch('/serveRequest', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            civilianId: civilianId,
+                            type: type,
+                            details: details
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Task added successfully');
+                        } else {
+                            alert('Failed to add task: ' + data.message);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+                }
+            });
+
 
 
         </script>
