@@ -186,6 +186,8 @@
                                         popupContent += `</ul>`;
                                     }
                             
+                                // Add the "Serve" button at the bottom of the popup
+                                popupContent += `<button onclick="serveAction('${civilian._id}', '${civilian.requests.length > 0 ? 'request' : 'donation'}')">Serve</button>`;
 
                                 // Debugging output to ensure the popup content is correctly generated
                                 console.log("Popup Content for civilian:", popupContent);
@@ -880,6 +882,35 @@
                     alert('An error occurred while unloading cargo.');
                 }
             });
+
+            function serveAction(civilianId, actionType) {
+                // You can use the civilianId and actionType to make a request to the server
+                // and perform the serving action (e.g., mark the request as served, or the donation as picked up)
+                console.log(`Serving ${actionType} for civilian with ID: ${civilianId}`);
+
+                // Example of making an AJAX request to handle the serve action
+                fetch(`/serveAction`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ civilianId: civilianId, actionType: actionType })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(`Successfully served the ${actionType}!`);
+                        // Optionally, you could remove the marker or update the UI in some way
+                    } else {
+                        alert(`Failed to serve the ${actionType}: ${data.message}`);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error serving the action:', error);
+                    alert('An error occurred while serving the action.');
+                });
+            }
+
 
         </script>
 
