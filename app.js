@@ -563,19 +563,37 @@ app.post('/serveRequest', isLoggedIn, isRescuer, async (req, res) => {
 });
 
 // Route to get tasks for the rescuer
+// Route to get tasks for the rescuer
 app.get('/getTasks', isLoggedIn, isRescuer, async (req, res) => {
     try {
-        const user = await User.findById(req.session.userId).populate('tasks.civilianId'); // Populate to get civilian details
+        // Fetch the user with populated tasks and civilian data
+        const user = await User.findById(req.session.userId).populate('tasks.civilianId');
+        
         if (!user) {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
 
-        const tasks = user.tasks.map((task, index) => ({
-            _id: task._id,
-            username: task.civilianId.username, // Get the civilian's username
-            type: task.type,
-            details: task.details
-        }));
+        // Now, user.tasks will have the populated civilian data
+        const tasks = user.tasks.map((task, index) => {
+            let details;
+            
+            // Check if details is already an object or a string
+            if (typeof task.details === 'string') {
+                details = JSON.parse(task.details || '{}');
+            } else {
+                details = task.details || {};
+            }
+
+            return {
+                _id: task._id,
+                username: task.civilianId.username, // Civilian's username
+                location: task.civilianId.location,
+                type: task.type,
+                details: details,
+                deliveryDate: details.deliveryDate || 'N/A',
+                deliveryTimeSlot: details.deliveryTimeSlot || { hours: 'N/A', minutes: 'N/A' }
+            };
+        });
 
         res.json({ success: true, tasks });
     } catch (error) {
@@ -583,6 +601,8 @@ app.get('/getTasks', isLoggedIn, isRescuer, async (req, res) => {
         res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
+
+
 
 app.delete('/deleteTask/:taskId', isLoggedIn, isRescuer, async (req, res) => {
     try {

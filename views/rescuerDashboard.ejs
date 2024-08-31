@@ -8,6 +8,11 @@
     <link rel="icon" href="/maptry/icons/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    <!-- <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script> -->
+
+
     <style>
         #map {
             width: 100%;
@@ -60,6 +65,9 @@
         
         <div class="map-container">
             <div id="map"></div>
+            <div id="navigationButtonContainer">
+                <button id="navRouteButton">Find Shortest Route</button>
+            </div>            
         </div>
 
         <div class="cargo-container">
@@ -98,6 +106,7 @@
             </table>
             </div>
         </div>
+        
 
         <button id="filterToggleButton" class="filter-button">Φίλτρα Χάρτη</button>
 
@@ -254,6 +263,100 @@
                     }
                 }
 
+                document.getElementById('navRouteButton').addEventListener('click', async function () {
+                    try {
+                        const response = await fetch('/getTasks');
+                        const data = await response.json();
+
+                        console.log('Tasks fetched:', data.tasks); // Debugging line to check task data
+
+                        let tasks = data.tasks;
+
+                        // Ensure tasks is an array
+                        if (!Array.isArray(tasks)) {
+                            tasks = [];
+                        }
+
+                        if (tasks.length === 0) {
+                            alert('No tasks available to calculate the route.');
+                            return;
+                        }
+
+                        // Get the rescuer's current location
+                        const rescuerLocation = markerRescuer.getLatLng();
+                        const waypoints = [L.latLng(rescuerLocation.lat, rescuerLocation.lng)]; // Start from rescuer's location
+
+                        // Extract the locations of the civilians from the tasks
+                        tasks.forEach(task => {
+                            console.log('Task location:', task.location); // Debugging line to check each task's location
+                            if (task.location && Array.isArray(task.location.coordinates)) {
+                                const [lng, lat] = task.location.coordinates; // coordinates are usually [lng, lat]
+                                console.log(`Adding waypoint for task: Latitude: ${lat}, Longitude: ${lng}`);
+                                if (lat && lng) {
+                                    waypoints.push(L.latLng(lat, lng));
+                                } else {
+                                    console.warn('Invalid latitude or longitude:', lat, lng);
+                                }
+                            } else {
+                                console.warn('Invalid or missing location in task:', task);
+                            }
+                        });
+
+                        console.log('Waypoints:', waypoints); // Debugging line to check waypoints
+
+                        // If we don't have enough waypoints, return early
+                        if (waypoints.length <= 1) {
+                            alert('Not enough valid locations to calculate the route.');
+                            return;
+                        }
+
+                        // Remove any existing route
+                        if (window.routeControl) {
+                            map.removeControl(window.routeControl);
+                        }
+
+                        // Create and display the route on the map with light blue color
+                        window.routeControl = L.Routing.control({
+                            waypoints: waypoints,
+                            lineOptions: {
+                                styles: [{ color: '#00aaff', weight: 6 }] // Customize the color and weight of the route line here
+                            },
+                            createMarker: function(i, waypoint, n) {
+                                const markerOptions = {
+                                    draggable: false
+                                };
+                                if (i === 0) {
+                                    markerOptions.icon = RescuerIcon; // Use the rescuer icon for the first marker
+                                }
+                                return L.marker(waypoint.latLng, markerOptions);
+                            },
+                            addWaypoints: false, // Prevent users from adding waypoints manually
+                            routeWhileDragging: true, // Disable recalculating the route while dragging
+                            fitSelectedRoutes: true, // Automatically zoom the map to fit the route
+                            show: false, // Disable the default route instructions popup
+                            routeDrag: false, // Disable the ability to drag the route
+                        }).addTo(map);
+
+                        // Remove the summary and instructions panels (popups)
+                        window.routeControl.on('routesfound', function (e) {
+                            const routes = e.routes;
+                            console.log('Route found:', routes); // Debugging line to check the found route
+                            if (window.routeControl._routes) {
+                                window.routeControl._routes.forEach(route => route.removeFrom(map));
+                            }
+                        });
+
+                    } catch (error) {
+                        console.error('Error fetching tasks or calculating route:', error);
+                    }
+                });
+
+
+
+
+
+
+
                 function populateTasksTable(tasks) {
                     const tasksTableBody = document.querySelector('#tasksTable tbody');
                     tasksTableBody.innerHTML = '';  // Clear existing rows
@@ -263,8 +366,6 @@
                         row.classList.add('task-row');
                         row.dataset.taskId = task._id;
 
-                        // Parse the details object
-                        const details = JSON.parse(task.details);
 
                         // Add checkbox
                         const checkboxCell = document.createElement('td');
@@ -289,15 +390,21 @@
                         typeCell.innerText = task.type.charAt(0).toUpperCase() + task.type.slice(1);
                         row.appendChild(typeCell);
 
+                        // Handle Date and Time
+                        const details = typeof task.details === 'string' ? JSON.parse(task.details) : task.details;
+
+                        const deliveryDate = details.deliveryDate || 'N/A';
+                        const deliveryTime = details.deliveryTimeSlot ? `${details.deliveryTimeSlot.hours}:${details.deliveryTimeSlot.minutes}` : 'N/A';
+
+
                         // Add date to be delivered
                         const dateCell = document.createElement('td');
-                        dateCell.innerText = task.details.deliveryDate || 'N/A';
+                        dateCell.innerText = deliveryDate;
                         row.appendChild(dateCell);
 
                         // Add time to be delivered
                         const timeCell = document.createElement('td');
-                        const timeSlot = details.deliveryTimeSlot || { hours: 'N/A', minutes: 'N/A' };
-                        timeCell.innerText = `${timeSlot.hours}:${timeSlot.minutes}`;
+                        timeCell.innerText = deliveryTime;
                         row.appendChild(timeCell);
 
                         // Add action cell (for red X button)
@@ -356,20 +463,16 @@
                         const detailsCell = document.createElement('td');
                         detailsCell.colSpan = 7;
 
-                        // Ensure details object contains the necessary properties
                         const address = details.address || {};
-                        const street = address.street || 'N/A';
-                        const number = address.number || 'N/A';
-                        const city = address.city || 'N/A';
-                        const country = address.country || 'N/A';
                         const productName = details.productName || 'N/A';
                         const category = details.category || 'N/A';
                         const deliveryDate = details.deliveryDate || 'N/A';
                         const deliveryTimeSlot = details.deliveryTimeSlot || { hours: 'N/A', minutes: 'N/A' };
 
+
                         detailsCell.innerHTML = `
                             <strong>Date Placed:</strong> ${details.datePlaced || 'N/A'}<br>
-                            <strong>Address:</strong> ${street} ${number}, ${city}, ${country}<br>
+                            <strong>Address:</strong> ${address.street || 'N/A'} ${address.number || 'N/A'}, ${address.city || 'N/A'}, ${address.country || 'N/A'}<br>
                             <strong>Product:</strong> ${productName}<br>
                             <strong>Category:</strong> ${category}<br>
                             <strong>Details:</strong> ${details.details ? details.details.join(', ') : 'N/A'}<br>

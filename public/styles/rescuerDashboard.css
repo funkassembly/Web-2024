@@ -234,6 +234,27 @@ button:disabled {
     height: calc(100% - 60px); /* Adjusted for space under the buttons */
 }
 
+#navigationButtonContainer {
+    position: absolute;
+    top: 50px; /* Adjust this according to your layout */
+    right: 10px; /* Adjust this according to your layout */
+    z-index: 1000;
+}
+
+#navRouteButton {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#navRouteButton:hover {
+    background-color: #0056b3;
+}
+
+
 /* Adjusted for better mobile responsiveness */
 @media (max-width: 768px) {
     .dashboard-container {
