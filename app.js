@@ -502,11 +502,33 @@ app.get('/getCiviliansWithActions', isLoggedIn, isRescuer, async (req, res) => {
                 { "requests.0": { $exists: true } },
                 { "donations.0": { $exists: true } }
             ]
-        }, 'location requests donations'); // Select only location, requests, and donations fields
+        })
+        .populate({
+            path: 'requests.products.product', // Path to populate within requests
+            select: 'name category details', // Select only the fields you need from the Product model
+        })
+        
+        .select('username location requests donations'); // Select only location, requests, and donations fields
 
         res.json({ success: true, civilians });
     } catch (error) {
         console.error('Error fetching civilians:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
+app.get('/getUsernameById/:id', async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const user = await User.findById(userId).select('username');
+
+        if (user) {
+            res.json({ success: true, username: user.username });
+        } else {
+            res.status(404).json({ success: false, message: 'User not found' });
+        }
+    } catch (error) {
+        console.error('Error fetching username by ID:', error);
         res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });

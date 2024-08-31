@@ -116,6 +116,110 @@
             
             document.addEventListener("DOMContentLoaded", function() {
                 console.log('DOMContentLoaded event triggered');
+                let popupContent = "some content"; // Example for other usage
+
+
+                const map = L.map('map').setView([38.2462420, 21.7350847], 16);
+            
+                L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                }).addTo(map);
+
+                (async function() {
+                    try {
+                        const response = await fetch('/getCiviliansWithActions');
+                        const data = await response.json();
+
+                        if (data.success) {
+                            const civilians = data.civilians;
+
+                            for (const civilian of civilians) {
+                                if (civilian.location && Array.isArray(civilian.location.coordinates) && civilian.location.coordinates.length === 2) {
+                                    const [lat, lng] = civilian.location.coordinates;
+
+                                    // Determine the appropriate icon based on the action
+                                    let icon = civilian.requests.length > 0 ? peoplePendingIcon : DonateIcon;
+
+                                    // Fetch the username based on the civilian's _id
+                                    let username = await fetchUsernameById(civilian._id);
+                                    if (!username) username = 'Unknown';
+
+                                    // Initialize popup content with username and action type
+                                    let popupContent = `<strong>Username:</strong> ${username}<br>`;
+                                    popupContent += `<strong>Action:</strong> ${civilian.requests.length > 0 ? 'Request' : 'Donation'}<br>`;
+                                    popupContent += `<strong>Location:</strong> ${lat}, ${lng}<br>`;
+
+                                    if (civilian.requests.length > 0) {
+                                        popupContent += `<strong>Requests:</strong><br><ul>`;
+                                        civilian.requests.forEach(request => {
+                                            // Construct the full address
+                                            const address = request.address;
+                                            const fullAddress = `${address.street} ${address.number}, ${address.city}, ${address.postalcode}, ${address.country}`;
+                                            
+                                            // Add each product's information to the popup
+                                            request.products.forEach(productObj => {
+                                                const product = productObj.product;
+                                                if (product) {
+                                                    popupContent += `<li>Product: ${product.name}<br>`;
+                                                    popupContent += `Category: ${product.category}<br>`;
+                                                    popupContent += `Address: ${fullAddress}<br>`;
+                                                    popupContent += `Requested on: ${request.date} at ${request.time}<br>`;
+                                                    popupContent += `Delivery Date: ${request.deliveryDate || ''}<br>`;
+                                                    popupContent += `Delivery Time: ${request.deliveryTimeSlot.hours}:${request.deliveryTimeSlot.minutes}</li><br>`;
+                                                } else {
+                                                    popupContent += `<li>Product: undefined<br></li>`;
+                                                }
+                                            });
+                                        });
+                                        popupContent += `</ul>`;
+                                    } else if (civilian.donations.length > 0) {
+                                        popupContent += `<strong>Donations:</strong><br><ul>`;
+                                        civilian.donations.forEach(donation => {
+                                            popupContent += `<li>Product: ${donation.product.name}<br>`;
+                                            popupContent += `Category: ${donation.product.category}<br>`;
+                                            popupContent += `Quantity: ${donation.product.details.find(detail => detail.name === 'stock')?.value || 'N/A'}<br>`;
+                                            popupContent += `Donated on: ${donation.date} at ${donation.time}<br>`;
+                                            popupContent += `Delivery Date: ${donation.deliveryDate}<br>`;
+                                            popupContent += `Delivery Time: ${donation.deliveryTimeSlot.hours}:${donation.deliveryTimeSlot.minutes}</li><br>`;
+                                        });
+                                        popupContent += `</ul>`;
+                                    }
+                            
+
+                                // Debugging output to ensure the popup content is correctly generated
+                                console.log("Popup Content for civilian:", popupContent);
+
+                                // Add a marker for the civilian with the pop-up
+                                const marker = L.marker([lat, lng], { icon: icon }).addTo(map);
+                                marker.bindPopup(popupContent);
+                                }
+                            }
+                            
+                        } else {
+                            console.error('Failed to load civilians:', data.message);
+                        }
+                    
+                    } catch (error) {
+                        console.error('Error loading civilians:', error);
+                    }
+                })();
+
+                async function fetchUsernameById(userId) {
+                    try {
+                        const response = await fetch(`/getUsernameById/${userId}`);
+                        if (!response.ok) {
+                            throw new Error('Failed to fetch username');
+                        }
+                        const data = await response.json();
+                        return data.username || 'Unknown';
+                    } catch (error) {
+                        console.error('Error fetching username:', error);
+                        return 'Unknown';
+                    }
+                }
+
+
                 (async function() {
                     // Load rescuer's cargo from the database
                     try {
@@ -141,43 +245,6 @@
                     }
                 })();
 
-                (async function() {
-                    try {
-                        const response = await fetch('/getCiviliansWithActions');
-                        const data = await response.json();
-
-                        if (data.success) {
-                            const civilians = data.civilians;
-
-                            civilians.forEach(civilian => {
-                                const [lat, lng] = civilian.location.coordinates;
-
-                                // Choose the appropriate icon based on whether it's a request or donation
-                                let icon = civilian.requests.length > 0 ? peoplePendingIcon : DonateIcon;
-
-                                // Add a marker for each civilian
-                                const marker = L.marker([lat, lng], { icon: icon }).addTo(map);
-
-                                // Optionally bind a popup with more details
-                                marker.bindPopup(`
-                                    <strong>Action:</strong> ${civilian.requests.length > 0 ? 'Request' : 'Donation'}<br>
-                                    <strong>Location:</strong> ${lat}, ${lng}
-                                `);
-                            });
-                        } else {
-                            console.error('Failed to load civilians:', data.message);
-                        }
-                    } catch (error) {
-                        console.error('Error loading civilians:', error);
-                    }
-                })();
-
-                const map = L.map('map').setView([38.2462420, 21.7350847], 16);
-            
-                L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                }).addTo(map);
 
                 const StorageIcon = L.icon({
                     iconUrl: '/maptry/icons/Storage.png', 
@@ -352,21 +419,39 @@
 
                     if (event.data.type === 'loadCiviliansMarkers') {
                         const civilians = event.data.civilians;
+                        console.log("Civilians Data:", civilians); // Debugging line
 
                         civilians.forEach(civilian => {
                             const [lat, lng] = civilian.location.coordinates;
 
                             // Choose the appropriate icon based on whether it's a request or donation
-                            let icon = civilian.requests.length > 0 ? RequestIcon : DonateIcon;
+                            let icon = civilian.requests.length > 0 ? peoplePendingIcon : DonateIcon;
 
-                            // Add a marker for each civilian
-                            const marker = L.marker([lat, lng], { icon: icon }).addTo(map);
+                            
 
                             // Optionally bind a popup with more details
-                            marker.bindPopup(`
-                                <strong>Action:</strong> ${civilian.requests.length > 0 ? 'Request' : 'Donation'}<br>
-                                <strong>Location:</strong> ${lat}, ${lng}
-                            `);
+                            let popupContent = `<strong>Action:</strong> ${civilian.requests.length > 0 ? 'Request' : 'Donation'}<br>`;
+                            popupContent += `<strong>Location:</strong> ${lat}, ${lng}<br>`;
+
+                            if (civilian.requests.length > 0) {
+                                // Add request details
+                                popupContent += `<strong>Requests:</strong><br><ul>`;
+                                civilian.requests.forEach(request => {
+                                    popupContent += `<li>${request.item}: ${request.quantity}</li>`;
+                                });
+                                popupContent += `</ul>`;
+                            } else if (civilian.donations.length > 0) {
+                                // Add donation details
+                                popupContent += `<strong>Donations:</strong><br><ul>`;
+                                civilian.donations.forEach(donation => {
+                                    popupContent += `<li>${donation.item}: ${donation.quantity}</li>`;
+                                });
+                                popupContent += `</ul>`;
+                            }
+                            console.log("Popup Content:", popupContent); // Debugging line
+                            // Add a marker for each civilian
+                            const marker = L.marker([lat, lng], { icon: icon }).addTo(map);
+                            marker.bindPopup(popupContent);
                         });
                     }
                 });
