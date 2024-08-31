@@ -292,11 +292,8 @@
                             if (task.location && Array.isArray(task.location.coordinates)) {
                                 const [lng, lat] = task.location.coordinates; // coordinates are usually [lng, lat]
                                 console.log(`Adding waypoint for task: Latitude: ${lat}, Longitude: ${lng}`);
-                                if (lat && lng) {
-                                    waypoints.push(L.latLng(lat, lng));
-                                } else {
-                                    console.warn('Invalid latitude or longitude:', lat, lng);
-                                }
+                                waypoints.push(L.latLng(lng, lat));
+                                
                             } else {
                                 console.warn('Invalid or missing location in task:', task);
                             }
