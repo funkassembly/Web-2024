@@ -23,6 +23,10 @@ mongoose.connect('mongodb://0.0.0.0:27017/web', {
     // Call your functions after the connection is established
     await createRescuer('rescuerUser', 'rescuer@example.com', 'StrongPass123!');
     await createCivilian('civilianUser', 'civilian@example.com', 'StrongPass123!');
+    await createCivilian('civilianUser1', 'civilian1@example.com', 'StrongPass123!');
+    await createCivilian('civilianUser2', 'civilian2@example.com', 'StrongPass123!');
+    await createCivilian('civilianUser3', 'civilian3@example.com', 'StrongPass123!');
+    await createCivilian('civilianUser4', 'civilian4@example.com', 'StrongPass123!');
     await createProducts();
     console.log('All users created successfully');
 })
@@ -445,8 +449,6 @@ app.get('/getDonationHistory', isLoggedIn, isCivilian, async (req, res) => {
 });
 
 
-
-
 app.delete('/deleteRequest/:id', async (req, res) => {
     try {
         const requestId = req.params.id;
@@ -491,6 +493,23 @@ app.delete('/deleteDonation/:donationId', async (req, res) => {
     }
 });
 
+app.get('/getCiviliansWithActions', isLoggedIn, isRescuer, async (req, res) => {
+    try {
+        // Find all users who are civilians and have at least one request or donation
+        const civilians = await User.find({
+            role: 'civilian',
+            $or: [
+                { "requests.0": { $exists: true } },
+                { "donations.0": { $exists: true } }
+            ]
+        }, 'location requests donations'); // Select only location, requests, and donations fields
+
+        res.json({ success: true, civilians });
+    } catch (error) {
+        console.error('Error fetching civilians:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
 
 
 

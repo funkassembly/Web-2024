@@ -1,180 +1,111 @@
+/* Base styles */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
+    background-color: #f4f6f9; /* Light background color */
+    color: #333; /* Dark text color for better readability */
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
     height: 100vh;
 }
 
-/* Basic styling for the container and its children */
+/* Container for the whole dashboard */
 .dashboard-container {
-    display: flex;          /* Use Flexbox to align children horizontally */
+    display: flex;
     justify-content: space-between;
-    height: 150vh;           /* Adjust height as needed */
+    height: calc(100vh - 60px); /* Adjust to exclude header */
     width: 100%;
-    padding: 2px;
-}
-
-/* Left side for the map */
-.dashboard-container .map-container {
-    flex: 3;                /* Take up more space */
-    margin-right: 2px;
-    height: 100%;
-}
-
-/* Right side for the cargo and other details */
-.dashboard-container .cargo-container {
-    flex: 1;                
-    display: flex;
-    flex-direction: column;
-    padding: 2px;
-    background-color: #f5f5f5; /* Slight background color for distinction */
-    border-radius: 5px;
-    height: 100%;
-    position: relative; /* Ensure absolute positioning for child elements */
-}
-
-.right-buttons {
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-}
-
-.right-buttons button {
-    padding: 8px 16px;
-    font-size: 14px;
-    cursor: pointer;
-    margin-bottom: 10px;
-    width: 100px; /* Ensures both buttons are of the same width */
-}
-
-/* Styles for inactive state of Load and Unload buttons */
-#unloadButton.inactive {
-    background-color: #ddd; /* Light gray color to indicate inactive state */
-    color: #888; /* Gray text color */
-    cursor: not-allowed; /* Not clickable */
-}
-
-/* Styles for active state of Load and Unload buttons */
-#unloadButton.active {
-    color: white;
-    cursor: pointer; /* Clickable */
-}
-
-#loadButton.active {
-    background-color: #4CAF50; /* Green color to indicate active state */
-    padding: 8px 16px;
-    font-size: 14px;
-    cursor: pointer;
-}
-
-#unloadButton.active {
-    background-color: #f44336; /* Red color to indicate active state */
-}
-
-#requestsDonations {
-    width: 100%;
-    height: 100%;
-    overflow-y: auto;
-    margin-top: 60px; /* Adjusted for space under the buttons */
-}
-
-h3 {
-    margin-top: 0;
-}
-
-a {
-    position: absolute;
-    top: 10px;
-    right: 20px;
-    text-decoration: none;
-    color: #333;
-}
-
-/* Modal styles */
-.modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    padding-top: 100px; /* Location of the box */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-}
-
-.modal-content {
-    background-color: #fefefe;
-    margin: auto;
     padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
+    box-sizing: border-box;
 }
 
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
+/* Map section */
+.map-container {
+    flex: 3;
+    margin-right: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
+
+/* Cargo and task section */
+.cargo-container {
+    flex: 1;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Header links */
+.header-links {
+    width: 100%;
+    background-color: #333;
+    padding: 10px 20px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #fff;
+}
+
+.header-links a {
+    color: #fff;
+    text-decoration: none;
     font-weight: bold;
 }
 
-.close:hover,
-.close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
+/* Modal styling */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999; /* Very high z-index to ensure it is on top */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+    padding: 20px;
+    box-sizing: border-box;
 }
 
-.header-links {
-    width: 100%;
+.modal-content {
+    background-color: #fff;
+    margin: auto;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
     position: relative;
-    top: 20px;
+    z-index: 10000; /* Ensure modal content is above overlay */
 }
 
-.header-links .left-link {
+.close-modal {
+    color: #888;
+    font-size: 28px;
+    font-weight: bold;
     position: absolute;
-    left: 20px;
-    text-decoration: none;
-    color: #333;
-}
-
-.header-links .right-link {
-    position: absolute;
+    top: 10px;
     right: 20px;
-    text-decoration: none;
+    cursor: pointer;
+    z-index: 10001; /* Ensure the close button is above everything */
+}
+
+.close-modal:hover {
     color: #333;
 }
 
-.filter-container {
-    margin-bottom: 15px;
-    padding: 10px;
-    background-color: #f5f5f5;
-    border-radius: 5px;
-    width: 100%;
-}
-
-.filter-container h3 {
-    margin-top: 0;
-}
-
-.filter-container label {
-    display: block;
-    margin-bottom: 5px;
-}
-
+/* Filter button and container */
 .filter-button {
     position: absolute;
-    bottom: 10px;
-    left: 10px;
+    bottom: 20px;
+    left: 20px;
     padding: 10px 20px;
     background-color: #333;
     color: white;
@@ -184,154 +115,132 @@ a {
     z-index: 10001; 
 }
 
-/* Initially hide the filter container */
 .filter-container {
-    display: none; /* Hidden by default */
+    display: none;
     position: absolute;
-    bottom: 50px;
-    left: 10px;
-    width: auto;
+    bottom: 70px;
+    left: 20px;
     background: rgba(0, 0, 0, 0.8);
     color: white;
-    padding: 10px;
-    border-radius: 5px;
-    z-index: 10000; 
+    padding: 15px;
+    border-radius: 8px;
+    z-index: 10000;
 }
 
-/* Adjust the filter container when it's visible */
 .filter-container.visible {
-    display: block; /* Show when visible */
+    display: block;
 }
 
-.modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+.filter-container h3, .filter-container label {
+    margin: 0 0 10px;
 }
 
-.modal-content {
-    background-color: #fefefe;
-    margin: 15% auto; /* 15% from the top and centered */
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%; /* Could be more or less, depending on screen size */
+.filter-container input[type="checkbox"] {
+    margin-right: 8px;
 }
 
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-#productTable {
-    width: 100%;
-    border-collapse: collapse; /* Ensure borders don't have gaps */
-    margin-top: 10px;
-}
-
-#productTable th, #productTable td {
-    border: 1px solid black; /* Black borders around each cell */
-    padding: 8px; /* Padding inside cells */
-    text-align: left; /* Align text to the left */
-}
-
-#productTable th {
-    background-color: #f2f2f2; /* Optional: light gray background for headers */
-}
-
-/* Styling for the modal buttons */
-.modal-buttons {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-}
-
-.modal-buttons button {
-    padding: 8px 16px;
-    margin-left: 10px;
-    font-size: 14px;
-    cursor: pointer;
-}
-
-/* Styling for tabs */
+/* Tab styles */
 .tabs {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     background-color: #f1f1f1;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 2px solid #ddd;
+    margin-bottom: 20px;
 }
 
 .tab-button {
-    padding: 10px;
+    padding: 10px 20px;
     cursor: pointer;
     border: none;
     background-color: inherit;
     font-size: 16px;
-}
-
-.tab-button:hover {
-    background-color: #ddd;
+    text-transform: uppercase;
 }
 
 .tab-button.active {
-    background-color: #ccc;
+    background-color: #ddd;
     font-weight: bold;
+    border-bottom: 3px solid #333;
 }
 
 .tab-content {
     display: none;
     padding: 20px;
-    border: 1px solid #ddd;
-    border-top: none;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .tab-content.active {
     display: block;
 }
- /* Style to position the load button in the top right corner of the modal */
- .modal-content {
-    position: relative; /* Ensure relative positioning for the load button */
+
+/* Button styles */
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-.modal-buttons {
-    position: absolute;
-    top: 10px; /* Adjust distance from the top of the modal */
-    right: 20px; /* Adjust distance from the right side of the modal */
-    display: flex;
-    gap: 10px; /* Add some space between buttons if you add more in the future */
+button:hover {
+    background-color: #45a049;
 }
 
-#loadedProducts table {
+button:disabled {
+    background-color: #ddd;
+    cursor: not-allowed;
+}
+
+/* Table styles */
+#productTable, #loadedProducts table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
 }
 
+#productTable th, #productTable td,
 #loadedProducts th, #loadedProducts td {
-    border: 1px solid black; /* Add borders to table cells */
-    padding: 8px; /* Add padding inside cells */
-    text-align: left; /* Align text to the left */
-    word-wrap: break-word; /* Ensure text wraps within the cell */
-    white-space: normal; /* Allow text wrapping */
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
 }
 
-#loadedProducts th {
-    background-color: #f2f2f2; /* Light gray background for headers */
+#productTable th, #loadedProducts th {
+    background-color: #f2f2f2;
+    font-weight: bold;
 }
 
+/* Modal button positioning */
+.modal-buttons {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 10001; /* Ensure the buttons are above everything */
+}
 
+/* Scrollable content */
+#requestsDonations {
+    overflow-y: auto;
+    height: calc(100% - 60px); /* Adjusted for space under the buttons */
+}
+
+/* Adjusted for better mobile responsiveness */
+@media (max-width: 768px) {
+    .dashboard-container {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .map-container, .cargo-container {
+        margin-right: 0;
+        margin-bottom: 20px;
+        width: 100%;
+    }
+}

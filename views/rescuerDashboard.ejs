@@ -6,6 +6,14 @@
     <title>Rescuer's Dashboard</title>
     <link rel="stylesheet" href="/styles/rescuerDashboard.css">
     <link rel="icon" href="/maptry/icons/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <style>
+        #map {
+            width: 100%;
+            height: 100vh; /* Fill the entire iframe */
+        }
+    </style>
 </head>
 <body>
 
@@ -51,7 +59,7 @@
     <div class="dashboard-container">
         
         <div class="map-container">
-            <iframe id="mapIframe" src="/maptry/rescuerMap.html" width="100%" height="100%" frameborder="0"></iframe>
+            <div id="map"></div>
         </div>
 
         <div class="cargo-container">
@@ -103,7 +111,331 @@
             </label>
         </div>
 
+        
         <script>
+            
+            document.addEventListener("DOMContentLoaded", function() {
+                console.log('DOMContentLoaded event triggered');
+                (async function() {
+                    // Load rescuer's cargo from the database
+                    try {
+                        const response = await fetch('/getCargo', { method: 'GET' });
+                        const data = await response.json();
+                        if (data.success) {
+                            populateCargoTab(data.cargo);
+                        } else {
+                            console.error('Failed to load cargo:', data.message);
+                        }
+                        const productsResponse = await fetch('/getProducts');
+                        const products = await productsResponse.json();
+                        renderProductModal(products);
+                    } catch (error) {
+                        console.error('Error loading cargo:', error);
+                    }
+
+                    var activeTabButton = document.getElementById('cargoTabBtn'); // Default to Cargo tab
+                    if (activeTabButton) {
+                        openTab('cargoTab', activeTabButton);
+                    } else {
+                        console.error('No tab buttons found');
+                    }
+                })();
+
+                (async function() {
+                    try {
+                        const response = await fetch('/getCiviliansWithActions');
+                        const data = await response.json();
+
+                        if (data.success) {
+                            const civilians = data.civilians;
+
+                            civilians.forEach(civilian => {
+                                const [lat, lng] = civilian.location.coordinates;
+
+                                // Choose the appropriate icon based on whether it's a request or donation
+                                let icon = civilian.requests.length > 0 ? peoplePendingIcon : DonateIcon;
+
+                                // Add a marker for each civilian
+                                const marker = L.marker([lat, lng], { icon: icon }).addTo(map);
+
+                                // Optionally bind a popup with more details
+                                marker.bindPopup(`
+                                    <strong>Action:</strong> ${civilian.requests.length > 0 ? 'Request' : 'Donation'}<br>
+                                    <strong>Location:</strong> ${lat}, ${lng}
+                                `);
+                            });
+                        } else {
+                            console.error('Failed to load civilians:', data.message);
+                        }
+                    } catch (error) {
+                        console.error('Error loading civilians:', error);
+                    }
+                })();
+
+                const map = L.map('map').setView([38.2462420, 21.7350847], 16);
+            
+                L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                }).addTo(map);
+
+                const StorageIcon = L.icon({
+                    iconUrl: '/maptry/icons/Storage.png', 
+                    iconSize: [30, 30],
+                    iconAnchor: [15,8],
+                    popupAnchor: [0, 0]
+                });
+                // Rescuer draggable marker
+                const RescuerIcon = L.icon({
+                    iconUrl: '/maptry/icons/transport.png',
+                    iconSize: [35, 35],
+                    iconAnchor: [15, 30],
+                    popupAnchor: [0, -30]
+                });
+
+                var markerStorage = L.marker([38.24600, 21.73500], {icon: StorageIcon}).addTo(map);
+                var markerRescuer = L.marker([38.24600, 21.73500], {icon: RescuerIcon, draggable: true}).addTo(map);
+                markerRescuer.bindPopup('Σύρε με στην τοποθεσία σου!').openPopup();
+
+                markerStorage.on('click', async function() {
+                const distance = calculateDistance(markerStorage.getLatLng(), markerRescuer.getLatLng());
+                if (distance <= 100) {
+                    try {
+                        const response = await fetch('/getProducts');
+                        if (!response.ok) {
+                            throw new Error('Failed to fetch products');
+                        }
+                        const products = await response.json();
+            
+                        // Send a message to the parent document to show the modal and populate it
+                        window.parent.postMessage({
+                            type: 'showProductModal',
+                            products: products
+                        }, '*');
+                    } catch (error) {
+                        console.error('Error fetching or displaying products:', error);
+                    }
+                }
+                });
+
+                // Function to calculate the distance between two LatLng points in meters
+                function calculateDistance(latlng1, latlng2) {
+                    return map.distance(latlng1, latlng2);
+                }
+                
+                // Function to update the Unload button state based on distance
+                function updateUnloadButtonState() {
+                    const storageLatLng = markerStorage.getLatLng();
+                    const rescuerLatLng = markerRescuer.getLatLng();
+                
+                    const distance = calculateDistance(storageLatLng, rescuerLatLng);
+                
+                    // Send a message to the parent window with the distance info to enable/disable the Unload button
+                    window.parent.postMessage({
+                        type: 'updateUnloadButtonState',
+                        distance: distance
+                    }, '*');
+                }
+                
+                // Initially set the Unload button state based on the initial position
+                updateUnloadButtonState();
+                
+                // Update Unload button state whenever the rescuer marker is dragged
+                markerRescuer.on('drag', function() {
+                    updateUnloadButtonState();
+                });
+
+                // Event listener for when the marker is dragged and dropped
+                markerRescuer.on('dragend', function(event) {
+                    var position = markerRescuer.getLatLng();
+                    console.log('Rescuer\'s location: ', position.lat, position.lng);
+                
+                    // Send an AJAX request to update the rescuer's location in the database
+                    fetch('/updateRescuerLocation', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ lat: position.lat, lng: position.lng })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            console.log('Location updated successfully.');
+                        } else {
+                            console.error('Failed to update location:', data.error);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+                });
+
+                const modals = document.querySelectorAll('.modal');
+                const closeButtons = document.querySelectorAll('.close-modal');
+                addCheckboxEventListeners();
+                observeCheckboxes();
+
+                // Open Instructions Modal
+                document.getElementById('instructionsLink').addEventListener('click', function(event) {
+                    event.preventDefault();
+                    document.getElementById('instructionsModal').style.display = "block";
+                });
+
+                // Close modals
+                closeButtons.forEach(closeBtn => {
+                    closeBtn.addEventListener('click', function() {
+                        closeBtn.closest('.modal').style.display = 'none';
+                    });
+                });
+
+                // Close modals when clicking outside of the modal content
+                window.addEventListener('click', function(event) {
+                    modals.forEach(modal => {
+                        if (event.target == modal) {
+                            modal.style.display = "none";
+                        }
+                    });
+                });
+
+                const filterToggleButton = document.getElementById('filterToggleButton');
+                const filterContainer = document.getElementById('filters');
+
+                // Toggle filter visibility on button click
+                filterToggleButton.addEventListener('click', function() {
+                    filterContainer.classList.toggle('visible');
+                });
+
+                // Initially check the desired filters
+                document.querySelectorAll('.main-filter[value="pending"], .sub-filter[value="medical"], .sub-filter[value="food"], .sub-filter[value="shelter"], .sub-filter[value="donate"]').forEach(cb => {
+                    cb.checked = true;
+                });
+
+                // Handle messages from the iframe
+                window.addEventListener('message', function(event) {
+                    if (event.data.type === 'updateUnloadButtonState') {
+                        const unloadButton = document.getElementById('unloadButton');
+                        const distance = event.data.distance;
+
+                        if (unloadButton) {
+                            if (distance <= 100) {
+                                unloadButton.classList.remove('inactive');
+                                unloadButton.classList.add('active');
+                                unloadButton.disabled = false;
+                            } else {
+                                unloadButton.classList.remove('active');
+                                unloadButton.classList.add('inactive');
+                                unloadButton.disabled = true;
+                            }
+                        } else {
+                            console.log('Unload button not found in the DOM');
+                        }
+                    }
+
+                    if (event.data.type === 'showProductModal') {
+                        const products = event.data.products;
+
+                        const productModal = document.getElementById('productModal');
+                        if (!productModal) {
+                            console.error('productModal element not found');
+                            return;
+                        }
+
+                        const productTable = document.getElementById('productTable');
+                        if (!productTable) {
+                            console.error('productTable element not found');
+                            return;
+                        }
+                        console.log('productTable found:', productTable);
+
+                        renderProductModal(products);
+                        productModal.style.display = 'block';
+                    }
+
+                    if (event.data.type === 'loadCiviliansMarkers') {
+                        const civilians = event.data.civilians;
+
+                        civilians.forEach(civilian => {
+                            const [lat, lng] = civilian.location.coordinates;
+
+                            // Choose the appropriate icon based on whether it's a request or donation
+                            let icon = civilian.requests.length > 0 ? RequestIcon : DonateIcon;
+
+                            // Add a marker for each civilian
+                            const marker = L.marker([lat, lng], { icon: icon }).addTo(map);
+
+                            // Optionally bind a popup with more details
+                            marker.bindPopup(`
+                                <strong>Action:</strong> ${civilian.requests.length > 0 ? 'Request' : 'Donation'}<br>
+                                <strong>Location:</strong> ${lat}, ${lng}
+                            `);
+                        });
+                    }
+                });
+
+                // Add event listeners for live filtering
+                document.querySelectorAll('.main-filter, .sub-filter').forEach(cb => {
+                    cb.addEventListener('change', function() {
+                        const activeMainFilters = Array.from(document.querySelectorAll('.main-filter:checked')).map(cb => cb.value);
+                        const activeSubFilters = Array.from(document.querySelectorAll('.sub-filter:checked')).map(cb => cb.value);
+                        iframeWindow.applyFilters(activeMainFilters, activeSubFilters);
+                    });
+                });
+
+                
+
+            }); 
+
+            // Markers Init
+            const FoodIcon = L.icon({
+                iconUrl: '/maptry/icons/food.png',
+                iconSize: [20, 20],
+                iconAnchor: [15, 30],
+                popupAnchor: [0, -30]
+            });
+            const MedicalIcon = L.icon({
+                iconUrl: '/maptry/icons/medical.png',
+                iconSize: [20, 20],
+                iconAnchor: [15, 30],
+                popupAnchor: [0, -30]
+            });
+            const ShelterIcon = L.icon({
+                iconUrl: '/maptry/icons/shelter.png',
+                iconSize: [20, 20],
+                iconAnchor: [15, 30],
+                popupAnchor: [0, -30]
+            });
+            const DonateIcon = L.icon({
+                iconUrl: '/maptry/icons/donate.png',
+                iconSize: [20, 20],
+                iconAnchor: [15, 30],
+                popupAnchor: [0, -30]
+            });
+            const peoplePendingIcon = L.icon({
+                iconUrl: '/maptry/icons/peoplePending.png',
+                iconSize: [30, 30],
+                iconAnchor: [15, 30],
+                popupAnchor: [0, -30]
+            });
+            const peopleServedIcon = L.icon({
+                iconUrl: '/maptry/icons/peopleServed.png',
+                iconSize: [30, 30],
+                iconAnchor: [15, 30],
+                popupAnchor: [0, -30]
+            });
+         
+            
+            function createCombinedIcon(mainCategoryIconUrl, subCategoryIconUrl) {
+                return L.divIcon({
+                    html: `
+                        <div style="position: relative; width: 30px; height: 30px;">
+                            <img src="${mainCategoryIconUrl}" style="width: 100%; height: 100%;">
+                            <img src="${subCategoryIconUrl}" style="width: 15px; height: 15px; position: absolute; top: 0; right: 0;">
+                        </div>
+                    `,
+                    className: ''
+                });
+            }
+            
+
             function openTab(tabName, element) {
                 console.log('openTab called with tabName:', tabName);
 
@@ -141,37 +473,6 @@
                 }
             }
             
-
-            // Set default tab to be open on page load
-            document.addEventListener("DOMContentLoaded", function() {
-                
-                (async function() {
-                    console.log('DOMContentLoaded event triggered');
-                    
-                    // Load rescuer's cargo from the database
-                    try {
-                        const response = await fetch('/getCargo', { method: 'GET' });
-                        const data = await response.json();
-                        if (data.success) {
-                            populateCargoTab(data.cargo);
-                        } else {
-                            console.error('Failed to load cargo:', data.message);
-                        }
-                        const productsResponse = await fetch('/getProducts');
-                        const products = await productsResponse.json();
-                        renderProductModal(products);
-                    } catch (error) {
-                        console.error('Error loading cargo:', error);
-                    }
-
-                    var activeTabButton = document.getElementById('cargoTabBtn'); // Default to Cargo tab
-                    if (activeTabButton) {
-                        openTab('cargoTab', activeTabButton);
-                    } else {
-                        console.error('No tab buttons found');
-                    }
-                })();
-            }); 
 
             function createCargoRow(item) {
                 const { productId, quantity } = item;
@@ -440,170 +741,61 @@
 
                 });
             
-                document.getElementById('unloadButton').addEventListener('click', async function () {
-                    const selectedItems = [];
+            document.getElementById('unloadButton').addEventListener('click', async function () {
+                const selectedItems = [];
 
-                    // Iterate over each row in the cargo table
-                    document.querySelectorAll('#loadedProducts tr').forEach(row => {
-                        const checkbox = row.querySelector('.product-checkbox');
-                        const quantityInput = row.querySelector('.quantity-input');
+                // Iterate over each row in the cargo table
+                document.querySelectorAll('#loadedProducts tr').forEach(row => {
+                    const checkbox = row.querySelector('.product-checkbox');
+                    const quantityInput = row.querySelector('.quantity-input');
 
-                        if (checkbox && checkbox.checked && quantityInput) {
-                            const quantityToReturn = parseInt(quantityInput.value, 10) || 0;
-                            if (quantityToReturn > 0) {
-                                const productId = checkbox.dataset.productId;
-                                selectedItems.push({
-                                    productId,
-                                    quantity: quantityToReturn
-                                });
-                            }
+                    if (checkbox && checkbox.checked && quantityInput) {
+                        const quantityToReturn = parseInt(quantityInput.value, 10) || 0;
+                        if (quantityToReturn > 0) {
+                            const productId = checkbox.dataset.productId;
+                            selectedItems.push({
+                                productId,
+                                quantity: quantityToReturn
+                            });
                         }
-                    });
-
-                    if (selectedItems.length === 0) {
-                        alert('No products selected or quantity is zero.');
-                        return;
-                    }
-
-                    try {
-                        const response = await fetch('/unloadCargo', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ items: selectedItems })
-                        });
-
-                        const result = await response.json();
-                        if (result.success) {
-                            alert('Products unloaded successfully!');
-
-                            // Refresh the cargo and product modals to reflect the changes
-                            const cargoResponse = await fetch('/getCargo');
-                            const cargoData = await cargoResponse.json();
-                            populateCargoTab(cargoData.cargo);
-
-                            const productsResponse = await fetch('/getProducts');
-                            const productsData = await productsResponse.json();
-                            renderProductModal(productsData);
-                        } else {
-                            alert('Failed to unload products: ' + result.message);
-                        }
-                    } catch (error) {
-                        console.error('Error unloading cargo:', error);
-                        alert('An error occurred while unloading cargo.');
                     }
                 });
 
+                if (selectedItems.length === 0) {
+                    alert('No products selected or quantity is zero.');
+                    return;
+                }
 
-            // Modal handling
-            document.addEventListener("DOMContentLoaded", function(){
-                const modals = document.querySelectorAll('.modal');
-                const closeButtons = document.querySelectorAll('.close-modal');
-                addCheckboxEventListeners();
-                observeCheckboxes();
-
-                // Open Instructions Modal
-                document.getElementById('instructionsLink').addEventListener('click', function(event) {
-                    event.preventDefault();
-                    document.getElementById('instructionsModal').style.display = "block";
-                });
-
-                // Close modals
-                closeButtons.forEach(closeBtn => {
-                    closeBtn.addEventListener('click', function() {
-                        closeBtn.closest('.modal').style.display = 'none';
-                    });
-                });
-
-                // Close modals when clicking outside of the modal content
-                window.addEventListener('click', function(event) {
-                    modals.forEach(modal => {
-                        if (event.target == modal) {
-                            modal.style.display = "none";
-                        }
-                    });
-                });
-
-                const filterToggleButton = document.getElementById('filterToggleButton');
-                const filterContainer = document.getElementById('filters');
-
-                // Toggle filter visibility on button click
-                filterToggleButton.addEventListener('click', function() {
-                    filterContainer.classList.toggle('visible');
-                });
-
-                const iframe = document.getElementById('mapIframe');
-
-                iframe.onload = function() {
-                    const iframeWindow = iframe.contentWindow;
-
-                    // Initially check the desired filters
-                    document.querySelectorAll('.main-filter[value="pending"], .sub-filter[value="medical"], .sub-filter[value="food"], .sub-filter[value="shelter"], .sub-filter[value="donate"]').forEach(cb => {
-                        cb.checked = true;
+                try {
+                    const response = await fetch('/unloadCargo', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ items: selectedItems })
                     });
 
-                    // Handle messages from the iframe
-                    window.addEventListener('message', function(event) {
-                        if (event.data.type === 'updateUnloadButtonState') {
-                            const unloadButton = document.getElementById('unloadButton');
-                            const distance = event.data.distance;
+                    const result = await response.json();
+                    if (result.success) {
+                        alert('Products unloaded successfully!');
 
-                            if (unloadButton) {
-                                if (distance <= 100) {
-                                    unloadButton.classList.remove('inactive');
-                                    unloadButton.classList.add('active');
-                                    unloadButton.disabled = false;
-                                } else {
-                                    unloadButton.classList.remove('active');
-                                    unloadButton.classList.add('inactive');
-                                    unloadButton.disabled = true;
-                                }
-                            } else {
-                                console.log('Unload button not found in the DOM');
-                            }
-                        }
+                        // Refresh the cargo and product modals to reflect the changes
+                        const cargoResponse = await fetch('/getCargo');
+                        const cargoData = await cargoResponse.json();
+                        populateCargoTab(cargoData.cargo);
 
-                        if (event.data.type === 'showProductModal') {
-                            const products = event.data.products;
-
-                            const productModal = document.getElementById('productModal');
-                            if (!productModal) {
-                                console.error('productModal element not found');
-                                return;
-                            }
-
-                            const productTable = document.getElementById('productTable');
-                            if (!productTable) {
-                                console.error('productTable element not found');
-                                return;
-                            }
-                            console.log('productTable found:', productTable);
-
-                            renderProductModal(products);
-                            productModal.style.display = 'block';
-                        }
-                    });
-
-                    // Ensure filters are applied when iframe is loaded
-                    
-
-                    // Add event listeners for live filtering
-                    document.querySelectorAll('.main-filter, .sub-filter').forEach(cb => {
-                        cb.addEventListener('change', function() {
-                            const activeMainFilters = Array.from(document.querySelectorAll('.main-filter:checked')).map(cb => cb.value);
-                            const activeSubFilters = Array.from(document.querySelectorAll('.sub-filter:checked')).map(cb => cb.value);
-                            iframeWindow.applyFilters(activeMainFilters, activeSubFilters);
-                        });
-                    });
-
-                };
-
-
-                // Handle the load button click
-                
-
+                        const productsResponse = await fetch('/getProducts');
+                        const productsData = await productsResponse.json();
+                        renderProductModal(productsData);
+                    } else {
+                        alert('Failed to unload products: ' + result.message);
+                    }
+                } catch (error) {
+                    console.error('Error unloading cargo:', error);
+                    alert('An error occurred while unloading cargo.');
+                }
             });
+
         </script>
 
     </body>
