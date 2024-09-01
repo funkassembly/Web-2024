@@ -37,6 +37,11 @@ const userSchema = new mongoose.Schema({
             deliveryTimeSlot: {
                 hours: String,
                 minutes: String
+            },
+            status: {
+                type: String,
+                enum: ['pending', 'processed', 'delivered'],
+                default: 'pending'
             }
         }
     ],
@@ -85,6 +90,11 @@ const userSchema = new mongoose.Schema({
                 hours: String,
                 minutes: String,
             },
+            status: {
+                type: String,
+                enum: ['pending', 'processed', 'delivered'],
+                default: 'pending'
+            }
         },
     ],
     tasks: [{

@@ -188,12 +188,18 @@
                                             request.products.forEach(productObj => {
                                                 const product = productObj.product;
                                                 if (product) {
-                                                    popupContent += `<li>Product: ${product.name}<br>`;
+                                                    popupContent += `
+                                                        <li>
+                                                            <input type="checkbox" class="request-checkbox">
+                                                            
+                                                        `;
+                                                    popupContent += `Product: ${product.name}<br>`;
                                                     popupContent += `Category: ${product.category}<br>`;
                                                     popupContent += `Address: ${fullAddress}<br>`;
                                                     popupContent += `Requested on: ${request.date} at ${request.time}<br>`;
                                                     popupContent += `Delivery Date: ${request.deliveryDate || ''}<br>`;
-                                                    popupContent += `Delivery Time: ${request.deliveryTimeSlot.hours}:${request.deliveryTimeSlot.minutes}</li><br>`;
+                                                    popupContent += `Delivery Time: ${request.deliveryTimeSlot.hours}:${request.deliveryTimeSlot.minutes}<br>`;
+                                                    popupContent += `Status: {request.status}</li><br>`;
                                                 } else {
                                                     popupContent += `<li>Product: undefined<br></li>`;
                                                 }
@@ -208,7 +214,8 @@
                                             popupContent += `Quantity: ${donation.product.details.find(detail => detail.name === 'stock')?.value || 'N/A'}<br>`;
                                             popupContent += `Donated on: ${donation.date} at ${donation.time}<br>`;
                                             popupContent += `Delivery Date: ${donation.deliveryDate}<br>`;
-                                            popupContent += `Delivery Time: ${donation.deliveryTimeSlot.hours}:${donation.deliveryTimeSlot.minutes}</li><br>`;
+                                            popupContent += `Delivery Time: ${donation.deliveryTimeSlot.hours}:${donation.deliveryTimeSlot.minutes}<br>`;
+                                            popupContent += `Status: {request.status}</li><br>`;
                                         });
                                         popupContent += `</ul>`;
                                     }
@@ -347,11 +354,6 @@
                         console.error('Error fetching tasks or calculating route:', error);
                     }
                 });
-
-
-
-
-
 
 
                 function populateTasksTable(tasks) {
@@ -1228,8 +1230,37 @@
                 }
             });
 
+            async function serveSelectedRequests(civilianId) {
+                const selectedRequestIds = Array.from(document.querySelectorAll('.request-checkbox:checked')).map(cb => cb.getAttribute('data-request-id'));
 
+                if (selectedRequestIds.length === 0) {
+                    alert('Please select at least one request to serve.');
+                    return;
+                }
 
+                try {
+                    const response = await fetch('/serveSelectedRequests', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ civilianId, selectedRequestIds })
+                    });
+
+                    const data = await response.json();
+                    if (data.success) {
+                        alert('Requests served successfully!');
+                        // Optionally refresh the UI or remove served requests
+                    } else {
+                        alert('Failed to serve requests: ' + data.message);
+                    }
+                } catch (error) {
+                    console.error('Error serving requests:', error);
+                    alert('An error occurred while serving the requests.');
+                }
+            }
+
+            
         </script>
 
     </body>

@@ -254,6 +254,84 @@ button:disabled {
     background-color: #0056b3;
 }
 
+/* Popup window styling for civilian markers */
+.leaflet-popup-content-wrapper {
+    background-color: #ffffff; /* White background for better contrast */
+    border-radius: 10px; /* Rounded corners to match the dashboard theme */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    padding: 20px; /* Space inside the pop-up */
+}
+
+.leaflet-popup-content {
+    margin: 0;
+    padding: 0;
+    color: #333; /* Dark text color for readability */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 14px; /* Standardize font size with the dashboard */
+}
+
+.leaflet-popup-content strong {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #333; /* Ensure strong text is easily readable */
+}
+
+.leaflet-popup-content ul {
+    list-style-type: none; /* Remove default bullet points */
+    padding: 0;
+    margin: 0;
+}
+
+.leaflet-popup-content ul li {
+    margin-bottom: 10px; /* Space between list items */
+}
+
+.leaflet-popup-content ul li label {
+    font-weight: normal; /* Normal weight for labels */
+    color: #666; /* Slightly lighter color for labels */
+}
+
+.leaflet-popup-content table {
+    width: 100%; /* Full width for better alignment */
+    border-collapse: collapse; /* Remove gaps between table cells */
+    margin-bottom: 10px; /* Space below the table */
+}
+
+.leaflet-popup-content table th, 
+.leaflet-popup-content table td {
+    border: 1px solid #ddd; /* Light borders around cells */
+    padding: 8px; /* Space inside cells */
+    text-align: left; /* Left-align text for consistency */
+}
+
+.leaflet-popup-content table th {
+    background-color: #f2f2f2; /* Light background for headers */
+    font-weight: bold; /* Bold text for headers */
+}
+
+.leaflet-popup-content table td {
+    background-color: #fff; /* White background for cell content */
+}
+
+.leaflet-popup-content .serve-button {
+    background-color: #4CAF50; /* Green background for serve button */
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 10px; /* Space above the button */
+}
+
+.leaflet-popup-content .serve-button:hover {
+    background-color: #45a049; /* Slightly darker green on hover */
+}
+
+
 
 /* Adjusted for better mobile responsiveness */
 @media (max-width: 768px) {

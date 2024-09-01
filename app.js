@@ -562,6 +562,7 @@ app.post('/serveRequest', isLoggedIn, isRescuer, async (req, res) => {
     }
 });
 
+
 // Route to get tasks for the rescuer
 // Route to get tasks for the rescuer
 app.get('/getTasks', isLoggedIn, isRescuer, async (req, res) => {
@@ -628,6 +629,34 @@ app.delete('/deleteTask/:taskId', isLoggedIn, isRescuer, async (req, res) => {
         res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
+
+
+app.post('/serveSelectedRequests', isLoggedIn, isRescuer, async (req, res) => {
+    const { civilianId, selectedRequestIds } = req.body;
+
+    try {
+        const civilian = await User.findById(civilianId);
+        if (!civilian) {
+            return res.status(404).json({ success: false, message: 'Civilian not found' });
+        }
+
+        // Mark the selected requests as served
+        civilian.requests.forEach(request => {
+            if (selectedRequestIds.includes(request._id.toString())) {
+                request.status = 'served';
+            }
+        });
+
+        await civilian.save();
+
+        res.json({ success: true, message: 'Requests served successfully' });
+    } catch (error) {
+        console.error('Error serving requests:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
+
 
 
 

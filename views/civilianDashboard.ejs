@@ -746,7 +746,7 @@
                         <td>${index + 1}</td>
                         <td>${request.date}</td>
                         <td>${products}</td>
-                        <td>To be developed</td>
+                        <td class="status">{request.status}</td>
                     `;
                     table.appendChild(row);
 
@@ -818,7 +818,7 @@
                         <td>${index + 1}</td>
                         <td>${donation.date}</td>
                         <td>${donation.product.name}</td> 
-                        <td>To be developed</td>
+                        <td class="status">{donation.status}</td>
                     `;
                     table.appendChild(row);
                   
