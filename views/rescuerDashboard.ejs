@@ -65,9 +65,9 @@
         
         <div class="map-container">
             <div id="map"></div>
-            <div id="navigationButtonContainer">
+            <!-- <div id="navigationButtonContainer">
                 <button id="navRouteButton">Find Shortest Route</button>
-            </div>            
+            </div>             -->
         </div>
 
         <div class="cargo-container">
@@ -143,8 +143,16 @@
                 console.log('DOMContentLoaded event triggered');
                 let popupContent = "some content"; // Example for other usage
 
+                // General storage coordinates
+                const storageLat = 38.24600;
+                const storageLng = 21.73500;
 
-                const map = L.map('map').setView([38.2462420, 21.7350847], 16);
+                // Generate a random location 5km around the general storage
+                const randomLocation = getRandomLocation(storageLat, storageLng, 5000); // 5000 meters = 5km
+
+                const map = L.map('map').setView([randomLocation.lat, randomLocation.lng], 16);
+
+                // const map = L.map('map').setView([38.2462420, 21.7350847], 16);
             
                 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
@@ -163,7 +171,7 @@
 
                             for (const civilian of civilians) {
                                 if (civilian.location && Array.isArray(civilian.location.coordinates) && civilian.location.coordinates.length === 2) {
-                                    const [lat, lng] = civilian.location.coordinates;
+                                    const [lng, lat] = civilian.location.coordinates;
 
                                     // Determine the appropriate icon based on the action
                                     let icon = civilian.requests.length > 0 ? peoplePendingIcon : DonateIcon;
@@ -175,7 +183,7 @@
                                     // Initialize popup content with username and action type
                                     let popupContent = `<strong>Username:</strong> ${username}<br>`;
                                     popupContent += `<strong>Action:</strong> ${civilian.requests.length > 0 ? 'Request' : 'Donation'}<br>`;
-                                    popupContent += `<strong>Location:</strong> ${lat}, ${lng}<br>`;
+                                    popupContent += `<strong>Location:</strong> ${lng}, ${lat}<br>`;
 
                                     if (civilian.requests.length > 0) {
                                         popupContent += `<strong>Requests:</strong><br><ul>`;
@@ -227,7 +235,7 @@
                                 console.log("Popup Content for civilian:", popupContent);
 
                                 // Add a marker for the civilian with the pop-up
-                                const marker = L.marker([lat, lng], { icon: icon }).addTo(map);
+                                const marker = L.marker([lng, lat], { icon: icon }).addTo(map);
                                 marker.bindPopup(popupContent);
                                 }
                             }
@@ -262,6 +270,9 @@
 
                         if (data.success) {
                             populateTasksTable(data.tasks);
+                            if (data.tasks.length > 0) {
+                                displayRouteForAllTasks(data.tasks); // Automatically show the route for the first task
+                            }
                         } else {
                             console.error('Failed to load tasks:', data.message);
                         }
@@ -270,48 +281,20 @@
                     }
                 }
 
-                document.getElementById('navRouteButton').addEventListener('click', async function () {
+                async function displayRouteForTask(task) {
                     try {
-                        const response = await fetch('/getTasks');
-                        const data = await response.json();
-
-                        console.log('Tasks fetched:', data.tasks); // Debugging line to check task data
-
-                        let tasks = data.tasks;
-
-                        // Ensure tasks is an array
-                        if (!Array.isArray(tasks)) {
-                            tasks = [];
-                        }
-
-                        if (tasks.length === 0) {
-                            alert('No tasks available to calculate the route.');
-                            return;
-                        }
-
                         // Get the rescuer's current location
                         const rescuerLocation = markerRescuer.getLatLng();
                         const waypoints = [L.latLng(rescuerLocation.lat, rescuerLocation.lng)]; // Start from rescuer's location
 
-                        // Extract the locations of the civilians from the tasks
-                        tasks.forEach(task => {
-                            console.log('Task location:', task.location); // Debugging line to check each task's location
-                            if (task.location && Array.isArray(task.location.coordinates)) {
-                                const [lng, lat] = task.location.coordinates; // coordinates are usually [lng, lat]
-                                console.log(`Adding waypoint for task: Latitude: ${lat}, Longitude: ${lng}`);
-                                waypoints.push(L.latLng(lng, lat));
-                                
-                            } else {
-                                console.warn('Invalid or missing location in task:', task);
-                            }
-                        });
-
-                        console.log('Waypoints:', waypoints); // Debugging line to check waypoints
-
-                        // If we don't have enough waypoints, return early
-                        if (waypoints.length <= 1) {
-                            alert('Not enough valid locations to calculate the route.');
-                            return;
+                        // Get the task location (assuming task.location.coordinates are in [lat, lng])
+                        if (task.location && Array.isArray(task.location.coordinates)) {
+                            const [lng, lat] = task.location.coordinates; // coordinates are usually [lng, lat]
+                            console.log(`Adding waypoint for task: Latitude: ${lat}, Longitude: ${lng}`);
+                            waypoints.push(L.latLng(lng, lat)); // Adding the task location as a waypoint
+                        } else {
+                            console.warn('Invalid or missing location in task:', task);
+                            return; // Exit if no valid location found
                         }
 
                         // Remove any existing route
@@ -325,9 +308,9 @@
                             lineOptions: {
                                 styles: [{ color: '#00aaff', weight: 6 }] // Customize the color and weight of the route line here
                             },
-                            createMarker: function(i, waypoint, n) {
+                            createMarker: function (i, waypoint, n) {
                                 const markerOptions = {
-                                    draggable: false
+                                    draggable: true
                                 };
                                 if (i === 0) {
                                     markerOptions.icon = RescuerIcon; // Use the rescuer icon for the first marker
@@ -336,29 +319,72 @@
                             },
                             addWaypoints: false, // Prevent users from adding waypoints manually
                             routeWhileDragging: true, // Disable recalculating the route while dragging
-                            fitSelectedRoutes: true, // Automatically zoom the map to fit the route
+                            fitSelectedRoutes: false, // Automatically zoom the map to fit the route
                             show: false, // Disable the default route instructions popup
                             routeDrag: false, // Disable the ability to drag the route
                         }).addTo(map);
 
-                        // Remove the summary and instructions panels (popups)
-                        window.routeControl.on('routesfound', function (e) {
-                            const routes = e.routes;
-                            console.log('Route found:', routes); // Debugging line to check the found route
-                            if (window.routeControl._routes) {
-                                window.routeControl._routes.forEach(route => route.removeFrom(map));
-                            }
-                        });
-
                     } catch (error) {
                         console.error('Error fetching tasks or calculating route:', error);
                     }
-                });
+                }
+                // Array to store all selected task waypoints
+                let taskWaypoints = [];
 
+                // Function to automatically calculate and display the route for all tasks
+                async function displayRouteForAllTasks(tasks) {
+                    try {
+                        // Get the rescuer's current location
+                        const rescuerLocation = markerRescuer.getLatLng();
+                        const waypoints = [L.latLng(rescuerLocation.lat, rescuerLocation.lng)]; // Start from rescuer's location
+
+                        // Loop through all tasks and add their waypoints (lat, lng) to the route
+                        tasks.forEach(task => {
+                            if (task.location && Array.isArray(task.location.coordinates)) {
+                                const [lng, lat] = task.location.coordinates; // Correct: [lng, lat]
+                                waypoints.push(L.latLng(lng, lat)); // Add task location to waypoints
+                            } else {
+                                console.warn('Invalid or missing location in task:', task);
+                            }
+                        });
+
+                        // Remove any existing route before adding a new one
+                        if (window.routeControl) {
+                            map.removeControl(window.routeControl);
+                        }
+
+
+                        // Create and display the route on the map
+                        window.routeControl = L.Routing.control({
+                            waypoints: waypoints,
+                            lineOptions: {
+                                styles: [{ color: '#00aaff', weight: 6 }] // Customize the color and weight of the route line here
+                            },
+                            createMarker: function (i, waypoint, n) {
+                                const markerOptions = { draggable: true };
+                                if (i === 0) {
+                                    markerOptions.icon = RescuerIcon; // Use the rescuer icon for the first marker
+                                } else if (i > 0) {
+                                    markerOptions.icon = peoplePendingIcon; // Use the task icon for the subsequent waypoints
+                                }
+                                return L.marker(waypoint.latLng, markerOptions);
+                            },
+                            addWaypoints: false, // Prevent users from adding waypoints manually
+                            routeWhileDragging: true, // Disable recalculating the route while dragging
+                            fitSelectedRoutes: false, // Automatically zoom the map to fit the route
+                            show: false, // Disable the default route instructions popup
+                            routeDrag: false, // Disable the ability to drag the route
+                        }).addTo(map);
+                    } catch (error) {
+                        console.error('Error calculating route:', error);
+                    }
+                }
 
                 function populateTasksTable(tasks) {
                     const tasksTableBody = document.querySelector('#tasksTable tbody');
                     tasksTableBody.innerHTML = '';  // Clear existing rows
+
+                    taskWaypoints = [];
 
                     tasks.forEach((task, index) => {
                         const row = document.createElement('tr');
@@ -429,6 +455,17 @@
                                 deleteButton.style.color = 'red';
                                 actionCell.appendChild(deleteButton);
 
+                                const checkmarkButton = document.createElement('button');
+                                checkmarkButton.classList.add('checkmark-button');
+                                checkmarkButton.innerHTML = '&#10003;';  // HTML code for the checkmark symbol
+                                checkmarkButton.style.color = 'green';
+                                actionCell.appendChild(checkmarkButton);
+
+                                // Add event listener for the checkmark button
+                                checkmarkButton.addEventListener('click', function() {
+                                    alert('Task confirmed!');
+                                });
+
                                 deleteButton.addEventListener('click', function() {
                                     if (confirm('Are you sure you want to delete this task?')) {
                                         deleteTask(task._id);
@@ -436,12 +473,33 @@
                                 });
                             } else {
                                 const existingButton = actionCell.querySelector('.delete-button');
+                                const existingCheckmarkButton = actionCell.querySelector('.checkmark-button');
                                 if (existingButton) existingButton.remove();
+                                if (existingCheckmarkButton) existingCheckmarkButton.remove();
                             }
                         });
 
                         // Handle row expansion to show task details
                         row.addEventListener('click', function(event) {
+                            if (this.checked && task.location && Array.isArray(task.location.coordinates)) {
+                                const [lng, lat] = task.location.coordinates;
+                                const taskWaypoint = L.latLng(lng, lat);
+                                // taskWaypoints.push(taskWaypoint); // Add task location to the waypoints array
+
+                                // Automatically display the updated route with new waypoints
+                                // displayRouteForAllTasks();
+                            } else if (!this.checked) {
+                                // Remove waypoint if unchecked
+                                const [lng, lat] = task.location.coordinates;
+                                const taskWaypoint = L.latLng(lng, lat);
+                                // taskWaypoints = taskWaypoints.filter(wp => !(wp.lat === taskWaypoint.lat && wp.lng === taskWaypoint.lng));
+
+                                // displayRouteForAllTasks(); // Recalculate route
+                            }
+                            else {
+                                console.warn('Invalid or missing location in task:', task);
+                            }
+                            
                             if (event.target.type !== 'checkbox') { // Avoid toggling when clicking the checkbox
                                 toggleRowDetails(row, task.details);
                             }
@@ -546,9 +604,13 @@
                     popupAnchor: [0, -30]
                 });
 
+                
                 var markerStorage = L.marker([38.24600, 21.73500], {icon: StorageIcon}).addTo(map);
-                var markerRescuer = L.marker([38.24600, 21.73500], {icon: RescuerIcon, draggable: true}).addTo(map);
-                markerRescuer.bindPopup('Σύρε με στην τοποθεσία σου!').openPopup();
+                const markerRescuer = L.marker([randomLocation.lat, randomLocation.lng], {
+                    icon: RescuerIcon,
+                    draggable: true
+                }).addTo(map);
+                markerRescuer.bindPopup('Είναι σίγουρα εδώ η τοποθεσία σου? Αν όχι Σύρε με στην τοποθεσία σου!').openPopup();
 
                 markerStorage.on('click', async function() {
                 const distance = calculateDistance(markerStorage.getLatLng(), markerRescuer.getLatLng());
@@ -596,12 +658,13 @@
                 // Update Unload button state whenever the rescuer marker is dragged
                 markerRescuer.on('drag', function() {
                     updateUnloadButtonState();
+                    fetchTasks();
                 });
 
                 // Event listener for when the marker is dragged and dropped
                 markerRescuer.on('dragend', function(event) {
                     var position = markerRescuer.getLatLng();
-                    console.log('Rescuer\'s location: ', position.lat, position.lng);
+                    console.log('Rescuer\'s location: ', position.lng, position.lat);
                 
                     // Send an AJAX request to update the rescuer's location in the database
                     fetch('/updateRescuerLocation', {
@@ -609,7 +672,7 @@
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({ lat: position.lat, lng: position.lng })
+                        body: JSON.stringify({ lng: position.lng, lat: position.lat })
                     })
                     .then(response => response.json())
                     .then(data => {
@@ -708,7 +771,7 @@
                         console.log("Civilians Data:", civilians); // Debugging line
 
                         civilians.forEach(civilian => {
-                            const [lat, lng] = civilian.location.coordinates;
+                            const [lng, lat] = civilian.location.coordinates;
 
                             // Choose the appropriate icon based on whether it's a request or donation
                             let icon = civilian.requests.length > 0 ? peoplePendingIcon : DonateIcon;
@@ -717,7 +780,7 @@
 
                             // Optionally bind a popup with more details
                             let popupContent = `<strong>Action:</strong> ${civilian.requests.length > 0 ? 'Request' : 'Donation'}<br>`;
-                            popupContent += `<strong>Location:</strong> ${lat}, ${lng}<br>`;
+                            popupContent += `<strong>Location:</strong> ${lng}, ${lat}<br>`;
 
                             if (civilian.requests.length > 0) {
                                 // Add request details
@@ -736,7 +799,7 @@
                             }
                             console.log("Popup Content:", popupContent); // Debugging line
                             // Add a marker for each civilian
-                            const marker = L.marker([lat, lng], { icon: icon }).addTo(map);
+                            const marker = L.marker([lng, lat], { icon: icon }).addTo(map);
                             marker.bindPopup(popupContent);
                         });
                     }
@@ -1259,6 +1322,41 @@
                     alert('An error occurred while serving the requests.');
                 }
             }
+
+            // Helper function to convert degrees to radians
+            function toRadians(degrees) {
+                return degrees * Math.PI / 180;
+            }
+
+            // Helper function to convert radians to degrees
+            function toDegrees(radians) {
+                return radians * 180 / Math.PI;
+            }
+
+            // Function to generate random latitude and longitude within a radius
+            function getRandomLocation(lat, lng, radius) {
+                const earthRadius = 6371000; // Earth's radius in meters
+
+                // Convert radius from meters to degrees
+                const radiusInDegrees = radius / earthRadius;
+
+                // Random distance and angle for the point within the circle
+                const distance = Math.random() * radiusInDegrees;
+                const angle = Math.random() * 2 * Math.PI;
+
+                // Calculate the new latitude and longitude
+                const newLat = Math.asin(Math.sin(toRadians(lat)) * Math.cos(distance) +
+                            Math.cos(toRadians(lat)) * Math.sin(distance) * Math.cos(angle));
+
+                const newLng = toRadians(lng) + Math.atan2(Math.sin(angle) * Math.sin(distance) * Math.cos(toRadians(lat)),
+                            Math.cos(distance) - Math.sin(toRadians(lat)) * Math.sin(newLat));
+
+                return {
+                    lat: toDegrees(newLat),
+                    lng: toDegrees(newLng)
+                };
+            }
+
 
             
         </script>
