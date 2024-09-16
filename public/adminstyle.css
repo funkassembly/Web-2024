@@ -1,0 +1,348 @@
+/* Global Styles */
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #ff9900, #ffffff);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.sidebar {
+    width: 60px;
+    background-color: white;
+    padding: 20px 0;
+    position: fixed;
+    height: 100%;
+    left: 0;
+    top: 0;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    transition: width 0.3s ease;
+    z-index: 10;
+    overflow: hidden;
+}
+
+.sidebar.expanded {
+    width: 250px;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar ul li {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.sidebar ul li a {
+    text-decoration: none;
+    color: #555;
+    display: block;
+    padding: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+    font-size: 20px;
+}
+
+.sidebar ul li a i {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.sidebar ul li a.active {
+    background-color: #ff9900;
+    color: white;
+}
+
+.sidebar ul li a:hover {
+    background-color: #ff9900;
+    color: #fff;
+}
+
+.bottom-menu {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    text-align: center;
+}
+
+.main-content {
+    margin-left: 60px;
+    padding: 20px;
+    width: calc(100% - 60px);
+    height: 100vh;
+    display: block;
+    overflow-y: auto;
+    transition: margin-left 0.3s ease;
+}
+
+.sidebar.expanded + .main-content {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+}
+
+/* DataTable and Button Styles */
+button {
+    background-color: #ff9900;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    margin: 10px 0;
+}
+
+button:hover {
+    background-color: #e68a00;
+}
+
+input[type="file"] {
+    margin: 10px 0;
+}
+
+/* Dashboard Boxes and Chart Styles */
+.dashboard-boxes {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px; /* Adds spacing between the boxes */
+    margin-bottom: 20px;
+    flex-wrap: wrap; /* Ensures boxes stack on smaller screens */
+}
+
+.box {
+    background: rgba(255, 255, 255, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 45%; /* Ensures two boxes sit side by side */
+    min-width: 250px; /* Ensures boxes don’t shrink too much on small screens */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.chart-box {
+    width: 100%;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Styling for the chart canvas */
+canvas {
+    width: 100% !important;
+    height: auto !important;
+}
+
+/* Header and Text Styles for Boxes */
+h3 {
+    margin-bottom: 10px;
+    color: #ff9900; /* Matching the theme color */
+}
+
+p {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Centralize the form and header */
+#user-form-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+form {
+    background: rgba(255, 255, 255, 0.6);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    text-align: left;
+    color: #333;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+    color: #333;
+}
+
+button[type="submit"], .primary-btn {
+    background-color: #ff9900;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    margin-top: 10px;
+}
+
+button[type="submit"]:hover, .primary-btn:hover {
+    background-color: #e68a00;
+}
+
+/* Header Styles */
+h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #ff9900;
+    text-align: center;
+    width: 100%;
+}
+
+h2 i {
+    margin-right: 10px;
+    color: #ff9900;
+}
+
+th, td {
+    text-align: center;
+}
+
+/* #itemsTable .action-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#itemsTable .action-buttons i {
+    margin: 0 10px;
+    cursor: pointer;
+    font-size: 30px;
+    color: #ff9900; /* Optional: You can change the color */
+
+
+/* #itemsTable .action-buttons i:hover {
+    color: red; /* Optional: Color change on hover */
+
+/* Announcement Form Styles */
+#announcement-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+#announcement-section form {
+    background: rgba(255, 255, 255, 0.6);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+#announcement-section h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #ff9900;
+    text-align: center;
+}
+
+#announcement-section .form-group {
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+#announcement-section label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    text-align: left;
+    color: #333;
+}
+
+#announcement-section input[type="text"],
+#announcement-section input[type="date"],
+#announcement-section textarea {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+    color: #333;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+#announcement-section textarea {
+    resize: vertical;
+    height: 100px;
+}
+
+#announcement-section button[type="submit"] {
+    background-color: #ff9900;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    margin-top: 10px;
+}
+
+#announcement-section button[type="submit"]:hover {
+    background-color: #e68a00;
+}
+
+/* Media Query for Responsive Design */
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .dashboard-boxes {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .box {
+        width: 100%; /* Full width on smaller screens */
+        margin-bottom: 20px;
+    }
+
+    .chart-box {
+        width: 100%;
+    }
+}

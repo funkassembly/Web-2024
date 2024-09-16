@@ -1,0 +1,3428 @@
+{
+    "code": 1,
+    "message": "Retrieved successfully",
+    "items": [
+    {
+      "id": "16",
+      "name": "Water",
+      "category": "6",
+      "details": [
+        {
+          "detail_name": "volume",
+          "detail_value": "1.5l"
+        },
+        {
+          "detail_name": "pack size",
+          "detail_value": "6"
+        }
+      ],
+      "stock": 413
+    },
+    {
+      "id": "17",
+      "name": "Orange juice",
+      "category": "6",
+      "details": [
+        {
+          "detail_name": "volume",
+          "detail_value": "250ml"
+        },
+        {
+          "detail_name": "pack size",
+          "detail_value": "12"
+        }
+      ],
+      "stock": 297
+    },
+    {
+      "id": "18",
+      "name": "Sardines",
+      "category": "5",
+      "details": [
+        {
+          "detail_name": "brand",
+          "detail_value": "Trata"
+        },
+        {
+          "detail_name": "weight",
+          "detail_value": "200g"
+        }
+      ],
+      "stock": 64
+    },
+    {
+      "id": "19",
+      "name": "Canned corn",
+      "category": "5",
+      "details": [
+        {
+          "detail_name": "weight",
+          "detail_value": "500g"
+        }
+      ],
+      "stock": 122
+    },
+    {
+      "id": "20",
+      "name": "Bread",
+      "category": "5",
+      "details": [
+        {
+          "detail_name": "weight",
+          "detail_value": "1kg"
+        },
+        {
+          "detail_name": "type",
+          "detail_value": "white"
+        }
+      ],
+      "stock": 346
+    },
+    {
+      "id": "21",
+      "name": "Chocolate",
+      "category": "5",
+      "details": [
+        {
+          "detail_name": "weight",
+          "detail_value": "100g"
+        },
+        {
+          "detail_name": "type",
+          "detail_value": "milk chocolate"
+        },
+        {
+          "detail_name": "brand",
+          "detail_value": "ION"
+        }
+      ],
+      "stock": 456
+    },
+    {
+      "id": "22",
+      "name": "Men Sneakers",
+      "category": "7",
+      "details": [
+        {
+          "detail_name": "size",
+          "detail_value": "44"
+        }
+      ],
+      "stock": 115
+    },
+    {
+      "id": "23",
+      "name": "Test Product",
+      "category": "9",
+      "details": [
+        {
+          "detail_name": "weight",
+          "detail_value": "500g"
+        },
+        {
+          "detail_name": "pack size",
+          "detail_value": "12"
+        },
+        {
+          "detail_name": "expiry date",
+          "detail_value": "13/12/1978"
+        }
+      ],
+      "stock": 27
+    },
+    {
+      "id": "24",
+      "name": "Test Val",
+      "category": "14",
+      "details": [
+        {
+          "detail_name": "Details",
+          "detail_value": "600ml"
+        }
+      ],
+      "stock": 308
+    },
+    {
+      "id": "25",
+      "name": "Spaghetti",
+      "category": "5",
+      "details": [
+        {
+          "detail_name": "grams",
+          "detail_value": "500"
+        }
+      ],
+      "stock": 421
+    },
+    {
+      "id": "26",
+      "name": "Croissant",
+      "category": "5",
+      "details": [
+        {
+          "detail_name": "calories",
+          "detail_value": "200"
+        }
+      ],
+      "stock": 66
+    },
+    {
+      "id": "28",
+      "name": "",
+      "category": "10",
+      "details": [
+        {
+          "detail_name": "",
+          "detail_value": ""
+        }
+      ],
+      "stock": 189
+    },
+    {
+      "id": "29",
+      "name": "Biscuits",
+      "category": "5",
+      "details": [
+        {
+          "detail_name": "",
+          "detail_value": ""
+        }
+      ],
+      "stock": 324
+    },
+    {
+      "id": "30",
+      "name": "Bandages",
+      "category": "16",
+      "details": [
+        {
+          "detail_name": "",
+          "detail_value": "25 pcs"
+        }
+      ],
+      "stock": 114
+    },
+    {
+      "id": "31",
+      "name": "Disposable gloves",
+      "category": "16",
+      "details": [
+        {
+          "detail_name": "",
+          "detail_value": "100 pcs"
+        }
+      ],
+      "stock": 132
+    },
+    {
+      "id": "32",
+      "name": "Gauze",
+      "category": "16",
+      "details": [
+        {
+          "detail_name": "",
+          "detail_value": ""
+        }
+      ],
+      "stock": 279
+    },
+    {
+      "id": "33",
+      "name": "Antiseptic",
+      "category": "16",
+      "details": [
+        {
+          "detail_name": "",
+          "detail_value": "250ml"
+        }
+      ],
+      "stock": 399
+    },
+    {
+      "id": "34",
+      "name": "First Aid Kit",
+      "category": "16",
+      "details": [
+        {
+          "detail_name": "",
+          "detail_value": ""
+        }
+      ],
+      "stock": 492
+    },
+    {
+      "id": "35",
+      "name": "Painkillers",
+      "category": "16",
+      "details": [
+        {
+          "detail_name": "volume",
+          "detail_value": "200mg"
+        }
+      ],
+      "stock": 337
+    },
+    {
+      "id": "36",
+      "name": "Blanket",
+      "category": "7",
+      "details": [
+        {
+          "detail_name": "size",
+          "detail_value": "50\" x 60\""
+        }
+      ],
+      "stock": 109
+    },
+    {
+      "id": "37",
+      "name": "Fakes",
+      "category": "5",
+      "details": [
+        {
+          "detail_name": "",
+          "detail_value": ""
+        }
+      ],
+      "stock": 417
+    },
+    {
+      "id": "38",
+      "name": "Menstrual Pads",
+      "category": "21",
+      "details": [
+        {
+          "detail_name": "stock",
+          "detail_value": "500"
+        },
+        {
+          "detail_name": "size",
+          "detail_value": "3"
+        },
+        {
+          "detail_name": "",
+          "detail_value": ""
+        }
+      ],
+      "stock": 181
+    },
+    {
+      "id": "39",
+      "name": "Tampon",
+      "category": "21",
+      "details": [
+        {
+          "detail_name": "stock",
+          "detail_value": "500"
+        },
+        {
+          "detail_name": "size",
+          "detail_value": "regular"
+        }
+      ],
+      "stock": 245
+    },
+    {
+      "id": "40",
+      "name": "Toilet Paper",
+      "category": "21",
+      "details": [
+        {
+          "detail_name": "stock",
+          "detail_value": "300"
+        },
+        {
+          "detail_name": "ply",
+          "detail_value": "3"
+        }
+      ],
+      "stock": 492
+    },
+    {
+      "id": "41",
+      "name": "Baby wipes",
+      "category": "21",
+      "details": [
+        {
+          "detail_name": "volume",
+          "detail_value": "500gr"
+        },
+        {
+          "detail_name": "stock ",
+          "detail_value": "500"
+        },
+        {
+          "detail_name": "scent",
+          "detail_value": "aloe"
+        }
+      ],
+      "stock": 89
+    },
+    {
+      "id": "42",
+      "name": "Toothbrush",
+      "category": "21",
+      "details": [
+        {
+          "detail_name": "stock",
+          "detail_value": "500"
+        }
+      ],
+      "stock": 285
+    },
+    {
+      "id": "43",
+      "name": "Toothpaste",
+      "category": "21",
+      "details": [
+        {
+          "detail_name": "stock",
+          "detail_value": "250"
+        }
+      ],
+      "stock": 99
+    },
+    {
+      "id": "44",
+      "name": "Vitamin C",
+      "category": "16",
+      "details": [
+        {
+          "detail_name": "stock",
+          "detail_value": "200"
+        }
+      ],
+      "stock": 213
+    },
+    {
+      "id": "70",
+      "name": "Pants",
+      "category": "7",
+      "details": [
+        {
+          "detail_name": "",
+          "detail_value": ""
+        }
+      ],
+      "stock": 243
+    },
+    {
+      "id": "71",
+      "name": "Boots",
+      "category": "7",
+      "details": [
+        {
+          "detail_name": "",
+          "detail_value": ""
+        }
+      ],
+      "stock": 387
+    },
+    {
+      "id": "72",
+      "name": "Dishes",
+      "category": "24",
+      "details": [
+        {
+          "detail_name": "",
+          "detail_value": ""
+        }
+      ],
+      "stock": 175
+    },
+    {
+      "id": "73",
+      "name": "Pots",
+      "category": "24",
+      "details": [
+        {
+          "detail_name": "",
+          "detail_value": ""
+        }
+      ],
+      "stock": 462
+    },
+    {
+      "id": "74",
+      "name": "Paring knives",
+      "category": "24",
+      "details": [
+        {
+          "detail_name": "",
+          "detail_value": ""
+        }
+      ],
+      "stock": 56
+    },
+    {
+      "id": "75",
+      "name": "Pan",
+      "category": "24",
+      "details": [
+        {
+          "detail_name": "",
+          "detail_value": ""
+        }
+      ],
+      "stock": 312
+    },
+    {
+      "id": "76",
+      "name": "Glass",
+      "category": "24",
+      "details": [
+        {
+          "detail_name": "",
+          "detail_value": ""
+        }
+      ],
+      "stock": 118
+    },
+    {
+      "id": "77",
+      "name": "",
+      "category": "10",
+      "details": [
+        {
+          "detail_name": "",
+          "detail_value": ""
+        },
+        {
+          "detail_name": "",
+          "detail_value": ""
+        },
+        {
+          "detail_name": "",
+          "detail_value": ""
+        }
+      ],
+      "stock": 99
+    },
+    {
+      "id": "78",
+      "name": "",
+      "category": "10",
+      "details": [
+        {
+          "detail_name": "",
+          "detail_value": ""
+        }
+      ],
+      "stock": 354
+    },
+    {
+      "id": "79",
+      "name": "",
+      "category": "10",
+      "details": [
+        {
+          "detail_name": "",
+          "detail_value": ""
+        }
+      ],
+      "stock": 197
+    },
+    {
+      "id": "80",
+      "name": "",
+      "category": "10",
+      "details": [
+        {
+          "detail_name": "",
+          "detail_value": ""
+        }
+      ],
+      "stock": 471
+    },
+    {
+      "id": "81",
+      "name": "",
+      "category": "10",
+      "details": [
+        {
+          "detail_name": "",
+          "detail_value": ""
+        }
+      ],
+      "stock": 244
+    },
+    {
+      "id": "82",
+      "name": "",
+      "category": "10",
+      "details": [
+        {
+          "detail_name": "",
+          "detail_value": ""
+        },
+        {
+          "detail_name": "",
+          "detail_value": ""
+        },
+        {
+          "detail_name": "",
+          "detail_value": ""
+        },
+        {
+          "detail_name": "ghw56",
+          "detail_value": "twhwhrwh"
+        },
+        {
+          "detail_name": "",
+          "detail_value": ""
+        }
+      ],
+      "stock": 23
+    },
+    {
+      "id": "83",
+      "name": "t22",
+      "category": "9",
+      "details": [
+        {
+          "detail_name": "wtwty",
+          "detail_value": "wytwty"
+        }
+      ],
+      "stock": 162
+    },
+    {
+      "id": "84",
+      "name": "water ",
+      "category": "6",
+      "details": [
+        {
+          "detail_name": "",
+          "detail_value": ""
+        }
+      ],
+      "stock": 384
+    },
+    {
+      "id": "85",
+      "name": "Coca Cola",
+      "category": "6",
+      "details": [
+        {
+          "detail_name": "Volume",
+          "detail_value": "500ml"
+        }
+      ],
+      "stock": 142
+    },
+    {
+      "id": "86",
+      "name": "spray",
+      "category": "26",
+      "details": [
+        {
+          "detail_name": "volume",
+          "detail_value": "75ml"
+        }
+      ],
+      "stock": 265
+    },
+    {
+      "id": "87",
+      "name": "Outdoor spiral",
+      "category": "26",
+      "details": [
+        {
+          "detail_name": "duration",
+          "detail_value": "7 hours"
+        }
+      ],
+      "stock": 45
+    },
+    {
+      "id": "88",
+      "name": "Baby bottle",
+      "category": "25",
+      "details": [
+        {
+          "detail_name": "volume",
+          "detail_value": "250ml"
+        }
+      ],
+      "stock": 398
+    },
+    {
+      "id": "89",
+      "name": "Pacifier",
+      "category": "25",
+      "details": [
+        {
+          "detail_name": "material",
+          "detail_value": "silicone"
+        }
+      ],
+      "stock": 193
+    },
+    {
+      "id": "90",
+      "name": "Condensed milk",
+      "category": "5",
+      "details": [
+        {
+          "detail_name": "weight",
+          "detail_value": "400gr"
+        }
+      ],
+      "stock": 248
+    },
+    {
+      "id": "91",
+      "name": "Cereal bar",
+      "category": "5",
+      "details": [
+        {
+          "detail_name": "weight",
+          "detail_value": "23,5gr"
+        }
+      ],
+      "stock": 284
+    },
+    {
+      "id": "92",
+      "name": "Pocket Knife",
+      "category": "23",
+      "details": [
+        {
+          "detail_name": "Number of different tools",
+          "detail_value": "3"
+        },
+        {
+          "detail_name": "Tool",
+          "detail_value": "Knife"
+        },
+        {
+          "detail_name": "Tool",
+          "detail_value": "Screwdriver"
+        },
+        {
+          "detail_name": "Tool",
+          "detail_value": "Spoon"
+        }
+      ],
+      "stock": 387
+    },
+    {
+      "id": "93",
+      "name": "Water Disinfection Tablets",
+      "category": "16",
+      "details": [
+        {
+          "detail_name": "Basic Ingredients",
+          "detail_value": "Iodine"
+        },
+        {
+          "detail_name": "Suggested for",
+          "detail_value": "Everyone expept pregnant women"
+        }
+      ],
+      "stock": 327
+    },
+    {
+      "id": "94",
+      "name": "Radio",
+      "category": "27",
+      "details": [
+        {
+          "detail_name": "Power",
+          "detail_value": "Batteries"
+        },
+        {
+          "detail_name": "Frequencies Range",
+          "detail_value": "3 kHz - 3000 GHz"
+        }
+      ],
+      "stock": 148
+    },
+    {
+      "id": "95",
+      "name": "Kitchen appliances",
+      "category": "14",
+      "details": [
+        {
+          "detail_name": "",
+          "detail_value": "(scrubbers, rubber gloves, kitchen detergent, laundry soap)"
+        }
+      ],
+      "stock": 365
+    },
+    {
+      "id": "96",
+      "name": "Winter hat",
+      "category": "28",
+      "details": [
+        {
+          "detail_name": "",
+          "detail_value": ""
+        }
+      ],
+      "stock": 299
+    },
+    {
+      "id": "97",
+      "name": "Winter gloves",
+      "category": "28",
+      "details": [
+        {
+          "detail_name": "",
+          "detail_value": ""
+        }
+      ],
+      "stock": 411
+    },
+    {
+      "id": "98",
+      "name": "Scarf",
+      "category": "28",
+      "details": [
+        {
+          "detail_name": "",
+          "detail_value": ""
+        }
+      ],
+      "stock": 379
+    },
+    {
+      "id": "99",
+      "name": "Thermos",
+      "category": "28",
+      "details": [
+        {
+          "detail_name": "",
+          "detail_value": ""
+        }
+      ],
+      "stock": 226
+    },
+    {
+      "id": "100",
+      "name": "Tea",
+      "category": "6",
+      "details": [
+        {
+          "detail_name": "volume",
+          "detail_value": "500ml"
+        }
+      ],
+      "stock": 96
+    },
+   
+    
+        {
+          "id": "131",
+          "name": "Electrolytes",
+          "category": "16",
+          "details": [
+            {
+              "detail_name": "packet of pills",
+              "detail_value": "20 pills"
+            }
+          ],
+          "stock": 367
+        },
+        {
+          "id": "132",
+          "name": "Pain Killers",
+          "category": "16",
+          "details": [
+            {
+              "detail_name": "packet of pills",
+              "detail_value": "20 pills"
+            }
+          ],
+          "stock": 452
+        },
+        {
+          "id": "133",
+          "name": "Flashlight",
+          "category": "23",
+          "details": [
+            {
+              "detail_name": "pieces",
+              "detail_value": "1"
+            },
+            {
+              "detail_name": "",
+              "detail_value": ""
+            }
+          ],
+          "stock": 236
+        },
+        {
+          "id": "134",
+          "name": "Juice",
+          "category": "6",
+          "details": [
+            {
+              "detail_name": "volume",
+              "detail_value": "500ml"
+            }
+          ],
+          "stock": 379
+        },
+        {
+          "id": "135",
+          "name": "Toilet Paper",
+          "category": "21",
+          "details": [
+            {
+              "detail_name": "rolls",
+              "detail_value": "1 roll"
+            },
+            {
+              "detail_name": "",
+              "detail_value": ""
+            }
+          ],
+          "stock": 148
+        },
+        {
+          "id": "136",
+          "name": "Sterilized Saline",
+          "category": "16",
+          "details": [
+            {
+              "detail_name": "volume",
+              "detail_value": "100ml"
+            }
+          ],
+          "stock": 258
+        },
+        {
+          "id": "137",
+          "name": "Biscuits",
+          "category": "5",
+          "details": [
+            {
+              "detail_name": "packet",
+              "detail_value": "1 packet"
+            }
+          ],
+          "stock": 423
+        },
+        {
+          "id": "138",
+          "name": "Antihistamines",
+          "category": "16",
+          "details": [
+            {
+              "detail_name": "pills",
+              "detail_value": "10 pills"
+            }
+          ],
+          "stock": 181
+        },
+        {
+          "id": "139",
+          "name": "Instant Pancake Mix",
+          "category": "5",
+          "details": [
+            {
+              "detail_name": "",
+              "detail_value": ""
+            }
+          ],
+          "stock": 292
+        },
+        {
+          "id": "140",
+          "name": "Lacta",
+          "category": "5",
+          "details": [
+            {
+              "detail_name": "weight",
+              "detail_value": "105g"
+            }
+          ],
+          "stock": 407
+        },
+        {
+          "id": "141",
+          "name": "Canned Tuna",
+          "category": "5",
+          "details": [
+            {
+              "detail_name": "",
+              "detail_value": ""
+            }
+          ],
+          "stock": 132
+        },
+        {
+          "id": "142",
+          "name": "Batteries",
+          "category": "23",
+          "details": [
+            {
+              "detail_name": "6 pack",
+              "detail_value": ""
+            }
+          ],
+          "stock": 274
+        },
+        {
+          "id": "143",
+          "name": "Dust Mask",
+          "category": "35",
+          "details": [
+            {
+              "detail_name": "1",
+              "detail_value": ""
+            }
+          ],
+          "stock": 339
+        },
+        {
+          "id": "144",
+          "name": "Can Opener",
+          "category": "23",
+          "details": [
+            {
+              "detail_name": "1",
+              "detail_value": ""
+            }
+          ],
+          "stock": 281
+        },
+        {
+          "id": "145",
+          "name": "",
+          "category": "10",
+          "details": [
+            {
+              "detail_name": "",
+              "detail_value": ""
+            }
+          ],
+          "stock": 213
+        },
+        {
+          "id": "146",
+          "name": "Πατατάκια",
+          "category": "5",
+          "details": [
+            {
+              "detail_name": "weight",
+              "detail_value": "45g"
+            }
+          ],
+          "stock": 356
+        },
+        {
+          "id": "147",
+          "name": "Σερβιέτες",
+          "category": "21",
+          "details": [
+            {
+              "detail_name": "pcs",
+              "detail_value": "18"
+            }
+          ],
+          "stock": 428
+        },
+        {
+          "id": "148",
+          "name": "Dry Cranberries",
+          "category": "5",
+          "details": [
+            {
+              "detail_name": "weight",
+              "detail_value": "100"
+            }
+          ],
+          "stock": 294
+        },
+        {
+          "id": "149",
+          "name": "Dry Apricots",
+          "category": "5",
+          "details": [
+            {
+              "detail_name": "weight",
+              "detail_value": "100"
+            }
+          ],
+          "stock": 167
+        },
+        {
+          "id": "150",
+          "name": "Dry Figs",
+          "category": "5",
+          "details": [
+            {
+              "detail_name": "weight",
+              "detail_value": "100"
+            }
+          ],
+          "stock": 405
+        },
+        {
+          "id": "151",
+          "name": "Παξιμάδια",
+          "category": "5",
+          "details": [
+            {
+              "detail_name": "weight",
+              "detail_value": "200g"
+            }
+          ],
+          "stock": 146
+        },
+        {
+          "id": "152",
+          "name": "",
+          "category": "10",
+          "details": [
+            {
+              "detail_name": "",
+              "detail_value": ""
+            }
+          ],
+          "stock": 178
+        },
+        {
+          "id": "153",
+          "name": "Test Item",
+          "category": "11",
+          "details": [
+            {
+              "detail_name": "volume",
+              "detail_value": "200g"
+            },
+            {
+              "detail_name": "",
+              "detail_value": ""
+            }
+          ],
+          "stock": 191
+        },
+        {
+          "id": "154",
+          "name": "Painkillers",
+          "category": "35",
+          "details": [
+            {
+              "detail_name": "Potency",
+              "detail_value": "High"
+            }
+          ],
+          "stock": 256
+        },
+        {
+          "id": "155",
+          "name": "Tampons",
+          "category": "16",
+          "details": [
+            {
+              "detail_name": "",
+              "detail_value": ""
+            }
+          ],
+          "stock": 315
+        },
+        {
+          "id": "156",
+          "name": "plaster set",
+          "category": "41",
+          "details": [
+            {
+              "detail_name": "1",
+              "detail_value": ""
+            },
+            {
+              "detail_name": "",
+              "detail_value": ""
+            }
+          ],
+          "stock": 263
+        },
+        {
+          "id": "157",
+          "name": "elastic bandages",
+          "category": "41",
+          "details": [
+            {
+              "detail_name": "",
+              "detail_value": "12"
+            }
+          ],
+          "stock": 147
+        },
+        {
+          "id": "158",
+          "name": "traumaplast",
+          "category": "41",
+          "details": [
+            {
+              "detail_name": "",
+              "detail_value": "20"
+            },
+            {
+              "detail_name": "",
+              "detail_value": ""
+            }
+          ],
+          "stock": 394
+        },
+        {
+          "id": "159",
+          "name": "thermal blanket",
+          "category": "41",
+          "details": [
+            {
+              "detail_name": "",
+              "detail_value": "2"
+            }
+          ],
+          "stock": 112
+        },
+        {
+          "id": "160",
+          "name": "burn gel",
+          "category": "41",
+          "details": [
+            {
+              "detail_name": "ml",
+              "detail_value": "500"
+            }
+          ],
+          "stock": 222
+        },
+        {
+          "id": "161",
+          "name": "pet carrier",
+          "category": "41",
+          "details": [
+            {
+              "detail_name": "",
+              "detail_value": "2"
+            }
+          ],
+          "stock": 319
+        },
+        {
+          "id": "162",
+          "name": "pet dishes",
+          "category": "41",
+          "details": [
+            {
+              "detail_name": "",
+              "detail_value": "10"
+            }
+          ],
+          "stock": 463
+        },
+        {
+          "id": "163",
+          "name": "plastic bags",
+          "category": "41",
+          "details": [
+            {
+              "detail_name": "",
+              "detail_value": "20"
+            }
+          ],
+          "stock": 274
+        },
+        {
+          "id": "164",
+          "name": "toys",
+          "category": "41",
+          "details": [
+            {
+              "detail_name": "",
+              "detail_value": "5"
+            }
+          ],
+          "stock": 111
+        },
+        {
+          "id": "165",
+          "name": "burn pads",
+          "category": "41",
+          "details": [
+            {
+              "detail_name": "",
+              "detail_value": "5"
+            }
+          ],
+          "stock": 237
+        },
+        {
+          "id": "166",
+          "name": "cheese",
+          "category": "5",
+          "details": [
+            {
+              "detail_name": "grams",
+              "detail_value": "1000"
+            }
+          ],
+          "stock": 147
+        },
+        {
+          "id": "167",
+          "name": "lettuce",
+          "category": "5",
+          "details": [
+            {
+              "detail_name": "grams",
+              "detail_value": "500"
+            }
+          ],
+          "stock": 294
+        },
+        {
+          "id": "168",
+          "name": "eggs",
+          "category": "5",
+          "details": [
+            {
+              "detail_name": "pair",
+              "detail_value": "10"
+            }
+          ],
+          "stock": 362
+        },
+        {
+          "id": "169",
+          "name": "steaks",
+          "category": "5",
+          "details": [
+            {
+              "detail_name": "grams",
+              "detail_value": "1000"
+            }
+          ],
+          "stock": 488
+        },
+        {
+          "id": "170",
+          "name": "beef burgers",
+          "category": "5",
+          "details": [
+            {
+              "detail_name": "grams",
+              "detail_value": "500"
+            }
+          ],
+          "stock": 325
+        },
+        {
+          "id": "171",
+          "name": "tomatoes",
+          "category": "5",
+          "details": [
+            {
+              "detail_name": "grams",
+              "detail_value": "1000"
+            }
+          ],
+          "stock": 291
+        },
+        {
+          "id": "172",
+          "name": "onions",
+          "category": "5",
+          "details": [
+            {
+              "detail_name": "grams",
+              "detail_value": "500"
+            }
+          ],
+          "stock": 185
+        },
+        {
+          "id": "173",
+          "name": "flour",
+          "category": "5",
+          "details": [
+            {
+              "detail_name": "grams",
+              "detail_value": "1000"
+            }
+          ],
+          "stock": 168
+        },
+        {
+          "id": "174",
+          "name": "pastel",
+          "category": "5",
+          "details": [
+            {
+              "detail_name": "",
+              "detail_value": "7"
+            }
+          ],
+          "stock": 463
+        },
+        {
+          "id": "175",
+          "name": "nuts",
+          "category": "5",
+          "details": [
+            {
+              "detail_name": "grams",
+              "detail_value": "500"
+            }
+          ],
+          "stock": 292
+        },
+        {
+          "id": "176",
+          "name": "dramamines",
+          "category": "42",
+          "details": [
+            {
+              "detail_name": "",
+              "detail_value": "5"
+            }
+          ],
+          "stock": 162
+        },
+        {
+          "id": "177",
+          "name": "nurofen",
+          "category": "42",
+          "details": [
+            {
+              "detail_name": "",
+              "detail_value": "10"
+            }
+          ],
+          "stock": 349
+        },
+        {
+          "id": "178",
+          "name": "imodium",
+          "category": "42",
+          "details": [
+            {
+              "detail_name": "",
+              "detail_value": "5"
+            }
+          ],
+          "stock": 238
+        },
+        {
+          "id": "179",
+          "name": "emetostop",
+          "category": "42",
+          "details": [
+            {
+              "detail_name": "",
+              "detail_value": "5"
+            }
+          ],
+          "stock": 187
+        },
+        {
+          "id": "180",
+          "name": "xanax",
+          "category": "42",
+          "details": [
+            {
+              "detail_name": "",
+              "detail_value": "5"
+            }
+          ],
+          "stock": 234
+        },
+        {
+          "id": "181",
+          "name": "saflutan",
+          "category": "42",
+          "details": [
+            {
+              "detail_name": "",
+              "detail_value": "2"
+            }
+          ],
+          "stock": 472
+        },
+        {
+          "id": "182",
+          "name": "sadolin",
+          "category": "42",
+          "details": [
+            {
+              "detail_name": "",
+              "detail_value": "3"
+            }
+          ],
+          "stock": 185
+        },
+        {
+          "id": "183",
+          "name": "depon",
+          "category": "42",
+          "details": [
+            {
+              "detail_name": "",
+              "detail_value": "20"
+            }
+          ],
+          "stock": 272
+        },
+        {
+          "id": "184",
+          "name": "panadol",
+          "category": "42",
+          "details": [
+            {
+              "detail_name": "",
+              "detail_value": "6"
+            }
+          ],
+          "stock": 339
+        },
+        {
+          "id": "185",
+          "name": "ponstan",
+          "category": "42",
+          "details": [
+            {
+              "detail_name": "",
+              "detail_value": "10"
+            }
+          ],
+          "stock": 485
+        },
+        {
+          "id": "186",
+          "name": "algofren",
+          "category": "42",
+          "details": [
+            {
+              "detail_name": "10",
+              "detail_value": "600ml"
+            },
+            {
+              "detail_name": "",
+              "detail_value": ""
+            }
+          ],
+          "stock": 162
+        },
+        {
+          "id": "187",
+          "name": "effervescent depon",
+          "category": "42",
+          "details": [
+            {
+              "detail_name": "67",
+              "detail_value": "1000mg"
+            }
+          ],
+          "stock": 241
+        },
+        {
+          "id": "188",
+          "name": "cold coffee",
+          "category": "6",
+          "details": [
+            {
+              "detail_name": "10",
+              "detail_value": "330ml"
+            }
+          ],
+          "stock": 453
+        },
+        {
+          "id": "189",
+          "name": "Hell",
+          "category": "43",
+          "details": [
+            {
+              "detail_name": "22",
+              "detail_value": "330"
+            }
+          ],
+          "stock": 315
+        },
+            {
+              "id": "190",
+              "name": "Monster",
+              "category": "43",
+              "details": [
+                {
+                  "detail_name": "31",
+                  "detail_value": "500ml"
+                }
+              ],
+              "stock": 312
+            },
+            {
+              "id": "191",
+              "name": "Redbull",
+              "category": "43",
+              "details": [
+                {
+                  "detail_name": "40",
+                  "detail_value": "330ml"
+                }
+              ],
+              "stock": 198
+            },
+            {
+              "id": "192",
+              "name": "Powerade",
+              "category": "43",
+              "details": [
+                {
+                  "detail_name": "23",
+                  "detail_value": "500ml"
+                }
+              ],
+              "stock": 276
+            },
+            {
+              "id": "193",
+              "name": "PRIME",
+              "category": "43",
+              "details": [
+                {
+                  "detail_name": "15",
+                  "detail_value": "500ml"
+                }
+              ],
+              "stock": 357
+            },
+            {
+              "id": "194",
+              "name": "Lighter",
+              "category": "23",
+              "details": [
+                {
+                  "detail_name": "16",
+                  "detail_value": "Mini"
+                }
+              ],
+              "stock": 144
+            },
+            {
+              "id": "195",
+              "name": "isothermally shirts",
+              "category": "28",
+              "details": [
+                {
+                  "detail_name": "5",
+                  "detail_value": "Medium"
+                },
+                {
+                  "detail_name": "6",
+                  "detail_value": "Large"
+                },
+                {
+                  "detail_name": "10",
+                  "detail_value": "Small"
+                },
+                {
+                  "detail_name": "2",
+                  "detail_value": "XL"
+                }
+              ],
+              "stock": 469
+            },
+            {
+              "id": "196",
+              "name": "",
+              "category": "10",
+              "details": [
+                {
+                  "detail_name": "",
+                  "detail_value": ""
+                }
+              ],
+              "stock": 128
+            },
+            {
+              "id": "197",
+              "name": "Depon",
+              "category": "42",
+              "details": [
+                {
+                  "detail_name": "10",
+                  "detail_value": "500mg"
+                },
+                {
+                  "detail_name": "",
+                  "detail_value": ""
+                }
+              ],
+              "stock": 311
+            },
+            {
+              "id": "198",
+              "name": "Shorts",
+              "category": "34",
+              "details": [
+                {
+                  "detail_name": "20",
+                  "detail_value": ""
+                },
+                {
+                  "detail_name": "",
+                  "detail_value": ""
+                }
+              ],
+              "stock": 192
+            },
+            {
+              "id": "199",
+              "name": "Chicken",
+              "category": "5",
+              "details": [
+                {
+                  "detail_name": "5",
+                  "detail_value": "1.5kg"
+                }
+              ],
+              "stock": 157
+            },
+            {
+              "id": "200",
+              "name": "Toilet Paper",
+              "category": "21",
+              "details": [
+                {
+                  "detail_name": "20",
+                  "detail_value": "200g"
+                },
+                {
+                  "detail_name": "",
+                  "detail_value": ""
+                }
+              ],
+              "stock": 482
+            },
+            {
+              "id": "201",
+              "name": "toys",
+              "category": "41",
+              "details": [
+                {
+                  "detail_name": "30",
+                  "detail_value": ""
+                }
+              ],
+              "stock": 347
+            },
+            {
+              "id": "202",
+              "name": "sanitary napkins",
+              "category": "21",
+              "details": [
+                {
+                  "detail_name": "30",
+                  "detail_value": "500g"
+                }
+              ],
+              "stock": 268
+            },
+            {
+              "id": "203",
+              "name": "COVID-19 Tests",
+              "category": "16",
+              "details": [
+                {
+                  "detail_name": "20",
+                  "detail_value": ""
+                }
+              ],
+              "stock": 132
+            },
+            {
+              "id": "204",
+              "name": "Club Soda",
+              "category": "6",
+              "details": [
+                {
+                  "detail_name": "volume",
+                  "detail_value": "500ml"
+                }
+              ],
+              "stock": 426
+            },
+            {
+              "id": "205",
+              "name": "Wheelchairs",
+              "category": "44",
+              "details": [
+                {
+                  "detail_name": "quantity",
+                  "detail_value": "100"
+                }
+              ],
+              "stock": 233
+            },
+            {
+              "id": "206",
+              "name": "mobile phones",
+              "category": "45",
+              "details": [
+                {
+                  "detail_name": "iphone",
+                  "detail_value": "200"
+                }
+              ],
+              "stock": 181
+            },
+            {
+              "id": "207",
+              "name": "spoon",
+              "category": "24",
+              "details": [
+                {
+                  "detail_name": "",
+                  "detail_value": ""
+                }
+              ],
+              "stock": 295
+            },
+            {
+              "id": "208",
+              "name": "fork",
+              "category": "24",
+              "details": [
+                {
+                  "detail_name": "",
+                  "detail_value": ""
+                }
+              ],
+              "stock": 215
+            },
+            {
+              "id": "209",
+              "name": "MOTOTRBO R7",
+              "category": "45",
+              "details": [
+                {
+                  "detail_name": "band",
+                  "detail_value": "UHF/VHF"
+                },
+                {
+                  "detail_name": "Wi-Fi",
+                  "detail_value": "2,4/5,0 GHz"
+                },
+                {
+                  "detail_name": "Bluetooth",
+                  "detail_value": "5.2"
+                },
+                {
+                  "detail_name": "Οθόνη",
+                  "detail_value": "2,4” 320 x 240 px. QVGA"
+                },
+                {
+                  "detail_name": "διάρκεια ζωής της μπαταρίας",
+                  "detail_value": "28 ώρες"
+                }
+              ],
+              "stock": 359
+            },
+            {
+              "id": "210",
+              "name": "RM LA 250 (VHF Linear Ενισχυτής 140-150MHz)",
+              "category": "45",
+              "details": [
+                {
+                  "detail_name": "Frequency",
+                  "detail_value": "140-150Mhz"
+                },
+                {
+                  "detail_name": "Power Supply",
+                  "detail_value": "13VDC /- 1V 40A"
+                },
+                {
+                  "detail_name": "Output RF Power (Nominal)",
+                  "detail_value": "30 – 210W ; 230W max AM/FM/CW"
+                },
+                {
+                  "detail_name": "Modulation Types",
+                  "detail_value": "SSB,CW,AM, FM, data etc (All narrowband modes)"
+                }
+              ],
+              "stock": 408
+            },
+            {
+              "id": "211",
+              "name": "Humanitarian General Purpose Tent System (HGPTS)",
+              "category": "47",
+              "details": [
+                {
+                  "detail_name": "PART NUMBER",
+                  "detail_value": "C14Y016X016-T"
+                },
+                {
+                  "detail_name": "CONTRACTOR NAME:",
+                  "detail_value": "CELINA Tent, Inc"
+                },
+                {
+                  "detail_name": "COLOR",
+                  "detail_value": "Tan"
+                },
+                {
+                  "detail_name": "SET-UP TIME/NUMBER OF PERSONS",
+                  "detail_value": "4 People/30 Minutes"
+                }
+              ],
+              "stock": 442
+            },
+            {
+              "id": "212",
+              "name": "CELINA Dynamic Small Shelter ",
+              "category": "47",
+              "details": [
+                {
+                  "detail_name": "dimensions",
+                  "detail_value": "20’x32.5’"
+                },
+                {
+                  "detail_name": "TYPE",
+                  "detail_value": "Frame Structure, Expandable, Air-Transportable"
+                },
+                {
+                  "detail_name": "WEIGHT",
+                  "detail_value": "1,200 lbs"
+                }
+              ],
+              "stock": 289
+            },
+            {
+              "id": "213",
+              "name": "Multi-purpose Area Shelter System, Type-I",
+              "category": "47",
+              "details": [
+                {
+                  "detail_name": "TYPE",
+                  "detail_value": "Frame Structure, Expandable, Air-Transportable"
+                },
+                {
+                  "detail_name": "DIMENSIONS",
+                  "detail_value": "E I-40’x80’"
+                },
+                {
+                  "detail_name": "WEIGHT",
+                  "detail_value": "24,000 lbs"
+                }
+              ],
+              "stock": 471
+            },
+            {
+              "id": "214",
+              "name": "Trousers",
+              "category": "7",
+              "details": [
+                {
+                  "detail_name": "",
+                  "detail_value": ""
+                }
+              ],
+              "stock": 369
+            },
+            {
+              "id": "215",
+              "name": "Shoes",
+              "category": "7",
+              "details": [
+                {
+                  "detail_name": "",
+                  "detail_value": ""
+                }
+              ],
+              "stock": 222
+            },
+            {
+              "id": "216",
+              "name": "Hoodie",
+              "category": "7",
+              "details": [
+                {
+                  "detail_name": "",
+                  "detail_value": ""
+                }
+              ],
+              "stock": 410
+            },
+            {
+              "id": "217",
+              "name": "",
+              "category": "10",
+              "details": [
+                {
+                  "detail_name": "",
+                  "detail_value": ""
+                }
+              ],
+              "stock": 263
+            },
+            {
+              "id": "218",
+              "name": "dog food",
+              "category": "49",
+              "details": [
+                {
+                  "detail_name": "weight",
+                  "detail_value": "1k"
+                }
+              ],
+              "stock": 300
+            },
+            {
+              "id": "219",
+              "name": "cat food",
+              "category": "49",
+              "details": [
+                {
+                  "detail_name": "weight",
+                  "detail_value": "1k"
+                }
+              ],
+              "stock": 217
+            },
+            {
+              "id": "220",
+              "name": "macaroni",
+              "category": "5",
+              "details": [
+                {
+                  "detail_name": "",
+                  "detail_value": ""
+                }
+              ],
+              "stock": 115
+            },
+            {
+              "id": "221",
+              "name": "rice",
+              "category": "5",
+              "details": [
+                {
+                  "detail_name": "",
+                  "detail_value": ""
+                }
+              ],
+              "stock": 494
+            },
+            {
+              "id": "222",
+              "name": "scarf",
+              "category": "7",
+              "details": [
+                {
+                  "detail_name": "",
+                  "detail_value": ""
+                }
+              ],
+              "stock": 162
+            },
+            {
+              "id": "223",
+              "name": "gloves",
+              "category": "7",
+              "details": [
+                {
+                  "detail_name": "",
+                  "detail_value": ""
+                }
+              ],
+              "stock": 425
+            },
+            {
+              "id": "224",
+              "name": "underwear",
+              "category": "7",
+              "details": [
+                {
+                  "detail_name": "",
+                  "detail_value": ""
+                }
+              ],
+              "stock": 334
+            },
+            {
+              "id": "225",
+              "name": "Silver blanket",
+              "category": "50",
+              "details": [
+                {
+                  "detail_name": "",
+                  "detail_value": ""
+                }
+              ],
+              "stock": 223
+            },
+            {
+              "id": "226",
+              "name": "Helmet",
+              "category": "50",
+              "details": [
+                {
+                  "detail_name": "",
+                  "detail_value": ""
+                }
+              ],
+              "stock": 170
+            },
+            {
+              "id": "227",
+              "name": "Disposable toilet",
+              "category": "50",
+              "details": [
+                {
+                  "detail_name": "",
+                  "detail_value": ""
+                }
+              ],
+              "stock": 337
+            },
+            {
+              "id": "228",
+              "name": "Self-generated flashlight",
+              "category": "50",
+              "details": [
+                {
+                  "detail_name": "",
+                  "detail_value": ""
+                }
+              ],
+              "stock": 208
+            },
+            {
+              "id": "229",
+              "name": "Mattresses ",
+              "category": "51",
+              "details": [
+                {
+                  "detail_name": "size",
+                  "detail_value": "1.90X60"
+                }
+              ],
+              "stock": 309
+            },
+            {
+              "id": "230",
+              "name": "flashlight",
+              "category": "51",
+              "details": [
+                {
+                  "detail_name": "light",
+                  "detail_value": "blue"
+                }
+              ],
+              "stock": 274
+            },
+            {
+              "id": "231",
+              "name": "matches",
+              "category": "51",
+              "details": [
+                {
+                  "detail_name": "pack",
+                  "detail_value": "60"
+                }
+              ],
+              "stock": 145
+            },
+            {
+              "id": "232",
+              "name": "Heater",
+              "category": "51",
+              "details": [
+                {
+                  "detail_name": "Volts",
+                  "detail_value": "208"
+                }
+              ],
+              "stock": 329
+            },
+            {
+              "id": "233",
+              "name": "Earplugs",
+              "category": "51",
+              "details": [
+                {
+                  "detail_name": "material",
+                  "detail_value": "plastic"
+                }
+              ],
+              "stock": 441
+            },
+            {
+              "id": "234",
+              "name": "Compass",
+              "category": "52",
+              "details": [
+                {
+                  "detail_name": "Type",
+                  "detail_value": "Digital"
+                }
+              ],
+              "stock": 122
+            },
+            {
+              "id": "235",
+              "name": "Map",
+              "category": "52",
+              "details": [
+                {
+                  "detail_name": "Material",
+                  "detail_value": "Paper"
+                }
+              ],
+              "stock": 390
+            },
+            {
+              "id": "236",
+              "name": "GPS",
+              "category": "52",
+              "details": [
+                {
+                  "detail_name": "Type",
+                  "detail_value": "Waterproof"
+                }
+              ],
+              "stock": 203
+            },
+            {
+              "id": "237",
+              "name": "First Aid",
+              "category": "16",
+              "details": [
+                {
+                  "detail_name": "1",
+                  "detail_value": "1"
+                },
+                {
+                  "detail_name": "",
+                  "detail_value": ""
+                }
+              ],
+              "stock": 194
+            },
+            {
+              "id": "238",
+              "name": "Bandage",
+              "category": "16",
+              "details": [
+                {
+                  "detail_name": "",
+                  "detail_value": "5"
+                }
+              ],
+              "stock": 438
+            },
+            {
+              "id": "239",
+              "name": "Mask",
+              "category": "16",
+              "details": [
+                {
+                  "detail_name": "",
+                  "detail_value": "10"
+                }
+              ],
+              "stock": 167
+            },
+            {
+              "id": "240",
+              "name": "Medicines",
+              "category": "16",
+              "details": [
+                {
+                  "detail_name": "",
+                  "detail_value": ""
+                }
+              ],
+              "stock": 312
+            },
+            
+  {
+    "id": "241",
+    "name": "Water",
+    "category": "5",
+    "details": [
+      {
+        "detail_name": "6",
+        "detail_value": "1500ml"
+      }
+    ],
+    "stock": 376
+  },
+  {
+    "id": "242",
+    "name": "Canned Goods",
+    "category": "5",
+    "details": [
+      {
+        "detail_name": "2",
+        "detail_value": "80g"
+      }
+    ],
+    "stock": 214
+  },
+  {
+    "id": "243",
+    "name": "Snacks",
+    "category": "5",
+    "details": [
+      {
+        "detail_name": "3",
+        "detail_value": "100g"
+      }
+    ],
+    "stock": 437
+  },
+  {
+    "id": "244",
+    "name": "Cereals",
+    "category": "5",
+    "details": [
+      {
+        "detail_name": "1",
+        "detail_value": "800g"
+      }
+    ],
+    "stock": 297
+  },
+  {
+    "id": "245",
+    "name": "Blankets",
+    "category": "53",
+    "details": [
+      {
+        "detail_name": "1",
+        "detail_value": ""
+      }
+    ],
+    "stock": 128
+  },
+  {
+    "id": "246",
+    "name": "Shirt",
+    "category": "53",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 345
+  },
+  {
+    "id": "247",
+    "name": "Pants",
+    "category": "53",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 190
+  },
+  {
+    "id": "248",
+    "name": "Shoes",
+    "category": "53",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 428
+  },
+  {
+    "id": "249",
+    "name": "Socks",
+    "category": "53",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 372
+  },
+  {
+    "id": "250",
+    "name": "Caps",
+    "category": "53",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 109
+  },
+  {
+    "id": "251",
+    "name": "Gloves",
+    "category": "53",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 253
+  },
+  {
+    "id": "252",
+    "name": "Flashlight",
+    "category": "54",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 452
+  },
+  {
+    "id": "253",
+    "name": "Batteries",
+    "category": "54",
+    "details": [
+      {
+        "detail_name": "AAA",
+        "detail_value": "5"
+      }
+    ],
+    "stock": 137
+  },
+  {
+    "id": "254",
+    "name": "Repair Tools",
+    "category": "54",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 294
+  },
+  {
+    "id": "255",
+    "name": "Soap and Shampoo",
+    "category": "21",
+    "details": [
+      {
+        "detail_name": "1",
+        "detail_value": "200ml"
+      }
+    ],
+    "stock": 231
+  },
+  {
+    "id": "256",
+    "name": "Toothpastes and Toothbrushes",
+    "category": "21",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 106
+  },
+  {
+    "id": "257",
+    "name": "Towels",
+    "category": "21",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 452
+  },
+  {
+    "id": "258",
+    "name": "Diapers",
+    "category": "56",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 309
+  },
+  {
+    "id": "259",
+    "name": "Animal food",
+    "category": "56",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 492
+  },
+  {
+    "id": "260",
+    "name": "Pots",
+    "category": "57",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 295
+  },
+  {
+    "id": "261",
+    "name": "Plates",
+    "category": "57",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 186
+  },
+  {
+    "id": "262",
+    "name": "Cups",
+    "category": "57",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 154
+  },
+  {
+    "id": "263",
+    "name": "Cutlery",
+    "category": "57",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 421
+  },
+  {
+    "id": "264",
+    "name": "Cleaning Supplies",
+    "category": "57",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 108
+  },
+  {
+    "id": "265",
+    "name": "Kitchen Appliances",
+    "category": "57",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 362
+  },
+  {
+    "id": "266",
+    "name": "Home Repair Tools",
+    "category": "57",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 145
+  },
+  {
+    "id": "267",
+    "name": "",
+    "category": "10",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 389
+  },
+  {
+    "id": "268",
+    "name": "Lord of the Rings",
+    "category": "59",
+    "details": [
+      {
+        "detail_name": "pages",
+        "detail_value": "230"
+      }
+    ],
+    "stock": 238
+  },
+  {
+    "id": "269",
+    "name": "Dog Food",
+    "category": "29",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": "1kg"
+      }
+    ],
+    "stock": 469
+  },
+  {
+    "id": "270",
+    "name": "DEPON",
+    "category": "16",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 154
+  },
+  {
+    "id": "271",
+    "name": "Painkillers",
+    "category": "16",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 290
+  },
+  {
+    "id": "272",
+    "name": "Gasoline",
+    "category": "60",
+    "details": [
+      {
+        "detail_name": "galons",
+        "detail_value": "20"
+      }
+    ],
+    "stock": 486
+  },
+  {
+    "id": "273",
+    "name": "Power Banks",
+    "category": "60",
+    "details": [
+      {
+        "detail_name": "quantity",
+        "detail_value": "5"
+      }
+    ],
+    "stock": 269
+  },
+  {
+    "id": "274",
+    "name": "",
+    "category": "9",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 457
+  },
+  {
+    "id": "275",
+    "name": "test item",
+    "category": "29",
+    "details": [
+      {
+        "detail_name": "test item ",
+        "detail_value": "1kg"
+      }
+    ],
+    "stock": 161
+  },
+  {
+    "id": "276",
+    "name": "test item2",
+    "category": "61",
+    "details": [
+      {
+        "detail_name": "volume",
+        "detail_value": "500ml"
+      },
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 278
+  },
+  {
+    "id": "277",
+    "name": "T4 Levothyroxine",
+    "category": "42",
+    "details": [
+      {
+        "detail_name": "pills",
+        "detail_value": "60 pills"
+      }
+    ],
+    "stock": 215
+  },
+  {
+    "id": "278",
+    "name": "",
+    "category": "10",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      },
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 145
+  },
+  {
+    "id": "279",
+    "name": "Solar Charger",
+    "category": "67",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      },
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 309
+  },
+  {
+    "id": "280",
+    "name": "Solar-Powered Radio",
+    "category": "67",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 143
+  },
+  {
+    "id": "281",
+    "name": "Solar Torch",
+    "category": "67",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 242
+  },
+  {
+    "id": "282",
+    "name": "Stress Ball",
+    "category": "68",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 456
+  },
+  {
+    "id": "283",
+    "name": "Guided Meditation Audio",
+    "category": "68",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 238
+  },
+  {
+    "id": "284",
+    "name": "",
+    "category": "10",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 390
+  },
+  {
+    "id": "285",
+    "name": "",
+    "category": "10",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 208
+  },
+  {
+    "id": "286",
+    "name": "Frezyderm Baby Bath",
+    "category": "69",
+    "details": [
+      {
+        "detail_name": "volume",
+        "detail_value": "700ml"
+      }
+    ],
+    "stock": 265
+  },
+  {
+    "id": "287",
+    "name": "Love me again",
+    "category": "59",
+    "details": [
+      {
+        "detail_name": "pages",
+        "detail_value": "654"
+      }
+    ],
+    "stock": 336
+  },
+  {
+    "id": "288",
+    "name": "Apotel",
+    "category": "16",
+    "details": [
+      {
+        "detail_name": "mg",
+        "detail_value": "100"
+      }
+    ],
+    "stock": 251
+  },
+  {
+    "id": "289",
+    "name": "Xanax",
+    "category": "16",
+    "details": [
+      {
+        "detail_name": "mg",
+        "detail_value": "5mg"
+      }
+    ],
+    "stock": 149
+  },
+  {
+    "id": "290",
+    "name": "Medrol",
+    "category": "16",
+    "details": [
+      {
+        "detail_name": "mg",
+        "detail_value": "16"
+      }
+    ],
+    "stock": 463
+  },
+  {
+    "id": "291",
+    "name": "Nike shoes",
+    "category": "19",
+    "details": [
+      {
+        "detail_name": "size",
+        "detail_value": "42"
+      }
+    ],
+    "stock": 239
+  },
+  {
+    "id": "292",
+    "name": "Petrol",
+    "category": "70",
+    "details": [
+      {
+        "detail_name": "Volume",
+        "detail_value": "2L"
+      }
+    ],
+    "stock": 378
+  },
+  {
+    "id": "293",
+    "name": "Tires",
+    "category": "70",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 141
+  },
+  {
+    "id": "294",
+    "name": "Car Oil",
+    "category": "70",
+    "details": [
+      {
+        "detail_name": "Volume",
+        "detail_value": "1L"
+      }
+    ],
+    "stock": 292
+  },
+  {
+    "id": "295",
+    "name": "Brake Fluid",
+    "category": "70",
+    "details": [
+      {
+        "detail_name": "Volume",
+        "detail_value": "1L"
+      }
+    ],
+    "stock": 162
+  },
+  {
+    "id": "296",
+    "name": "Car Battery",
+    "category": "70",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 283
+  },
+  {
+    "id": "297",
+    "name": "Windshield Wipers",
+    "category": "70",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 349
+  },
+  {
+    "id": "298",
+    "name": "testSept2024",
+    "category": "11",
+    "details": [
+      {
+        "detail_name": "volume",
+        "detail_value": "500ml"
+      }
+    ],
+    "stock": 194
+  },
+  {
+    "id": "299",
+    "name": "Chicken and Rice Meal",
+    "category": "72",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 157
+  },
+  {
+    "id": "300",
+    "name": "Beef Stew",
+    "category": "72",
+    "details": [
+      {
+        "detail_name": "Shelf Life",
+        "detail_value": "3 Years"
+      }
+    ],
+    "stock": 275
+  },
+  {
+    "id": "301",
+    "name": "Alfredo Pasta",
+    "category": "72",
+    "details": [
+      {
+        "detail_name": "Spaghetti Bolognese",
+        "detail_value": "1 year"
+      }
+    ],
+    "stock": 320
+  },
+  {
+    "id": "302",
+    "name": "Thermal Gloves",
+    "category": "71",
+    "details": [
+      {
+        "detail_name": "Material",
+        "detail_value": "Insulated Fiber"
+      },
+      {
+        "detail_name": "Size",
+        "detail_value": "S to L"
+      }
+    ],
+    "stock": 119
+  },
+  {
+    "id": "303",
+    "name": "Fleece-Lined Jacket",
+    "category": "71",
+    "details": [
+      {
+        "detail_name": "Material",
+        "detail_value": "Fleece and Nylon"
+      },
+      {
+        "detail_name": "Size Range",
+        "detail_value": "M to XXL"
+      }
+    ],
+    "stock": 232
+  },
+  {
+    "id": "304",
+    "name": "Thermal Leggings",
+    "category": "71",
+    "details": [
+      {
+        "detail_name": "Material",
+        "detail_value": "Polyester Blend"
+      },
+      {
+        "detail_name": "Size Range",
+        "detail_value": "S to XXL"
+      }
+    ],
+    "stock": 383
+  },
+  {
+    "id": "305",
+    "name": "The Great Gatsby",
+    "category": "59",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 211
+  },
+  {
+    "id": "306",
+    "name": "Cold Weather Thermal Jacket",
+    "category": "71",
+    "details": [
+      {
+        "detail_name": "Material",
+        "detail_value": "Insulated Down"
+      },
+      {
+        "detail_name": "Size Range",
+        "detail_value": "L to XXL"
+      }
+    ],
+    "stock": 161
+  },
+  {
+    "id": "307",
+    "name": "Transformers",
+    "category": "73",
+    "details": [
+      {
+        "detail_name": "Weight",
+        "detail_value": "1kg"
+      },
+      {
+        "detail_name": "Size",
+        "detail_value": "8x4x14(cm)"
+      }
+    ],
+    "stock": 232
+  },
+  {
+    "id": "308",
+    "name": "Gormiti set",
+    "category": "73",
+    "details": [
+      {
+        "detail_name": "Pack",
+        "detail_value": "8"
+      },
+      {
+        "detail_name": "Figure weight",
+        "detail_value": "100gr(each)"
+      },
+      {
+        "detail_name": "Figure size",
+        "detail_value": "5x3x6(each)"
+      }
+    ],
+    "stock": 371
+  },
+  {
+    "id": "309",
+    "name": "Emergency Blankets",
+    "category": "74",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 306
+  },
+  {
+    "id": "310",
+    "name": "Tent Repair Kits",
+    "category": "74",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 424
+  },
+  {
+    "id": "311",
+    "name": "Portable Lighting",
+    "category": "74",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 209
+  },
+  {
+    "id": "312",
+    "name": "Shelter Tarps",
+    "category": "74",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 378
+  },
+  {
+    "id": "313",
+    "name": "Protective Masks",
+    "category": "75",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 263
+  },
+  {
+    "id": "314",
+    "name": "Reflective Vests",
+    "category": "75",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 393
+  },
+  {
+    "id": "315",
+    "name": "Emergency Whistles",
+    "category": "75",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 175
+  },
+  {
+    "id": "316",
+    "name": "Emergency Flares",
+    "category": "75",
+    "details": [
+      {
+        "detail_name": "",
+        "detail_value": ""
+      }
+    ],
+    "stock": 115
+  }
+]
+,
+    "categories": [
+      {
+        "id": "10",
+        "category_name": ""
+      },
+      {
+        "id": "13",
+        "category_name": "-----"
+      },
+      {
+        "id": "9",
+        "category_name": "2d hacker"
+      },
+      {
+        "id": "49",
+        "category_name": "Animal Care"
+      },
+      {
+        "id": "66",
+        "category_name": "Animal Flood"
+      },
+      {
+        "id": "29",
+        "category_name": "Animal Food"
+      },
+      {
+        "id": "25",
+        "category_name": "Baby Essentials"
+      },
+      {
+        "id": "6",
+        "category_name": "Beverages"
+      },
+      {
+        "id": "59",
+        "category_name": "Books"
+      },
+      {
+        "id": "70",
+        "category_name": "Car Supplies"
+      },
+      {
+        "id": "22",
+        "category_name": "Cleaning Supplies"
+      },
+      {
+        "id": "33",
+        "category_name": "Cleaning Supplies."
+      },
+      {
+        "id": "7",
+        "category_name": "Clothing"
+      },
+      {
+        "id": "53",
+        "category_name": "Clothing and cover"
+      },
+      {
+        "id": "28",
+        "category_name": "Cold weather"
+      },
+      {
+        "id": "45",
+        "category_name": "Communication items"
+      },
+      {
+        "id": "46",
+        "category_name": "communications"
+      },
+      {
+        "id": "44",
+        "category_name": "Disability and Assistance Items"
+      },
+      {
+        "id": "50",
+        "category_name": "Earthquake Safety"
+      },
+      {
+        "id": "27",
+        "category_name": "Electronic Devices"
+      },
+      {
+        "id": "43",
+        "category_name": "Energy Drinks"
+      },
+      {
+        "id": "30",
+        "category_name": "Financial support"
+      },
+      {
+        "id": "35",
+        "category_name": "First Aid "
+      },
+      {
+        "id": "14",
+        "category_name": "Flood"
+      },
+      {
+        "id": "5",
+        "category_name": "Food"
+      },
+      {
+        "id": "60",
+        "category_name": "Fuel and Energy"
+      },
+      {
+        "id": "8",
+        "category_name": "Hacker of class"
+      },
+      {
+        "id": "34",
+        "category_name": "Hot Weather"
+      },
+      {
+        "id": "57",
+        "category_name": "Household Items"
+      },
+      {
+        "id": "47",
+        "category_name": "Humanitarian Shelters"
+      },
+      {
+        "id": "26",
+        "category_name": "Insect Repellents"
+      },
+      {
+        "id": "24",
+        "category_name": "Kitchen Supplies"
+      },
+      {
+        "id": "16",
+        "category_name": "Medical Supplies"
+      },
+      {
+        "id": "68",
+        "category_name": "Mental Health Support"
+      },
+      {
+        "id": "52",
+        "category_name": "Navigation Tools"
+      },
+      {
+        "id": "15",
+        "category_name": "new cat"
+      },
+      {
+        "id": "65",
+        "category_name": "ood"
+      },
+      {
+        "id": "21",
+        "category_name": "Personal Hygiene "
+      },
+      {
+        "id": "75",
+        "category_name": "Personal Safety"
+      },
+      {
+        "id": "41",
+        "category_name": "pet supplies"
+      },
+      {
+        "id": "72",
+        "category_name": "Ready-To-Eat Meals"
+      },
+      {
+        "id": "69",
+        "category_name": "Sanitary Products"
+      },
+      {
+        "id": "74",
+        "category_name": "Shelter Materials"
+      },
+      {
+        "id": "19",
+        "category_name": "Shoes"
+      },
+      {
+        "id": "51",
+        "category_name": "Sleep Essentilals"
+      },
+      {
+        "id": "67",
+        "category_name": "Solar-Powered Devices"
+      },
+      {
+        "id": "56",
+        "category_name": "Special items"
+      },
+      {
+        "id": "11",
+        "category_name": "Test"
+      },
+      {
+        "id": "61",
+        "category_name": "test category"
+      },
+      {
+        "id": "40",
+        "category_name": "test1"
+      },
+      {
+        "id": "39",
+        "category_name": "Test_0"
+      },
+      {
+        "id": "71",
+        "category_name": "Thermal Clothing"
+      },
+      {
+        "id": "23",
+        "category_name": "Tools"
+      },
+      {
+        "id": "54",
+        "category_name": "Tools and Equipment"
+      },
+      {
+        "id": "73",
+        "category_name": "Toys"
+      },
+      {
+        "id": "48",
+        "category_name": "Water Purification"
+      },
+      {
+        "id": "42",
+        "category_name": "Μedicines"
+      }
+    ]
+  }
