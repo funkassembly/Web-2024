@@ -6,28 +6,160 @@
     <title>Document</title>
     <link rel="stylesheet" href="/styles/adminDashboard.css">
     <link rel="icon" href="/maptry/icons/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
 </head>
 <body>
     
 <h1>Admin Dashboard</h1>
-<!-- Form to create a new rescuer -->
-<h2>Create Rescuer</h2>
-<form action="/createRescuer" method="POST">
-    <input type="text" name="username" placeholder="Rescuer Username" required>
-    <input type="email" name="email" placeholder="Rescuer Email" required>
-    <input type="password" name="password" placeholder="Rescuer Password" required>
-    <button type="submit">Create Rescuer</button>
-</form>
 
-<!-- Form to create a new civilian -->
-<h2>Create Civilian</h2>
-<form action="/createCivilian" method="POST">
-    <input type="text" name="username" placeholder="Civilian Username" required>
-    <input type="email" name="email" placeholder="Civilian Email" required>
-    <input type="password" name="password" placeholder="Civilian Password" required>
-    <button type="submit">Create Civilian</button>
-</form>
 <a href="/logout">Logout</a>
+
+<div class="dashboard-container">
+    <div class="map-container">
+        <div id="map"></div> <!-- No need for inline style anymore -->
+    </div>
+    <!-- Add other sections of the dashboard here -->
+</div>
+
+<script>
+    
+    document.addEventListener("DOMContentLoaded", function() {
+        console.log('DOMContentLoaded event triggered');
+        const map = L.map('map').setView([38.2462420, 21.7350847], 16);
+                
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        const peoplePendingIcon = L.icon({
+            iconUrl: '/maptry/icons/peoplePending.png',
+            iconSize: [35, 35],
+            iconAnchor: [15, 30],
+            popupAnchor: [0, -30]
+        });
+
+        const DonateIcon = L.icon({
+            iconUrl: '/maptry/icons/donate.png',
+            iconSize: [35, 35],
+            iconAnchor: [15, 30],
+            popupAnchor: [0, -30]
+        });
+
+        const StorageIcon = L.icon({
+            iconUrl: '/maptry/icons/Storage.png', 
+            iconSize: [40, 40],
+            iconAnchor: [15,8],
+            popupAnchor: [0, 0]
+        });
+        
+        var markerStorage = L.marker([38.24600, 21.73500], {icon: StorageIcon}).addTo(map);
+
+        const RescuerIcon = L.icon({
+            iconUrl: '/maptry/icons/transport.png',
+            iconSize: [40, 40],
+            iconAnchor: [15, 30],
+            popupAnchor: [0, -30]
+        });
+
+        const marker1 = L.marker([38.24852721101361, 21.73745869709119], { icon: peoplePendingIcon }).addTo(map);
+        const marker2 = L.marker([38.25245743373403, 21.73902358206551], { icon: peoplePendingIcon }).addTo(map);
+        const marker3 = L.marker([38.241786654079725, 21.740699091799787], { icon: peoplePendingIcon }).addTo(map);
+        const marker4 = L.marker([38.24152721101361, 21.73145869709119], { icon: DonateIcon }).addTo(map);
+        const marker6 = L.marker([38.2422721101361, 21.73545869709119], { icon: RescuerIcon }).addTo(map);
+        const marker7 = L.marker([38.2472721101361, 21.73945869709119], { icon: RescuerIcon }).addTo(map);
+        const marker8 = L.marker([38.2452721101361, 21.73145869709119], { icon: RescuerIcon }).addTo(map);
+        const marker9 = L.marker([38.24162721101361, 21.73745869709119], { icon: peoplePendingIcon }).addTo(map);
+        const marker10 = L.marker([38.25945743373403, 21.7362358206551], { icon: peoplePendingIcon }).addTo(map);
+        
+        
+        const markerDon1 = L.marker([38.253, 21.742], { icon: DonateIcon}).addTo(map);
+        
+        const popupContentDon1 = `
+            <table>
+                <tr><td><strong>Type:</strong></td><td>Donation</td></tr>
+                <tr><td><strong>Name:</strong></td><td>John Doe</td></tr>
+                <tr><td><strong>Cell Phone:</strong></td><td>6932859010</td></tr>
+                <tr><td><strong>Date Submitted:</strong></td><td>15/09/2024</td></tr>
+                <tr><td><strong>Product:</strong></td><td>Water</td></tr>
+                <tr><td><strong>Quantity:</strong></td><td>2</td></tr>
+                <tr><td colspan="2"><button type="button">Serve</button></td></tr>
+            </table>
+        `;
+        const popupContent1 = `
+            <table>
+                <tr><td><strong>Type:</strong></td><td>Request</td></tr>
+                <tr><td><strong>Name:</strong></td><td>Jane Doe</td></tr>
+                <tr><td><strong>Cell Phone:</strong></td><td>69458212210</td></tr>
+                <tr><td><strong>Date Submitted:</strong></td><td>13/09/2024</td></tr>
+                <tr><td><strong>Product:</strong></td><td>Bread</td></tr>
+                <tr><td><strong>Quantity:</strong></td><td>1</td></tr>
+                <tr><td colspan="2"><button type="button">Serve</button></td></tr>
+            </table>
+        `;
+
+        marker1.on('click', function() {
+            marker1.bindPopup(popupContent1).openPopup();
+        });
+
+        markerDon1.on('click', function() {
+            markerDon1.bindPopup(popupContentDon1).openPopup();
+        });
+
+        function customLineStyle(options) {
+            return L.Routing.line(options, {
+                styles: [{ color: 'blue', weight: 6, opacity: 0.7 }]
+            });
+        }
+
+        const peopleServedIcon = L.icon({
+            iconUrl: '/maptry/icons/peopleServed.png',
+            iconSize: [35, 35],
+            iconAnchor: [15, 30],
+            popupAnchor: [0, -30]
+        });  // Closing curly brace corrected here
+
+        const markerRescuer = L.marker([38.24600, 21.73450], {
+            icon: RescuerIcon,
+            draggable: true
+        }).addTo(map);
+
+        markerRescuer.bindPopup('Drag and Drop me to your location!').openPopup();
+
+        // Route 1: marker6 -> marker1 -> marker2
+        L.Routing.control({
+            waypoints: [
+                marker6.getLatLng(),// marker6
+                marker4.getLatLng(),
+                marker2.getLatLng()
+            ],
+            routeWhileDragging: true,
+            lineOptions: { styles: [{ color: 'blue', weight: 6, opacity: 0.7 }] },  // Custom style
+            addWaypoints: true,  // Do not allow dragging to add waypoints
+            createMarker: function() { return null; },  // Do not create intermediate markers
+            show: false  // Do not show directions panel
+        }).addTo(map);
+
+        // Route 2: marker8 -> marker9 -> marker10
+        L.Routing.control({
+            waypoints: [
+                marker8.getLatLng(),// marker6
+                marker9.getLatLng(),
+                marker10.getLatLng()
+            ],
+            routeWhileDragging: true,
+            lineOptions: { styles: [{ color: 'red', weight: 4, opacity: 0.8 }] },  // Custom style
+            addWaypoints: true,  // Do not allow dragging to add waypoints
+            createMarker: function() { return null; },  // Do not create intermediate markers
+            show: false  // Do not show directions panel
+        }).addTo(map);
+
+    });
+    
+</script>
 
 </body>
 </html>
