@@ -81,8 +81,8 @@
             <!-- Content for Cargo tab -->
             <div id="cargoTab" class="tab-content active">
                 <button id="unloadButton" class="inactive">Εκφόρτωση</button>
-                <div id="loadedProducts" style="display: none;"></div> <!-- Placeholder for loaded products  -->
-                <div id="DummyCargo">
+                <div id="loadedProducts" ></div> <!-- Placeholder for loaded products style="display: none;" -->
+                <div id="DummyCargo" style="display: none;">
                     <h3>Your Cargo</h3>
                     <table>
                         <thead>
@@ -96,28 +96,28 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td>1</td>
+                                <td><input type="checkbox" class="task-checkbox"></td>
                                 <td>Bandages</td>
                                 <td>Painkillers</td>
                                 <td>Adhesive: 2 meters</td>
                                 <td>2</td>
                             </tr>
                             <tr>
-                                <td>2</td>
+                                <td><input type="checkbox" class="task-checkbox"></td>
                                 <td>Water</td>
                                 <td>Beverages</td>
                                 <td>volume: 1.5l, pack size: 6</td>
                                 <td>3</td>
                             </tr>
                             <tr>
-                                <td>3</td>
+                                <td><input type="checkbox" class="task-checkbox"></td>
                                 <td>Men Sneakers</td>
                                 <td>Clothing</td>
                                 <td>size: 44</td>
                                 <td>4</td>
                             </tr>
                             <tr>
-                                <td>4</td>
+                                <td><input type="checkbox" class="task-checkbox"></td>
                                 <td>Canned corn</td>
                                 <td>Food</td>
                                 <td>weight: 500g</td>
@@ -150,6 +150,7 @@
                         
                     </tbody>
                 </table>
+
                 <table id="DummyTable">
                     <thead>
                         <tr>
@@ -255,36 +256,31 @@
         <button id="filterToggleButton" class="filter-button">Φίλτρα Χάρτη</button>
 
         <div id="filters" class="filter-container">
-            <h3>Εξυπηρέτηση</h3>
+            <h3>Tasks</h3>
             
             <label>
-                <input type="checkbox" class="main-filter" value="pending"> Πολίτες εν Αναμονή
+                <input type="checkbox" class="main-filter" value="pending"> Pending
             </label>
             <label>
-                <input type="checkbox" class="main-filter" value="served"> Πολίτες που Εξυπηρετούνται
+                <input type="checkbox" class="main-filter" value="served"> Served
             </label>
 
-            <h4>Είδος Προϊόντος</h4>
+            <h4>Type</h4>
             
             <label>
-                <input type="checkbox" class="sub-filter" value="medical"> Ιατρικός Εξοπλισμός
+                <input type="checkbox" class="sub-filter" value="request"> Request
             </label>
             <label>
-                <input type="checkbox" class="sub-filter" value="food"> Φαγητό
-            </label>
-            <label>
-                <input type="checkbox" class="sub-filter" value="shelter"> Εξοπλισμός Στέγασης
-            </label>
-            <label>
-                <input type="checkbox" class="sub-filter" value="donate"> Προσφορά Αγαθών
+                <input type="checkbox" class="sub-filter" value="donation"> Donation
             </label>
         </div>
 
         
         <script>
-            
+            let markerRescuer;
             document.addEventListener("DOMContentLoaded", function() {
                 console.log('DOMContentLoaded event triggered');
+                
 
                 // Add event listeners to static task table rows ****
                 const taskRows = document.querySelectorAll('#tasksTable tbody tr');
@@ -324,15 +320,15 @@
                 let popupContent = "some content"; // Example for other usage
 
                 // General storage coordinates
-                const storageLat = 38.24600;
-                const storageLng = 21.73500;
+                // const storageLat = 38.24600;
+                // const storageLng = 21.73500;
 
-                // Generate a random location 5km around the general storage
-                const randomLocation = getRandomLocation(storageLat, storageLng, 5000); // 5000 meters = 5km
+                // // Generate a random location 5km around the general storage
+                // const randomLocation = getRandomLocation(storageLat, storageLng, 5000); // 5000 meters = 5km
 
-                const map = L.map('map').setView([randomLocation.lat, randomLocation.lng], 15);
+                // const map = L.map('map').setView([randomLocation.lat, randomLocation.lng], 15);
 
-                // const map = L.map('map').setView([38.2462420, 21.7350847], 16);
+                const map = L.map('map').setView([38.2462420, 21.7350847], 16);
             
                 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
@@ -340,6 +336,7 @@
                 }).addTo(map);
 
                 fetchTasks(); 
+                
 
                 (async function() {
                     try {
@@ -412,10 +409,11 @@
                                 popupContent += `<button onclick="serveRequest('${civilian._id}', '${civilian.requests.length > 0 ? 'request' : 'donation'}')">Serve</button>`;
 
                                 // Debugging output to ensure the popup content is correctly generated
-                                console.log("Popup Content for civilian:", popupContent);
+                                // console.log("Popup Content for civilian:", popupContent);
 
                                 // Add a marker for the civilian with the pop-up
                                 const marker = L.marker([lng, lat], { icon: icon }).addTo(map);
+                                marker.setIcon(peopleServedIcon);
                                 marker.bindPopup(popupContent);
                                 }
                             }
@@ -427,6 +425,44 @@
                     } catch (error) {
                         console.error('Error loading civilians:', error);
                     }
+                    // dummy markers
+                    const marker1 = L.marker([38.248410689591665, 21.737523069877692], { icon: peoplePendingIcon }).addTo(map);
+                    const marker2 = L.marker([38.25245743373403, 21.73902358206551], { icon: peoplePendingIcon }).addTo(map);
+                    const marker3 = L.marker([38.241786654079725, 21.740699091799787], { icon: peoplePendingIcon }).addTo(map);
+                    const markerDon1 = L.marker([38.253, 21.742], { icon: DonateIcon}).addTo(map);
+                    
+                    const popupContentDon1 = `
+                        <table>
+                            <tr><td><strong>Type:</strong><td>Donation</td></tr>
+                            <tr><td><strong>Name:</strong></td><td>John Doe</td></tr>
+                            <tr><td><strong>Cell Phone:</strong></td><td>6932859010</td></tr>
+                            <tr><td><strong>Date Submitted:</strong></td><td>15/09/2024</td></tr>
+                            <tr><td><strong>Product:</strong></td><td>Water</td></tr>
+                            <tr><td><strong>Quantity:</strong></td><td>2</td></tr>
+                            <tr><td colspan="2"><button type="button">Serve</button></td></tr>
+                        </table>
+                    `;
+                    const popupContent1 = `
+                        <table>
+                            <tr><td><strong>Type:</strong><td>Request</td></tr>
+                            <tr><td><strong>Name:</strong></td><td>Jane Doe</td></tr>
+                            <tr><td><strong>Cell Phone:</strong></td><td>69458212210</td></tr>
+                            <tr><td><strong>Date Submitted:</strong></td><td>13/09/2024</td></tr>
+                            <tr><td><strong>Product:</strong></td><td>Bread</td></tr>
+                            <tr><td><strong>Quantity:</strong></td><td>1</td></tr>
+                            <tr><td colspan="2"><button type="button">Serve</button></td></tr>
+                        </table>
+                    `;
+
+                    marker1.on('click', function() {
+                        marker1.bindPopup(popupContent1).openPopup();
+                    
+                    });
+                    // Bind a click event to the marker to open the popup with the formatted content
+                    markerDon1.on('click', function() {
+                        markerDon1.bindPopup(popupContentDon1).openPopup();
+                    
+                    });
                 })();
 
                 async function fetchUsernameById(userId) {
@@ -662,17 +698,12 @@
                             if (this.checked && task.location && Array.isArray(task.location.coordinates)) {
                                 const [lng, lat] = task.location.coordinates;
                                 const taskWaypoint = L.latLng(lng, lat);
-                                // taskWaypoints.push(taskWaypoint); // Add task location to the waypoints array
-
-                                // Automatically display the updated route with new waypoints
-                                // displayRouteForAllTasks();
+                                
                             } else if (!this.checked) {
                                 // Remove waypoint if unchecked
                                 const [lng, lat] = task.location.coordinates;
                                 const taskWaypoint = L.latLng(lng, lat);
-                                // taskWaypoints = taskWaypoints.filter(wp => !(wp.lat === taskWaypoint.lat && wp.lng === taskWaypoint.lng));
-
-                                // displayRouteForAllTasks(); // Recalculate route
+                                
                             }
                             else {
                                 console.warn('Invalid or missing location in task:', task);
@@ -686,6 +717,8 @@
                         tasksTableBody.appendChild(row);
                     });
                 }
+
+                
 
                 // Function to toggle the display of task details
                 function toggleRowDetails(row, details) {
@@ -719,7 +752,6 @@
                     }
                 }
 
-
                 // Function to delete a task
                 async function deleteTask(taskId) {
                     try {
@@ -739,8 +771,6 @@
                         alert('An error occurred while deleting the task.');
                     }
                 }
-
-
 
                 (async function() {
                     // Load rescuer's cargo from the database
@@ -770,28 +800,42 @@
 
                 const StorageIcon = L.icon({
                     iconUrl: '/maptry/icons/Storage.png', 
-                    iconSize: [30, 30],
+                    iconSize: [40, 40],
                     iconAnchor: [15,8],
                     popupAnchor: [0, 0]
                 });
-                // Rescuer draggable marker
-                const RescuerIcon = L.icon({
-                    iconUrl: '/maptry/icons/transport.png',
-                    iconSize: [35, 35],
-                    iconAnchor: [15, 30],
-                    popupAnchor: [0, -30]
-                });
-
                 
                 var markerStorage = L.marker([38.24600, 21.73500], {icon: StorageIcon}).addTo(map);
-                const markerRescuer = L.marker([randomLocation.lat, randomLocation.lng], {
+
+                const RescuerIcon = L.icon({
+                        iconUrl: '/maptry/icons/transport.png',
+                        iconSize: [40, 40],
+                        iconAnchor: [15, 30],
+                        popupAnchor: [0, -30]
+                });
+                const peopleServedIcon = L.icon({
+                iconUrl: '/maptry/icons/peopleServed.png',
+                iconSize: [35, 35],
+                iconAnchor: [15, 30],
+                popupAnchor: [0, -30]
+            });
+
+                // Rescuer draggable marker.
+            
+                
+
+                let markerRescuer = L.marker([38.24600, 21.73500], {
                     icon: RescuerIcon,
                     draggable: true
                 }).addTo(map);
-                markerRescuer.bindPopup('Είναι σίγουρα εδώ η τοποθεσία σου? Αν όχι Σύρε με στην τοποθεσία σου!').openPopup();
+                markerRescuer.bindPopup('Drag and Drop me to your location!').openPopup();
+
 
                 markerStorage.on('click', async function() {
-                const distance = calculateDistance(markerStorage.getLatLng(), markerRescuer.getLatLng());
+                rescuerCurrentPosition = markerRescuer.getLatLng();
+                const distance = calculateDistance(markerStorage.getLatLng(), rescuerCurrentPosition);
+                console.log('Distance between rescuer, storage: ', distance)
+            
                 if (distance <= 100) {
                     try {
                         const response = await fetch('/getProducts');
@@ -810,6 +854,7 @@
                     }
                 }
                 });
+                
 
                 // Function to calculate the distance between two LatLng points in meters
                 function calculateDistance(latlng1, latlng2) {
@@ -842,7 +887,7 @@
                 // Event listener for when the marker is dragged and dropped
                 markerRescuer.on('dragend', function(event) {
                     var position = markerRescuer.getLatLng();
-                    console.log('Rescuer\'s location: ', position.lng, position.lat);
+                    console.log('Rescuer\'s location: ', position.lat, position.lng);
                 
                     // Send an AJAX request to update the rescuer's location in the database
                     fetch('/updateRescuerLocation', {
@@ -850,7 +895,7 @@
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({ lng: position.lng, lat: position.lat })
+                        body: JSON.stringify({ lat: position.lat, lng: position.lng })
                     })
                     .then(response => response.json())
                     .then(data => {
@@ -861,6 +906,8 @@
                         }
                     })
                     .catch(error => console.error('Error:', error));
+                    // Update the Unload button state based on the new position
+                    updateUnloadButtonState();
                 });
 
                 const modals = document.querySelectorAll('.modal');
@@ -1017,22 +1064,17 @@
             });
             const DonateIcon = L.icon({
                 iconUrl: '/maptry/icons/donate.png',
-                iconSize: [20, 20],
+                iconSize: [35, 35],
                 iconAnchor: [15, 30],
                 popupAnchor: [0, -30]
             });
             const peoplePendingIcon = L.icon({
                 iconUrl: '/maptry/icons/peoplePending.png',
-                iconSize: [30, 30],
+                iconSize: [35, 35],
                 iconAnchor: [15, 30],
                 popupAnchor: [0, -30]
             });
-            const peopleServedIcon = L.icon({
-                iconUrl: '/maptry/icons/peopleServed.png',
-                iconSize: [30, 30],
-                iconAnchor: [15, 30],
-                popupAnchor: [0, -30]
-            });
+            
          
             
             function createCombinedIcon(mainCategoryIconUrl, subCategoryIconUrl) {
@@ -1210,30 +1252,63 @@
 
 
             function renderProductModal(products) {
-                    
                 const productTable = document.getElementById('productTable');
-                productTable.innerHTML = '<tr><th>Product Name</th><th>Category</th><th>Details</th><th>Stock</th><th>Quantity</th><th>Actions</th></tr>';
+                
+                // Clear any existing rows in the table
+                productTable.innerHTML = `
+                    <thead>
+                        <tr>
+                            <th>Product Name</th>
+                            <th>Category</th>
+                            <th>Details</th>
+                            <th>Stock</th>
+                            <th>Quantity</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                `;
 
+                const tableBody = productTable.querySelector('tbody');
+
+                // Loop through each product and create a row
                 products.forEach(product => {
-                    const row = productTable.insertRow();
+                    const row = document.createElement('tr');
                     row.dataset.productId = product._id;
-                    row.insertCell(0).innerText = product.name;
-                    row.insertCell(1).innerText = product.category;
-                    row.insertCell(2).innerText = product.details.map(detail => `${detail.detail_name}: ${detail.detail_value}`).join(', ');
-                    row.insertCell(3).innerText = product.stock;
 
-                    // Create the quantity input field
-                    const quantityCell = row.insertCell(4);
+                    // Product Name
+                    const nameCell = document.createElement('td');
+                    nameCell.innerText = product.name;
+                    row.appendChild(nameCell);
+
+                    // Category
+                    const categoryCell = document.createElement('td');
+                    categoryCell.innerText = product.category;
+                    row.appendChild(categoryCell);
+
+                    // Details
+                    const detailsCell = document.createElement('td');
+                    detailsCell.innerText = product.details.map(detail => `${detail.detail_name}: ${detail.detail_value}`).join(', ');
+                    row.appendChild(detailsCell);
+
+                    // Stock
+                    const stockCell = document.createElement('td');
+                    stockCell.innerText = product.stock;
+                    row.appendChild(stockCell);
+
+                    // Quantity Input Field
+                    const quantityCell = document.createElement('td');
                     const quantityInput = document.createElement('input');
                     quantityInput.type = 'number';
                     quantityInput.value = 0;
                     quantityInput.min = 0;
-                    quantityInput.max = product.stock;
+                    quantityInput.max = product.stock || 0; // Fallback to 0 if stock is not defined
                     quantityInput.style.width = '50px';
                     quantityCell.appendChild(quantityInput);
+                    row.appendChild(quantityCell);
 
-                    // Create the + and - buttons
-                    const actionsCell = row.insertCell(5);
+                    // Increment/Decrement Buttons
+                    const actionsCell = document.createElement('td');
                     const incrementButton = document.createElement('button');
                     incrementButton.innerText = '+';
                     incrementButton.addEventListener('click', function () {
@@ -1251,10 +1326,18 @@
                             quantityInput.value = currentQuantity - 1;
                         }
                     });
+
+                    // Append buttons to the actions cell
                     actionsCell.appendChild(incrementButton);
                     actionsCell.appendChild(decrementButton);
+                    row.appendChild(actionsCell);
+
+                    // Add the row to the table body
+                    tableBody.appendChild(row);
+                });
             }
-            )}
+
+            
             // Handle Load Button
             document.getElementById('loadButton').addEventListener('click', async function() {
                     const cargoTab = document.getElementById('cargoTab');
