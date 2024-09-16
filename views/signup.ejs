@@ -3,143 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!--<link rel="stylesheet" type="text/css" href="../styles/signupstyle.css">-->
+    <link rel="stylesheet" type="text/css" href="../styles/signupstyle.css">
     <title>Document</title>
     <link rel="icon" href="/maptry/icons/favicon.ico" type="image/x-icon">
-    <style>
-        
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #ff9900, #ffffff);
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-}
+    <!-- Load Leaflet first -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 
-.background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-}
+    <!-- Then load Esri Leaflet -->
+    <script src="https://unpkg.com/esri-leaflet@2.3.3/dist/esri-leaflet.js"></script>
 
-.shape {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 50%;
-    position: absolute;
-}
+    <!-- Then load the Esri Leaflet Geocoder plugin -->
+    <script src="https://unpkg.com/esri-leaflet-geocoder@2.3.2/dist/esri-leaflet-geocoder.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/esri-leaflet-geocoder@2.3.2/dist/esri-leaflet-geocoder.css" />
 
-.shape:nth-child(1) {
-    width: 200px;
-    height: 200px;
-    top: -50px;
-    right: -50px;
-}
-
-.shape:nth-child(2) {
-    width: 300px;
-    height: 300px;
-    bottom: -100px;
-    left: -100px;
-}
-
-form {
-    background: rgba(255, 255, 255, 0.7);
-    padding: 40px;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(10px);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 320px;
-}
-
-form h3 {
-    margin-bottom: 20px;
-    color: #333;
-}
-
-form label {
-    width: 100%;
-    margin-top: 10px;
-    font-weight: bold;
-    color: #333;
-}
-
-form input[type="text"],
-form input[type="email"],
-form input[type="password"],
-form select {
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    margin-bottom: 20px;
-    border: 2px solid #ff9900;
-    border-radius: 5px;
-    background-color: rgba(255, 255, 255, 0.8);
-    color: #333;
-    transition: box-shadow 0.3s, background-color 0.3s;
-}
-
-form input[type="text"]:focus,
-form input[type="email"]:focus,
-form input[type="password"]:focus,
-form select:focus {
-    box-shadow: 0 0 10px 2px #ff9900;
-    background-color: #fff;
-}
-
-form button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    background-color: #ff9900;
-    color: #fff;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    width: 100%;
-}
-
-form button:hover {
-    background-color: #e68a00;
-}
-
-/* Error message styling */
-p {
-    text-align: center;
-    font-size: 1em;
-    margin-bottom: 20px;
-}
-
-.login-section {
-    margin-top: 20px;
-    text-align: center;
-}
-
-.login-section p {
-    font-size: 0.9em;
-    color: #333;
-}
-
-.login-section a {
-    color: #ff9900;
-    text-decoration: none;
-    font-weight: bold;
-    transition: color 0.3s;
-}
-
-.login-section a:hover {
-    color: #e68a00;
-}
-
-    </style>
+    
 </head>
 <body>
 
@@ -152,28 +30,107 @@ p {
     <div class="shape"></div>
 </div>
 
-<form action="/signup" method="POST">
+<div class="form-container">
+    <form action="/signup" method="POST" class="form-left">
+        <label for="username">Username</label>
+        <input type="text" name="username" placeholder="Username" id="username" required />
 
-    <label for="username">Username</label>
-    <input type="text" name="username" placeholder="Username" id="username" required />
-    
-    <label for="email">Email</label>
-    <input type="email" name="email" placeholder="Email" id="email" required />
+        <label for="email">Email</label>
+        <input type="email" name="email" placeholder="Email" id="email" required />
 
-    <label for="password">Password</label>
-    <input type="password" name="password" placeholder="Password" id="password" required />
+        <label for="cellphone">Cell Phone Number</label>
+        <input type="text" name="cellphoneNumbeer" placeholder="Cellphone" id="cellphone" required />
 
-    <select name="role">
-        <option value="civilian">Civilian</option>
-        <option value="rescuer">Rescuer</option>
-    </select>
+        <label for="password">Password</label>
+        <input type="password" name="password" placeholder="Password" id="password" required />
 
-    <button type="submit">Sign Up</button>
+        <select name="role" style="display: none;">
+            <option value="civilian">Civilian</option>
+            <option value="rescuer">Rescuer</option>
+        </select>
 
-    <div class="login-section">
-        <p>Do you have an account? <a href="/login">Login</a></p>
-    </div>
-</form>
+        <button type="submit">Sign Up</button>
+
+        <div class="login-section">
+            <p>Do you have an account? <a href="/login">Login</a></p>
+        </div>
+    </form>
+
+    <form class="address-container">
+        <label for="street">Street</label>
+        <input type="text" name="street" placeholder="Street" id="street" required />
+
+        <label for="number">Number</label>
+        <input type="text" name="number" placeholder="Number" id="number" required />
+
+        <label for="city">City</label>
+        <input type="text" name="city" placeholder="City" id="city" required />
+
+        <label for="country">Country</label>
+        <input type="text" name="country" placeholder="Country" id="country" required />
+
+        <label for="zip">Zip Code</label>
+        <input type="text" name="zip" placeholder="Zip Code" id="zip" required />
+    </form>
+</div>
+
+<script>
+    // Function to use Geolocation API and Reverse Geocoding
+    function detectLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    }
+
+    function successCallback(position) {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+        console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+
+        // Use ESRI Geocoder to reverse geocode coordinates to an address
+        const geocodeService = L.esri.Geocoding.geocodeService();
+
+        geocodeService.reverse().latlng([latitude, longitude]).run(function (error, result) {
+            if (error) {
+                alert("Unable to retrieve address.");
+                return;
+            }
+
+            // Extract the full address
+            const fullAddress = result.address.Address || '';
+            const city = result.address.City || '';
+            const zip = result.address.Postal || '';
+            const country = result.address.CountryCode || '';
+
+            // Split the full address to separate street name and number
+            // Assuming the street number is at the beginning, followed by the street name
+            const addressParts = fullAddress.split(' ');
+            const streetName = addressParts[0]; // The rest is the street name
+            const streetNumber = addressParts[1]; // The first part is usually the number
+
+            // Ask user to confirm the detected address
+            const userConfirmed = confirm(`Is this your correct address?\nStreet: ${streetName}\nNumber: ${streetNumber}\nCity: ${city}\nPostal Code: ${zip}\nCountry: ${country}`);
+            if (userConfirmed) {
+                // Fill form fields with detected address
+                document.getElementById('street').value = streetName;
+                document.getElementById('number').value = streetNumber;
+                document.getElementById('city').value = city;
+                document.getElementById('zip').value = zip;
+                document.getElementById('country').value = country;
+            }
+        });
+    }
+
+    function errorCallback(error) {
+        console.error(error);
+        alert("Error occurred while retrieving your location.");
+    }
+
+    // Run the location detection when the page loads
+    window.onload = detectLocation;
+</script>
 
 </body>
 </html>
