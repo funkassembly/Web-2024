@@ -67,6 +67,7 @@
             <div class="tabs">
                 <button id="requestTabBtn" class="tab-button active" onclick="openTab('requestTab', this)">Request</button>
                 <button id="historyTabBtn" class="tab-button" onclick="openTab('historyTab', this)">History</button>
+                <button id="announcementTabBtn" class="tab-button" onclick="openTab('announcementTab', this)">Announcements</button>
             </div>
         
             <div id="requestTab" class="tab-content">
@@ -92,6 +93,20 @@
                     </tbody>
                 </table>
             </div>
+            <div id="announcementTab" class="tab-content">
+                <h3>Announcements</h3>
+                <table id="announcementTable">
+                <thead>
+                <tr>
+                <th>Date</th>
+                <th>Announcement</th>
+                <th>Items</th>
+                </tr>
+                </thead>
+                <tbody id="announcementContent">
+                </tbody>
+                </table>
+                </div>
         </div>
 
     </div>
@@ -171,21 +186,34 @@
         markerCivilian.on('moveend', debouncedUpdateAddress);
 
         // Function to toggle the marker icon based on checkbox selection
-        function toggleMarkerIcon() {
-            if (document.getElementById('requestCheckbox').checked) {
-                markerCivilian.setIcon(RequestIcon);
+        // function toggleMarkerIcon() {
+        //     if (document.getElementById('requestCheckbox').checked) {
+        //         markerCivilian.setIcon(RequestIcon);
+        //         document.getElementById('donateCheckbox').checked = false; // Uncheck the donate option
+        //         generateRequestForm();
+        //     } else if (document.getElementById('donateCheckbox').checked) {
+        //         markerCivilian.setIcon(DonateIcon);
+        //         document.getElementById('requestCheckbox').checked = false; // Uncheck the request option
+        //         generateDonateForm();
+        //     } else {
+        //         // Default to RequestIcon if neither is selected (could also remove marker if desired)
+        //         markerCivilian.setIcon(RequestIcon);
+        //         generateRequestForm();
+        //     }
+        // }
+        // Function to toggle the marker icon based on checkbox selection
+        function toggleMarkerIcon(e) {
+            if (e.target.id === 'requestCheckbox') {
                 document.getElementById('donateCheckbox').checked = false; // Uncheck the donate option
-                generateRequestForm();
-            } else if (document.getElementById('donateCheckbox').checked) {
-                markerCivilian.setIcon(DonateIcon);
-                document.getElementById('requestCheckbox').checked = false; // Uncheck the request option
-                generateDonateForm();
-            } else {
-                // Default to RequestIcon if neither is selected (could also remove marker if desired)
                 markerCivilian.setIcon(RequestIcon);
                 generateRequestForm();
+            } else if (e.target.id === 'donateCheckbox') {
+                document.getElementById('requestCheckbox').checked = false; // Uncheck the request option
+                markerCivilian.setIcon(DonateIcon);
+                generateDonateForm();
             }
         }
+
 
         // Event listeners for the checkboxes
         document.getElementById('requestCheckbox').addEventListener('change', toggleMarkerIcon);
@@ -946,6 +974,10 @@
             document.getElementById(tabName).classList.add('active');
 
             element.classList.add("active");
+            
+            if (tabName === 'announcementTab') {
+                loadAnnouncements();
+            }
         }
 
         document.addEventListener("DOMContentLoaded", function() {
@@ -1015,6 +1047,48 @@
                 }
             });
         });
+
+        const announcements = [
+            {
+            date: '2024-09-01',
+            message: 'Request for clothing',
+            items: ['Blankets']
+            },
+            {
+            date: '2024-08-25',
+            message: 'Request for food',
+            items: ['Canned Beans']
+            }];
+
+            function loadAnnouncements() {
+                const announcementContent = document.getElementById('announcementContent');
+                announcementContent.innerHTML = ''; // Clear any previous announcements
+
+                announcements.forEach(announcement => {
+                    const row = document.createElement('tr');
+                    
+                    const dateCell = document.createElement('td');
+                    dateCell.textContent = announcement.date;
+                    
+                    const messageCell = document.createElement('td');
+                    messageCell.textContent = announcement.message;
+                    
+                    const itemsCell = document.createElement('td');
+                    itemsCell.textContent = announcement.items.join(', ');
+
+                    // Append cells to the row
+                    row.appendChild(dateCell);
+                    row.appendChild(messageCell);
+                    row.appendChild(itemsCell);
+
+                    // Append row to the table body
+                    announcementContent.appendChild(row);
+                });
+            }
+
+
+
+
     </script>
 
 </body>
