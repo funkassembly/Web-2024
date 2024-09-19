@@ -9,13 +9,13 @@ const DetailSchema = new Schema({
 
 // Define the categories schema
 const CategorySchema = new Schema({
-  id: { type: String, required: true },
+  id: { type: mongoose.Schema.Types.ObjectId, auto: true },
   category_name: { type: String, required: true }
 });
 
 // Define the items schema with a reference to categories
 const ItemSchema = new Schema({
-  id: { type: String, required: true },
+  id: { type: mongoose.Schema.Types.ObjectId, auto: true },
   name: { type: String, required: true },
   category: { type: Schema.Types.String, ref: 'Category', required: true }, // Reference to category id
   details: [DetailSchema], // Embedded array of details
