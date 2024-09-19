@@ -33,7 +33,8 @@ app.use(express.json());
 
 
 app.use(express.static('public'));
-
+app.use(express.static('maptry'));
+app.use(express.static('scripts'));
 app.set('view engine', 'ejs');
 
 // Import Routes

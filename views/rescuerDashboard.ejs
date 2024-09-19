@@ -3,12 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="/rescuerstyle.css">
+    <link rel="icon" href="/icons/favicon.ico" type="image/x-icon">
+    <title>Rescuer's Dashboard</title>
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    <style>
+        #map {
+            width: 100%;
+            height: 100vh; /* Fill the entire iframe */
+        }
+    </style>
 </head>
 <body>
-  
-<h1>Rescuer Dashboard</h1>
-<a href="/logout">Logout</a>
+
+<div class="header-links">
+    <a href="#" id="instructionsLink" class="left-link">Οδηγίες</a>
+    <a href="/logout" class="right-link">Logout</a>
+</div>
+
+<!-- Instructions Modal -->
+<div id="instructionsModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h2>Οδηγίες</h2>
+        <p>1. Σύρε το όχημα <img src="/icons/transport.png" style="width: 3%; height: 3%;"> στην Τοποθεσία σου.</p>
+        <p>2. Επέλεξε το κουμπί 'Φόρτωση' ή 'Εκφόρτωση' όταν βρίσκεσαι σε απόσταση μέχρι 100m από τη Γενική Αποθήκη για την παραλαβή προμηθειών.</p>
+        <p>3. Επέλεξε μέχρι 4 πολίτες <img src="/icons/peoplePending.png" style="width: 3%; height: 3%;"> για να εξυπηρετήσεις.</p>
+        <p>4. Για να επιθεωρήσεις το τρέχον φορτίο του οχήματος επέλεξε το κουμπί 'Τρέχον Φορτίο'.</p>
+        <p>5. Υπομνήματα Χάρτη: </p>
+        <p>    *<img src="/icons/donate.png" style="width: 2%; height: 2%;">: Δωρεά Αγαθών</p>
+    </div>
+</div>
+
+<!-- Modal for Displaying Products -->
+<div id="productModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <div class="modal-buttons">
+            <button id="loadButton" class="inactive">Φόρτωση</button>
+        </div>
+        <h2>Available Products in General Storage</h2>
+        <div class="product-list">
+            <table id="productTable">
+                <!-- Table will be populated by JavaScript -->
+            </table>
+        </div>
+    </div>
+</div>
+
+<h1>Rescuer's Dashboard</h1>
+<div class="dashboard-container">
+    
+    <div class="map-container">
+        <div id="map"></div>
+    </div>
+
+    <div class="cargo-container">
+        <!-- Tabs for switching between Cargo and Tasks -->
+        <div class="tabs">
+            <button id="cargoTabBtn" class="button-active" onclick="openTab('cargoTab', this)">Cargo</button>
+            <button id="taskTabBtn" class="button-inactive" onclick="openTab('tasksTab', this)">Tasks</button>
+
+        </div>
+    
+        <!-- Content for Cargo tab -->
+        <div id="cargoTab" class="tab-content active">
+            <button id="unloadButton" class="inactive">Εκφόρτωση</button>
+            <div id="loadedProducts" ></div> <!-- Placeholder for loaded products style="display: none;" -->
+        </div>
+    
+        <!-- Content for Tasks tab -->
+        <div id="tasksTab" class="tab-content">
+
+            <h3>Your tasks will appear here.</h3>
+            <table id="tasksTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>No</th>
+                        <th>Type</th>
+                        <th>Name</th>
+                        <th>Cell Phone</th>
+                        <th>Date to be delivered</th>
+                        <th>Action</th>
+                        <th></th> <!-- Placeholder for the red X button -->
+                    </tr>
+                </thead>
+                <!-- *** Commented Out for Placeholder *** -->
+                <tbody>
+                    
+                </tbody>
+            </table>
+
+            
+        </div>
+    </div>
+    
+
+    <button id="filterToggleButton" class="filter-button">Φίλτρα Χάρτη</button>
+
+    <div id="filters" class="filter-container">
+        <h3>Tasks</h3>
+        
+        <label>
+            <input type="checkbox" class="main-filter" value="pending"> Pending
+        </label>
+        <label>
+            <input type="checkbox" class="main-filter" value="served"> Served
+        </label>
+
+        <h4>Type</h4>
+        
+        <label>
+            <input type="checkbox" class="sub-filter" value="request"> Request
+        </label>
+        <label>
+            <input type="checkbox" class="sub-filter" value="donation"> Donation
+        </label>
+    </div>
 
 </body>
+
+<script src="/rescuerScripts/loadMap.js"></script>
 </html>

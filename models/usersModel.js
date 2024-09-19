@@ -88,9 +88,11 @@ const rescuerSchema = new mongoose.Schema({
 const adminSchema = new mongoose.Schema({
     announcements: [
         {
-            item: { type: mongoose.Schema.Types.ObjectId, ref: 'Item', required: true },
-            itemCategory: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: true },
-            quantity: { type: Number, required: true }
+            type: [{
+                date: { type: String },
+                announcement: { type: String },
+                items: { type: String }
+            }]
         }
     ]
 });

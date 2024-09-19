@@ -1,0 +1,422 @@
+h1 {
+    align-self: center;
+}
+
+/* Base styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #ff9900, #ffffff); /* Gradient background from signup page */
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* Container for the whole dashboard */
+.dashboard-container {
+    display: flex;
+    justify-content: space-between;
+    height: calc(100vh - 60px);
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: rgba(255, 255, 255, 0.8); /* Transparent white for a clean look */
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Soft shadow */
+}
+
+/* Map section */
+.map-container {
+    flex: 3;
+    margin-right: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
+
+/* Cargo and task section */
+.cargo-container {
+    flex: 1;
+    background-color: rgba(255, 255, 255, 0.7); /* Transparent white for consistency */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Header links */
+.header-links {
+    width: 100%;
+    background-color: #ff9900; /* Primary orange background */
+    padding: 10px 20px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #fff;
+}
+
+.header-links a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* Modal styling */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: auto;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    position: relative;
+}
+
+.close-modal {
+    color: #888;
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    cursor: pointer;
+}
+
+.close-modal:hover {
+    color: #333;
+}
+
+/* Filter button and container */
+.filter-button {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    padding: 10px 20px;
+    background-color: #ff9900;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 1000;
+}
+
+.filter-button:hover {
+    background-color: #e68a00; /* Hover color */
+}
+
+.filter-container {
+    display: none;
+    position: absolute;
+    bottom: 70px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    z-index: 1000;
+}
+
+.filter-container.visible {
+    display: block;
+}
+
+.filter-container h3, .filter-container label {
+    margin: 0 0 10px;
+}
+
+.filter-container input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+/* Updated Tabs Section */
+/* Updated Tabs Section */
+.tabs {
+    display: flex;
+    justify-content: center; /* Center the tabs */
+    background-color: #f1f1f1; /* Light background */
+    border-bottom: 2px solid #ddd;
+    border-radius: 10px 10px 0 0;
+    overflow: hidden;
+    padding: 10px; /* Add padding around the tab container */
+}
+
+.tab-button {
+    flex: none; /* Ensure buttons don't stretch */
+    margin: 0 10px; /* Add some horizontal margin between the buttons */
+    padding: 12px 20px; /* Padding around the buttons */
+    background-color: #e0e0e0; /* Light gray for unselected tabs */
+    font-size: 16px;
+    text-align: center;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+}
+
+.tab-button:hover {
+    background-color: #ccc; /* Slightly darker gray on hover */
+}
+
+.tab-button.active {
+    background-color: #ff9900; /* Orange background for active tab */
+    color: white;
+    font-weight: bold;
+}
+
+
+/* Button styles */
+button {
+    background-color: #ff9900;
+    color: white;
+    padding: 10px 20px;
+    margin: 10px 50px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #e68a00;
+}
+
+button:disabled {
+    background-color: #ddd;
+    cursor: not-allowed;
+}
+
+/* Table styles */
+#productTable, #loadedProducts table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+#productTable th, #productTable td,
+#loadedProducts th, #loadedProducts td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+#productTable th, #loadedProducts th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+/* Modal button positioning */
+.modal-buttons {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+/* Scrollable content */
+#requestsDonations {
+    overflow-y: auto;
+    height: calc(100% - 60px);
+}
+
+#navigationButtonContainer {
+    position: absolute;
+    top: 50px;
+    right: 10px;
+}
+
+#navRouteButton {
+    background-color: #ff9900;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#navRouteButton:hover {
+    background-color: #e68a00;
+}
+
+/* Popup window styling for civilian markers */
+.leaflet-popup-content-wrapper {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.leaflet-popup-content {
+    margin: 0;
+    padding: 0;
+    color: #333;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 14px;
+}
+
+.leaflet-popup-content strong {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #333;
+}
+
+.leaflet-popup-content ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.leaflet-popup-content ul li {
+    margin-bottom: 10px;
+}
+
+.leaflet-popup-content ul li label {
+    font-weight: normal;
+    color: #666;
+}
+
+.leaflet-popup-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+
+.leaflet-popup-content table th, 
+.leaflet-popup-content table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.leaflet-popup-content table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.leaflet-popup-content table td {
+    background-color: #fff;
+}
+
+.leaflet-popup-content .serve-button {
+    background-color: #ff9900;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.leaflet-popup-content .serve-button:hover {
+    background-color: #e68a00;
+}
+
+.checkmark-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    margin-left: 5px;
+}
+
+.delete-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    margin-left: 5px;
+}
+
+/* Style for the checkmark and delete buttons */
+.checkmark-button,
+.delete-button {
+    background-color: white;  /* White background */
+    border: 1px solid black;   /* Black border */
+    color: black;              /* Black text */
+    cursor: pointer;           /* Pointer on hover */
+    font-size: 16px;           /* Button font size */
+    margin-left: 5px;          /* Slight margin for spacing */
+    padding: 5px;              /* Padding for the buttons */
+    border-radius: 50%;        /* Rounded button */
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Hover effect for delete button (X) */
+.delete-button:hover {
+    background-color: red;     /* Red background on hover */
+    color: white;              /* White X on hover */
+    border-color: red;         /* Change border to red */
+}
+
+/* Hover effect for checkmark button (✓) */
+.checkmark-button:hover {
+    background-color: green;   /* Green background on hover */
+    color: white;              /* White checkmark on hover */
+    border-color: green;       /* Change border to green */
+}
+
+/* Style for task details row */
+.task-details-row {
+    display: none; /* Initially hidden */
+}
+
+.task-details {
+    background-color: #f9f9f9;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+/* Styling the alternating row color */
+.task-row {
+    cursor: pointer;
+}
+
+.task-row:nth-child(odd) {
+    background-color: #f2f2f2;
+}
+
+.task-row:nth-child(even) {
+    background-color: #fff;
+}
+
+
+
+/* Adjusted for better mobile responsiveness */
+@media (max-width: 768px) {
+    .dashboard-container {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .map-container, .cargo-container {
+        margin-right: 0;
+        margin-bottom: 20px;
+        width: 100%;
+    }
+}
