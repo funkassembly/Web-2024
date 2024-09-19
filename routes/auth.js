@@ -35,6 +35,7 @@ router.get('/rescuerDashboard', (req, res) => {
 
 router.post('/signup', async (req, res) => {
     // Extract the form data
+    console.log(req.body);
     const { username, name, email, cellphone, password, street, number, city, country, zip, role = 'civilian' } = req.body;
 
     // Password validation (example)

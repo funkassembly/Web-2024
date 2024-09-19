@@ -13,24 +13,70 @@ body {
 /* Flexbox container to hold both left and right sections */
 .form-container {
     display: flex;
-    justify-content: space-between;
-    width: 80%; /* Control the width of the entire form */
-    max-width: 1200px;
+    justify-content: center;
+    width: 100%; /* Control the width of the entire form */
+    max-width: 1500px;
     gap: 50px; /* Space between the two sections */
 }
 
 /* Styling for the left section (user info form) */
 .form-left {
-    flex: 2; /* Take up equal space */
-    padding: 20px;
-
+    display: inline-block;
+    justify-content: space-between;
+    flex-direction: column;
+    width: 65%;
+    flex: 1; /* Take up equal space */
+    padding: 10px;
 }
 
-/* Styling for the right section (address form) */
+/* Style the container */
 .address-container {
-    flex: 2; /* Take up equal space */
-    padding: 20px;
+    display: -webkit-inline-flex;
+    flex-direction: row;
+    gap: 5px; /* Adds spacing between the label-input pairs */
 }
+
+/* General style for all inputs */
+.address-container input {
+    padding: 10px;
+    border: 2px solid #ff9900;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #333;
+    transition: box-shadow 0.3s, background-color 0.3s;
+}
+
+/* Street input should take up most of the width */
+.address-container input#street {
+    width: 100%; /* Adjust as needed */
+}
+
+/* Number input should be smaller */
+.address-container input#number {
+    width: 10%; /* Adjust as needed */
+}
+
+/* City input should be of moderate size */
+.address-container input#city {
+    width: 60%; /* Adjust as needed */
+}
+
+/* Country input can also be wider */
+.address-container input#country {
+    width: 30%; /* Adjust as needed */
+}
+
+/* Zip input can be smaller */
+.address-container input#zip {
+    width: 50%; /* Adjust as needed */
+}
+
+/* Focus state to highlight the input */
+.address-container input:focus {
+    box-shadow: 0 0 10px 2px #ff9900;
+    background-color: #fff;
+}
+
 
 /* Form styling (shared by both left and right sections) */
 form {
@@ -39,14 +85,20 @@ form {
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(10px);
-    width: 100%;
+    width: 50%;
     display: flex;
     flex-direction: column;
+}
+
+h1 {
+    padding: 10px;
+    color: #333;
 }
 
 /* Form field styling */
 form label {
     margin-top: 10px;
+    padding: 10px;
     font-weight: bold;
     color: #333;
 }
@@ -80,13 +132,14 @@ form input[type="text"]:focus {
 form button {
     padding: 10px 20px;
     border: none;
+    align-self: center;
     border-radius: 5px;
     background-color: #ff9900;
     color: #fff;
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s;
-    width: 100%;
+    width: 40%;
 }
 
 form button:hover {
