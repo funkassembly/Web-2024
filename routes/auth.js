@@ -3,10 +3,29 @@ const router = express.Router();
 const {User, Civilian, Rescuer, Admin} = require('../models/usersModel');
 const bcrypt = require('bcryptjs');
 
+
+
+
 // Strong password policy
 const passwordValidator = (password) => {
     const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&+=]).{8,}$/;
     return passwordRegex.test(password);
+};
+
+const getCoordinates = async (address) => {
+    const accessKey = 'bd3521cab3babdc77f86ccb2feabbdae'; // Replace with your Positionstack access key
+    const apiUrl = `http://api.positionstack.com/v1/forward?access_key=${accessKey}&query=${encodeURIComponent(address)}`;
+    // Use dynamic import for node-fetch
+    const fetch = (await import('node-fetch')).default;
+    const response = await fetch(apiUrl);
+    const data = await response.json();
+
+    if (data.data && data.data.length > 0) {
+        const { latitude, longitude } = data.data[0];
+        return { lat: latitude, lng: longitude };
+    } else {
+        throw new Error('Could not retrieve coordinates.');
+    }
 };
 
 router.get('/', (req, res) => {
@@ -43,7 +62,11 @@ router.post('/signup', async (req, res) => {
         return res.render('signup', { error: 'Password does not meet security requirements.' });
     }
 
+    const fullAddress = `${number} ${street}, ${city}, ${zip}, ${country}`;
+
     try {
+        const {lng, lat} = await getCoordinates(fullAddress);
+        
         // Create the new user with all the fields
         const newUser = await Civilian.create({
             username,
@@ -58,6 +81,10 @@ router.post('/signup', async (req, res) => {
                 city,
                 country,
                 zip
+            },
+            location: {
+                type: 'Point',
+                coordinates: [lat, lng] // GeoJSON standard, longitude first
             }
         });
 
@@ -92,7 +119,7 @@ router.post('/login', async (req, res) => {
         if (!isPasswordCorrect) {
             return res.render('login', { error: 'Invalid username or password.' });
         }
-
+        req.session.userId = user._id;
         // Redirect based on the user's role
         if (user.role === 'civilian') {
             // Redirect to civilian dashboard

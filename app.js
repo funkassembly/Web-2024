@@ -9,6 +9,7 @@ const multer = require('multer');
 const fs = require('fs');
 const userRoutes = require('./routes/newuserRoutes');
 const statsRoutes = require('./routes/statsRoutes');
+const rescuerRoutes = require('./routes/rescuerRoutes');
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.use(express.json());
 app.use(express.static('public'));
 app.use(express.static('maptry'));
 app.use(express.static('scripts'));
+
 app.set('view engine', 'ejs');
 
 // Import Routes
@@ -83,6 +85,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/stats', statsRoutes);
 //app.use('/api/categories', categoryRoutes);
 app.use('/api/items', itemRoutes);
+app.use('/api/rescuer', rescuerRoutes);
 
 
 // // Multer setup for JSON file upload
@@ -141,7 +144,25 @@ app.post('/test', (req, res) => {
 
 app.get('/adminDashboard', isLoggedIn, isAdmin, (req, res) => res.send('adminDashboard'));
 app.get('/civilianDashboard', isLoggedIn, isCivilian, (req, res) => res.send('civilianDashboard'));
-app.get('/rescuerDashboard', isLoggedIn, isRescuer, (req, res) => res.send('rescuerDashboard'));
+app.get('/rescuerDashboard', isLoggedIn, isRescuer, async (req, res) => {
+    try {
+        const rescuer = await Rescuer.findById(req.session.userId).populate('cargo.item').populate('tasks.item');
+        if (!rescuer) {
+            return res.status(404).send('Rescuer not found');
+        }
+
+        res.render('rescuerDashboard', {
+            rescuer: rescuer, // Pass rescuer data to the view
+            cargo: rescuer.cargo, // Rescuer's cargo
+            tasks: rescuer.tasks // Rescuer's tasks
+        });
+    } catch (err) {
+        console.error('Error rendering rescuer dashboard:', err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
 
 
 app.listen(3000, () => console.log('Server running on port 3000'));
+

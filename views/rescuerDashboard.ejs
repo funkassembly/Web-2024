@@ -129,4 +129,46 @@
 </body>
 
 <script src="/rescuerScripts/loadMap.js"></script>
+<!-- <script src="/rescuerScripts/loadCargo.js"></script>
+<script src="/rescuerScripts/loadModals.js"></script>
+<script src="/rescuerScripts/loadTasks.js"></script> -->
+
+<script>
+    function openTab(tabName, element) {
+        console.log('openTab called with tabName:', tabName);
+
+        var i, tabcontent, tabbuttons;
+
+        // Hide all tab content
+        tabcontent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+            tabcontent[i].classList.remove('active');
+        }
+
+        // Remove the active class from all tab buttons
+        tabbuttons = document.querySelectorAll("#cargoTabBtn, #taskTabBtn");
+        for (i = 0; i < tabbuttons.length; i++) {
+            tabbuttons[i].classList.remove("button-active");
+            tabbuttons[i].classList.add("button-inactive");
+        }
+
+        // Show the specific tab content
+        var tabContentElement = document.getElementById(tabName);
+        if (tabContentElement) {
+            tabContentElement.style.display = "block";
+            tabContentElement.classList.add('active');
+        } else {
+            console.error('Tab content element not found for:', tabName);
+        }
+
+        // Add the active class to the button that opened the tab
+        if (element) {
+            element.classList.add("button-active");
+            element.classList.remove("button-inactive");
+        } else {
+            console.error('Element is undefined in openTab function');
+        }
+    }
+</script>
 </html>
