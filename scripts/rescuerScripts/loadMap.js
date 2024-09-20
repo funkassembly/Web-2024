@@ -46,17 +46,26 @@ document.addEventListener("DOMContentLoaded", function() {
     
         if (distance <= 100) {
             try {
-                const response = await fetch('/getItems');
-                if (!response.ok) {
-                    throw new Error('Failed to fetch products');
-                }
-                const products = await response.json();
-    
+                // Correct fetch request in client-side JavaScript
+                fetch('/api/items')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch products');
+                    }
+                    const items = response;
+                    console.log(items);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Fetched items:', data);
+                })
+                .catch(error => console.error('Error fetching items:', error));
+                
                 // Send a message to the parent document to show the modal and populate it
-                window.parent.postMessage({
-                    type: 'showProductModal',
-                    products: products
-                }, '*');
+                // window.parent.postMessage({
+                //     type: 'showProductModal',
+                //     items: items
+                // }, '*');
             } catch (error) {
                 console.error('Error fetching or displaying products:', error);
             }
