@@ -36,8 +36,8 @@ document.addEventListener("DOMContentLoaded", function() {
     }).addTo(map);
     markerRescuer.bindPopup('Drag and Drop me to your location!').openPopup();
     updateUnloadButtonState();
+    
     // markerStorage on Click event *Trigger*
-
     markerStorage.on('click', async function() {
         console.log('markerStorage on click Event Triggered!')
         rescuerCurrentPosition = markerRescuer.getLatLng();
@@ -46,29 +46,27 @@ document.addEventListener("DOMContentLoaded", function() {
     
         if (distance <= 100) {
             try {
-                // Correct fetch request in client-side JavaScript
-                fetch('/api/items')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch products');
-                    }
-                    const items = response;
-                    console.log(items);
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Fetched items:', data);
-                })
-                .catch(error => console.error('Error fetching items:', error));
+                // Fetch request to get the items
+            fetch('/api/items')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch products');
+                }
+                return response.json(); // Return the JSON response (actual data)
+            })
+            .then(items => {  // Use the actual data as `items`
+                console.log('Fetched items:', items);
                 
                 // Send a message to the parent document to show the modal and populate it
-                // window.parent.postMessage({
-                //     type: 'showProductModal',
-                //     items: items
-                // }, '*');
-            } catch (error) {
-                console.error('Error fetching or displaying products:', error);
-            }
+                window.parent.postMessage({
+                    type: 'showItemsModal',
+                    items: items  // Pass the fetched items as products
+                }, '*');
+            })
+            .catch(error => console.error('Error fetching items:', error));
+    } catch (error) {
+        console.error('Error fetching or displaying products:', error);
+    }
         }
     });
     // markerRescuer on Drag event *Trigger*
