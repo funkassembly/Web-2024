@@ -40,15 +40,15 @@
 </div>
 
 <!-- Modal for Displaying Products -->
-<div id="productModal" class="modal">
+<div id="itemsModal" class="modal">
     <div class="modal-content">
         <span class="close-modal">&times;</span>
         <div class="modal-buttons">
             <button id="loadButton" class="inactive">Φόρτωση</button>
         </div>
-        <h2>Available Products in General Storage</h2>
-        <div class="product-list">
-            <table id="productTable">
+        <h2>Available Items in General Storage</h2>
+        <div class="items-list">
+            <table id="itemsTable">
                 <!-- Table will be populated by JavaScript -->
             </table>
         </div>
@@ -56,6 +56,7 @@
 </div>
 
 <h1>Rescuer's Dashboard</h1>
+
 <div class="dashboard-container">
     
     <div class="map-container">
@@ -73,7 +74,7 @@
         <!-- Content for Cargo tab -->
         <div id="cargoTab" class="tab-content active">
             <button id="unloadButton" class="inactive">Εκφόρτωση</button>
-            <div id="loadedProducts" ></div> <!-- Placeholder for loaded products style="display: none;" -->
+            <div id="loadedItems" ></div> <!-- Placeholder for loaded products style="display: none;" -->
         </div>
     
         <!-- Content for Tasks tab -->
@@ -129,9 +130,9 @@
 </body>
 
 <script src="/rescuerScripts/loadMap.js"></script>
-<!-- <script src="/rescuerScripts/loadCargo.js"></script>
+<!-- <script src="/rescuerScripts/loadCargo.js"></script> -->
 <script src="/rescuerScripts/loadModals.js"></script>
-<script src="/rescuerScripts/loadTasks.js"></script> -->
+<!-- <script src="/rescuerScripts/loadTasks.js"></script> -->
 
 <script>
     function openTab(tabName, element) {

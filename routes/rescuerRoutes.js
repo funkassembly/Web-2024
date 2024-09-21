@@ -1,18 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { Rescuer } = require('../models/usersModel');
-
-
-
-// Fetch rescuer tasks
-router.get('/tasks', async (req, res) => {
-    try {
-        const rescuer = await Rescuer.findById(req.session.userId).populate('tasks.item');
-        res.json({ tasks: rescuer.tasks });
-    } catch (err) {
-        res.status(500).json({ error: 'Error fetching tasks' });
-    }
-});
+const { Item, Category, Data } = require('../models/dataModel');
 
 
 // Update Rescuer's Location
@@ -43,50 +32,78 @@ router.post('/updateRescuerLocation', async (req, res) => {
     }
 });
 
-
-
-// Fetch Rescuer Cargo
-router.get('/rescuerCargo', async (req, res) => {
+// Route to save cargo to the database
+router.post('/saveCargo', async (req, res) => {
     try {
-        const rescuer = await Rescuer.findById(req.session.userId).populate('cargo.item');
-        if (!rescuer) {
-            return res.status(404).json({ success: false, message: 'Rescuer not found' });
+        const userId = req.session.userId;
+        const { cargo } = req.body;
+
+        // Find the rescuer and update their cargo
+        const user = await Rescuer.findById(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
         }
 
-        res.json({ success: true, cargo: rescuer.cargo });
-    } catch (err) {
-        console.error('Error fetching cargo:', err);
-        res.status(500).json({ success: false, message: 'Internal server error' });
+        // Fetch the data document that contains all the items and categories
+        const dataDoc = await Data.findOne();
+        if (!dataDoc) {
+            return res.status(500).json({ success: false, message: 'Data document not found' });
+        }
+
+        // Iterate over the cargo and update items and categories
+        for (const obj of cargo) {
+            console.log(`Processing cargo item: ${JSON.stringify(obj)}`);
+
+            // Find the item by its id within the items array
+            const item = dataDoc.items.find(i => i.id === obj.itemId);
+            if (!item) {
+                return res.status(400).json({ success: false, message: 'Invalid item ID' });
+            }
+
+            // Find the category by its name within the categories array
+            const itemCategory = dataDoc.categories.find(c => c.category_name === obj.categoryName);
+            if (!itemCategory) {
+                return res.status(400).json({ success: false, message: 'Invalid category name' });
+            }
+
+            // Check stock availability
+            if (item.stock < obj.quantity) {
+                return res.status(400).json({ success: false, message: `Insufficient stock for product: ${item.name}` });
+            }
+
+            // Deduct the stock for the item
+            item.stock -= obj.quantity;
+
+            // Update Rescuer's Cargo
+            console.log(`item: ${item}, itemCategory: ${itemCategory}, quantity: ${obj.quantity}`);
+            const existingCargoItem = user.cargo.find(cargoItem => cargoItem.item === item.name);
+            if (existingCargoItem) {
+                // If product already exists in cargo, just update the quantity
+                existingCargoItem.quantity += obj.quantity;
+            } else {
+                // If product is not in cargo, add it as a new item
+                user.cargo.push({
+                    item: item.name,  // Save item name as string
+                    itemCategory: itemCategory.category_name,  // Save category name as string
+                    quantity: obj.quantity
+                });
+            }
+        }
+        
+        // Save the updated rescuer data
+        await user.save();
+
+        // Save the updated stock back to the data document
+        await dataDoc.save();
+
+        res.json({ success: true, message: 'Cargo saved successfully' });
+    } catch (error) {
+        console.error('Error saving cargo:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
 
-// Load Cargo for Rescuer
-router.post('/loadCargo', async (req, res) => {
-    const { itemId, quantity } = req.body;
 
-    try {
-        const rescuer = await Rescuer.findById(req.session.userId);
 
-        if (!rescuer) {
-            return res.status(404).json({ success: false, message: 'Rescuer not found' });
-        }
-
-        const itemIndex = rescuer.cargo.findIndex(c => c.item.equals(itemId));
-
-        // If item already exists in cargo, update quantity
-        if (itemIndex !== -1) {
-            rescuer.cargo[itemIndex].quantity += quantity;
-        } else {
-            rescuer.cargo.push({ item: itemId, quantity });
-        }
-
-        await rescuer.save();
-
-        res.json({ success: true, message: 'Cargo loaded successfully' });
-    } catch (err) {
-        console.error('Error loading cargo:', err);
-        res.status(500).json({ success: false, message: 'Internal server error' });
-    }
-});
 
 module.exports = router;

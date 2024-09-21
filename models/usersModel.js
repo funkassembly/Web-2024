@@ -76,8 +76,8 @@ const civilianSchema = new mongoose.Schema({
 const rescuerSchema = new mongoose.Schema({
     cargo: [
         {
-            item: { type: mongoose.Schema.Types.ObjectId, ref: 'Item', required: true },
-            itemCategory: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: true },
+            item: { type: String, ref: 'Item', required: true },
+            itemCategory: { type: String, ref: 'Category', required: true },
             quantity: { type: Number, required: true }
         }
     ],

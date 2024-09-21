@@ -127,8 +127,6 @@ function updateUnloadButtonState() {
     }, '*');
 }
 
-// Event Listeners
-// DOM event *trigger*
 
     
     

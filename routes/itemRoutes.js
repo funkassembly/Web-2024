@@ -202,14 +202,12 @@ router.get('/export', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const data = await Data.findOne();  // Fetch the single document
+    
     if (!data) {
       console.error('No data found in the collection');
       return res.status(404).json({ error: 'No data found' });
     }
 
-    // Check if `items` and `categories` arrays are populated
-    console.log('Items:', data.items);
-    console.log('Categories:', data.categories);
 
     if (!data.items || !data.categories) {
       console.error('Items or categories are missing in the retrieved data');
@@ -230,7 +228,6 @@ router.get('/', async (req, res) => {
       };
     });
 
-    console.log('Formatted items:', itemsWithCategories);
 
     res.json(itemsWithCategories);
   } catch (err) {
