@@ -1,6 +1,8 @@
 const modals = document.querySelectorAll('.modal');
 const closeButtons = document.querySelectorAll('.close-modal');
 
+// Helper Functions
+// Function 1: Items Modal Render 'on click' @ General Storage Marker
 function renderItemsModal(items) {
     const itemsTable = document.getElementById('itemsTable');
     
@@ -89,6 +91,150 @@ function renderItemsModal(items) {
         tableBody.appendChild(row);
     });
 }
+
+// Function 2: Populate Cargo table Row
+function createCargoRow(item, index) {
+    const { item: itemName, itemCategory, quantity } = item;
+    
+    return `
+        <tr>
+            <td>
+                <input type="checkbox" class="item-checkbox" data-item-name="${itemName}">
+            </td>
+            <td>${index + 1}</td>
+            <td>${itemName}</td>
+            <td>${itemCategory}</td>
+            <td class="quantity-cell">${quantity}</td>
+        </tr>`;
+}
+// Function 3: Cargo Tab population
+function populateCargoTab(cargo) {
+    if (!Array.isArray(cargo)) {
+        console.error('Cargo is not an array or is undefined:', cargo);
+        return;
+    }
+
+    const loadedItemsDiv = document.getElementById('loadedItems');
+    
+    let itemTableHtml = `
+        <table id="itemTable">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th> # </th>
+                    <th>Item</th>
+                    <th>Category</th>
+                    <th>Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+    cargo.forEach((item, index) => {
+        itemTableHtml += createCargoRow(item, index);
+    });
+    
+    itemTableHtml += '</tbody></table>';
+    loadedItemsDiv.innerHTML = itemTableHtml;
+
+    addCheckboxEventListeners();
+}
+// Function 4: Checkbox for editing the cargo items
+function addCheckboxEventListeners() {
+    document.querySelectorAll('.item-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const row = this.closest('tr');
+            const quantityCell = row.querySelector('.quantity-cell');
+
+            if (!quantityCell) {
+                console.error('Quantity cell not found for row:', row);
+                return;
+            }
+
+            let quantity = parseInt(quantityCell.textContent, 10);
+            if (isNaN(quantity)) {
+                console.warn('Parsed quantity is NaN, defaulting to 0');
+                quantity = 0;
+            }
+
+            if (this.checked) {
+                // Replace quantity text with an input field and buttons
+                quantityCell.innerHTML = `
+                    <input type="number" class="quantity-input" value="0" min="0" max="${quantity}" style="width: 50px;">
+                    <button class="increment-btn">+</button>
+                    <button class="decrement-btn">-</button>
+                `;
+
+                // Add event listeners to the increment and decrement buttons
+                const incrementBtn = quantityCell.querySelector('.increment-btn');
+                const decrementBtn = quantityCell.querySelector('.decrement-btn');
+                const quantityInput = quantityCell.querySelector('.quantity-input');
+
+                incrementBtn.addEventListener('click', function() {
+                    let currentQuantity = parseInt(quantityInput.value, 10);
+                    if (currentQuantity < quantity) {
+                        quantityInput.value = currentQuantity + 1;
+                    }
+                });
+
+                decrementBtn.addEventListener('click', function() {
+                    let currentQuantity = parseInt(quantityInput.value, 10);
+                    if (currentQuantity > 0) {
+                        quantityInput.value = currentQuantity - 1;
+                    }
+                });
+
+            } else {
+                // Restore the original quantity text when checkbox is unchecked
+                quantityCell.innerHTML = quantity;
+            }
+        });
+    });
+}
+
+
+// Function 5: Checkboxes @ Cargo editing - observing function
+function observeCheckboxes() {
+    document.addEventListener("DOMContentLoaded", function() {
+        const targetNode = document.querySelector('#loadedItems tbody'); // Assuming checkboxes are within <tbody>
+          
+        if (!targetNode) {
+            console.error("Target node (tbody) not found. Ensure it exists before observing.");
+            return;
+        }
+
+        const config = { childList: true, subtree: true };
+
+        const callback = function(mutationsList) {
+            for (let mutation of mutationsList) {
+                if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                    addCheckboxEventListeners();
+                }
+            }
+        };
+
+        const observer = new MutationObserver(callback);
+        observer.observe(targetNode, config);
+    });
+}
+// Function 6: Load Current Rescuer's Cargo
+(async function() {
+    // Load rescuer's cargo from the database
+    try {
+        const response = await fetch('/api/rescuer/getCargo', { method: 'GET' });
+        const data = await response.json();
+        if (data.success) {
+            populateCargoTab(data.cargo);
+        } else {
+            console.error('Failed to load cargo:', data.message);
+        }
+        const itemsResponse = await fetch('/api/items');
+        const items = await itemsResponse.json();
+        renderItemsModal(items);
+    } catch (error) {
+        console.error('Error loading cargo:', error);
+    }
+
+})();
 
 // Open Instructions Modal
 document.getElementById('instructionsLink').addEventListener('click', function(event) {
@@ -182,7 +328,7 @@ document.getElementById('loadButton').addEventListener('click', async function()
                 const itemDetails = row.cells[2].innerText;
 
                 const newRowHtml = `<tr>
-                    <td><input type="checkbox" class="product-checkbox" data-product-id="${item.itemId}"></td>
+                    <td><input type="checkbox" class="item-checkbox" data-item-id="${item.itemId}"></td>
                     <td>${itemName}</td>
                     <td>${itemCategory}</td>
                     <td>${itemDetails}</td>
@@ -207,60 +353,62 @@ document.getElementById('loadButton').addEventListener('click', async function()
 
 
 });
-
+// Unload Cargo Button Event listener
 document.getElementById('unloadButton').addEventListener('click', async function () {
-const selectedItems = [];
+    const selectedItems = [];
 
-// Iterate over each row in the cargo table
-document.querySelectorAll('#loadedItems tr').forEach(row => {
-    const checkbox = row.querySelector('.product-checkbox');
-    const quantityInput = row.querySelector('.quantity-input');
+    // Iterate over each row in the cargo table
+    document.querySelectorAll('#itemTable tbody tr').forEach(row => {
+        const checkbox = row.querySelector('.item-checkbox');
+        const quantityInput = row.querySelector('.quantity-input');
 
-    if (checkbox && checkbox.checked && quantityInput) {
-        const quantityToReturn = parseInt(quantityInput.value, 10) || 0;
-        if (quantityToReturn > 0) {
-            const itemId = checkbox.dataset.itemId;
-            selectedItems.push({
-                itemId,
-                quantity: quantityToReturn
-            });
+        if (checkbox && checkbox.checked && quantityInput) {
+            const quantityToReturn = parseInt(quantityInput.value, 10) || 0;
+            if (quantityToReturn > 0) {
+                const itemName = checkbox.dataset.itemName;
+                console.log(selectedItems);
+                console.log(`itemName: ${itemName}, quantity: ${quantityToReturn}`);
+                selectedItems.push({
+                    itemName,
+                    quantity: quantityToReturn
+                });
+            }
         }
-    }
-});
-
-if (selectedItems.length === 0) {
-    alert('No products selected or quantity is zero.');
-    return;
-}
-
-try {
-    const response = await fetch('/unloadCargo', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ items: selectedItems })
     });
 
-    const result = await response.json();
-    if (result.success) {
-        alert('Products unloaded successfully!');
-
-        // Refresh the cargo and product modals to reflect the changes
-        const cargoResponse = await fetch('/getCargo');
-        const cargoData = await cargoResponse.json();
-        populateCargoTab(cargoData.cargo);
-
-        const productsResponse = await fetch('/getProducts');
-        const productsData = await productsResponse.json();
-        renderProductModal(productsData);
-    } else {
-        alert('Failed to unload products: ' + result.message);
+    if (selectedItems.length === 0) {
+        alert('No products selected or quantity is zero.');
+        return;
     }
-} catch (error) {
-    console.error('Error unloading cargo:', error);
-    alert('An error occurred while unloading cargo.');
-}
+
+    try {
+        const response = await fetch('/api/rescuer/unloadCargo', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ items: selectedItems })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            alert('Products unloaded successfully!');
+
+            // Refresh the cargo and product modals to reflect the changes
+            const cargoResponse = await fetch('/api/rescuer/getCargo');
+            const cargoData = await cargoResponse.json();
+            populateCargoTab(cargoData.cargo);
+
+            const dataDoc = await fetch('/api/items');
+            const itemsData = await dataDoc.json();
+            renderItemsModal(itemsData);
+        } else {
+            alert('Failed to unload products: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error unloading cargo:', error);
+        alert('An error occurred while unloading cargo.');
+    }
 });
 
 
@@ -304,5 +452,7 @@ window.addEventListener('message', function(event) {
         itemsModal.style.display = 'block';
     }
 });
+
+
 
     

@@ -32,6 +32,26 @@ router.post('/updateRescuerLocation', async (req, res) => {
     }
 });
 
+// Get Current Rescuer's Cargo 
+router.get('/getCargo', async (req, res) => {
+    console.log('getCargo route hit');  // Debugging line
+    try {
+        const userId = req.session.userId;
+        const user = await Rescuer.findById(userId);
+        
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+        
+        console.log('Returning user cargo:', user.cargo);
+        res.json({ success: true, cargo: user.cargo });
+    } catch (error) {
+        console.error('Error fetching cargo:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
+
 // Route to save cargo to the database
 router.post('/saveCargo', async (req, res) => {
     try {
@@ -102,6 +122,78 @@ router.post('/saveCargo', async (req, res) => {
         res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 });
+
+
+router.post('/unloadCargo', async (req, res) => {
+    try {
+        const userId = req.session.userId;
+        const { items } = req.body;  // Array of items with itemName and quantity
+
+        // Find the rescuer
+        const user = await Rescuer.findById(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'Rescuer not found' });
+        }
+
+        // Fetch the data document that contains all the items
+        const dataDoc = await Data.findOne();
+        if (!dataDoc) {
+            return res.status(500).json({ success: false, message: 'Data document not found' });
+        }
+
+        // Iterate through the items to be unloaded
+        for (const item of items) {
+            const { itemName, quantity } = item;
+            
+            // Find the item in the general items collection by its name
+            const itemInStorage = dataDoc.items.find(i => i.name === itemName);
+            if (!itemInStorage) {
+                return res.status(400).json({ success: false, message: `Item ${itemName} not found in storage` });
+            }
+
+            // Find the item in the rescuer's cargo
+            const cargoItemIndex = user.cargo.findIndex(cargoItem => cargoItem.item === itemName);
+
+            if (cargoItemIndex === -1) {
+                return res.status(400).json({ success: false, message: `Item ${itemName} not found in rescuer's cargo` });
+            }
+
+            const cargoItem = user.cargo[cargoItemIndex];
+
+            // Ensure enough quantity exists to unload
+            if (cargoItem.quantity < quantity) {
+                return res.status(400).json({ success: false, message: `Not enough quantity of ${itemName} in cargo to unload` });
+            }
+
+            // Update the stock in the general storage
+            itemInStorage.stock += quantity;  // Add the unloaded quantity back to the stock
+
+            // Deduct the quantity from the rescuer's cargo
+            cargoItem.quantity -= quantity;
+
+            // If the quantity becomes zero, remove the item from the rescuer's cargo
+            if (cargoItem.quantity === 0) {
+                user.cargo.splice(cargoItemIndex, 1);  // Remove the item from cargo
+            }
+        }
+
+        // Save the updated rescuer data
+        await user.save();
+
+        // Save the updated stock back to the data document
+        await dataDoc.save();
+
+        res.json({ success: true, message: 'Cargo unloaded successfully, and stock updated.' });
+    } catch (error) {
+        console.error('Error unloading cargo:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
+
+
+
+
 
 
 

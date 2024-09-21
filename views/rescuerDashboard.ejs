@@ -78,9 +78,9 @@
         </div>
     
         <!-- Content for Tasks tab -->
-        <div id="tasksTab" class="tab-content">
+        <div id="tasksTab" class="tab-content" style="display: none;">
 
-            <h3>Your tasks will appear here.</h3>
+            <h3>Your Tasks</h3>
             <table id="tasksTable">
                 <thead>
                     <tr>
@@ -170,6 +170,12 @@
         } else {
             console.error('Element is undefined in openTab function');
         }
+    }
+    var activeTabButton = document.getElementById('cargoTabBtn'); // Default to Cargo tab
+    if (activeTabButton) {
+        openTab('cargoTab', activeTabButton);
+    } else {
+        console.error('No tab buttons found');
     }
 </script>
 </html>
