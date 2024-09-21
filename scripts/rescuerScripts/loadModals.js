@@ -109,13 +109,12 @@ function createCargoRow(item, index) {
 }
 // Function 3: Cargo Tab population
 function populateCargoTab(cargo) {
-    if (!Array.isArray(cargo)) {
-        console.error('Cargo is not an array or is undefined:', cargo);
+    const loadedItemsDiv = document.getElementById('loadedItems');
+    // If no cargo, display empty message
+    if (!cargo || cargo.length === 0) {
+        loadedItemsDiv.innerHTML = '<p>Cargo is currently empty!</p>';
         return;
     }
-
-    const loadedItemsDiv = document.getElementById('loadedItems');
-    
     let itemTableHtml = `
         <table id="itemTable">
             <thead>
@@ -263,33 +262,31 @@ window.addEventListener('click', function(event) {
     });
 });
 
-// Handle Load Button
+
 document.getElementById('loadButton').addEventListener('click', async function() {
-    const cargoTab = document.getElementById('cargoTab');
     const rows = document.querySelectorAll('#itemsModal table tbody tr');
     let cargo = [];
 
     rows.forEach((row, index) => {
-        
         const quantityInput = row.querySelector('input[type="number"]');
         if (quantityInput) {
             const quantity = parseInt(quantityInput.value);
             
             if (quantity > 0) {
                 const itemId = row.dataset.itemId;
-                const itemName = row.dataset.itemName;
+                const itemName = row.dataset.itemName;  // Ensure this is correctly set in the dataset
                 const categoryName = row.dataset.categoryName;
                 console.log(`Item id: ${itemId}, Item Name: ${itemName}, Category ID: ${categoryName}, Quantity: ${quantity}`);
                 
-                if (itemId && categoryName) {
-                    cargo.push({ itemId: itemId, categoryName: categoryName, quantity: quantity });
+                if (itemId && categoryName && itemName) {
+                    cargo.push({ itemId: itemId, itemName: itemName, categoryName: categoryName, quantity: quantity });
                 }
-            } 
-        
-        } 
+            }
+        }
     });
+
     console.log('Cargo to be saved:', JSON.stringify(cargo));
-    // Save cargo to the database via an AJAX request
+
     try {
         const response = await fetch('/api/rescuer/saveCargo', {
             method: 'POST',
@@ -299,65 +296,54 @@ document.getElementById('loadButton').addEventListener('click', async function()
             body: JSON.stringify({ cargo: cargo })
         });
         const data = await response.json();
-        
+
         console.log('Cargo saved successfully:', data);
+
         if (!data.success) {
             console.error('Cargo save failed:', data.message);
         } else {
-        // Fetch updated products to reflect the new stock
-        const itemsResponse = await fetch('/api/items');
-        const updatedItems = await itemsResponse.json();
-
-        // Re-render the product modal with updated stock
-        renderItemsModal(updatedItems);
-        // populateCargoTab(cargo);
-        }
-
-        let tableBody = document.querySelector('#loadedItems table tbody');
-        
-        // If the table doesn't exist, create it with headers
-        if (!tableBody) {
-            let loadedItemsHtml = '<h3>Loaded Items:</h3>';
-            loadedItemsHtml += '<table><thead><tr><th> # </th><th>Item Name</th><th>Category</th><th>Details</th><th>Quantity</th></tr></thead><tbody>';
-            document.getElementById('loadedItems').innerHTML = loadedItemsHtml;
-            tableBody = document.querySelector('#loadedItems table tbody');
-        }
-            
-        
-        // Append each new product as a row
-        cargo.forEach(item => {
-            const row = Array.from(rows).find(row => row.dataset.itemId === item.itemId);
-            if (row) {
-                const itemName = row.cells[0].innerText;
-                const itemCategory = row.cells[1].innerText;
-                const itemDetails = row.cells[2].innerText;
-
-                const newRowHtml = `<tr>
-                    <td><input type="checkbox" class="item-checkbox" data-item-id="${item.itemId}"></td>
-                    <td>${itemName}</td>
-                    <td>${itemCategory}</td>
-                    <td>${itemDetails}</td>
-                    <td>${item.quantity}</td>
-                </tr>`;
+            // Update the existing cargo table
+            cargo.forEach(item => {
+                let itemFound = false;
                 
-                tableBody.insertAdjacentHTML('beforeend', newRowHtml); // Append the new row
-            } else {
-                console.warn('No matching row found for productId:', item.itemId);  // Debugging aid
-            }
-        });
-        
-        
+                // Search for the row with the same itemName
+                document.querySelectorAll('#itemTable tbody tr').forEach(row => {
+                    const itemNameCell = row.querySelector('td:nth-child(3)'); // Assuming 3rd column contains the item name
+                    if (itemNameCell && itemNameCell.textContent.trim() === item.itemName) {
+                        // Update the quantity if the item already exists
+                        const quantityCell = row.querySelector('.quantity-cell');
+                        const currentQuantity = parseInt(quantityCell.textContent);
+                        quantityCell.textContent = currentQuantity + item.quantity;
+                        itemFound = true;
+                    }
+                });
 
+                if (!itemFound) {
+                    // If the item doesn't exist, add a new row
+                    const itemTable = document.querySelector('#itemTable tbody');
+                    if (itemTable) {
+                        itemTable.insertAdjacentHTML('beforeend', createCargoRow(item, itemTable.rows.length));
+                    }
+                }
+            });
 
-        // Optionally, close the modal after loading products
-        document.getElementById('itemsModal').style.display = 'none';
+            // Fetch updated products to reflect the new stock
+            const itemsResponse = await fetch('/api/items');
+            const updatedItems = await itemsResponse.json();
+
+            // Re-render the product modal with updated stock
+            renderItemsModal(updatedItems);
+        }
+
+        document.getElementById('itemsModal').style.display = 'none';  // Optionally close the modal
 
     } catch (error) {
         console.error('Error saving cargo:', error);
     }
-
-
 });
+
+
+
 // Unload Cargo Button Event listener
 document.getElementById('unloadButton').addEventListener('click', async function () {
     const selectedItems = [];
