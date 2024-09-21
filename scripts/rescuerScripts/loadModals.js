@@ -119,7 +119,7 @@ function populateCargoTab(cargo) {
         <table id="itemTable">
             <thead>
                 <tr>
-                    <th></th>
+                    <th><input type="checkbox" id="selectAllCheckbox"></th>
                     <th> # </th>
                     <th>Item</th>
                     <th>Category</th>
@@ -136,6 +136,16 @@ function populateCargoTab(cargo) {
     loadedItemsDiv.innerHTML = itemTableHtml;
 
     addCheckboxEventListeners();
+    // Event Listener for Checkbox Select all to unload massively
+    document.getElementById('selectAllCheckbox').addEventListener('change', function() {
+        const isChecked = this.checked;
+        
+        // Select or deselect all checkboxes based on the header checkbox
+        document.querySelectorAll('#itemTable tbody .item-checkbox').forEach(checkbox => {
+            checkbox.checked = isChecked;
+            checkbox.dispatchEvent(new Event('change')); // Trigger change event to update quantity input fields if necessary
+    });
+});
 }
 // Function 4: Checkbox for editing the cargo items
 // Function 4: Checkbox for editing the cargo items
@@ -263,22 +273,23 @@ window.addEventListener('click', function(event) {
 });
 
 
+
 document.getElementById('loadButton').addEventListener('click', async function() {
     const rows = document.querySelectorAll('#itemsModal table tbody tr');
     let cargo = [];
 
-    rows.forEach((row, index) => {
+    // Collecting the cargo data
+    rows.forEach((row) => {
         const quantityInput = row.querySelector('input[type="number"]');
         if (quantityInput) {
             const quantity = parseInt(quantityInput.value);
             
             if (quantity > 0) {
                 const itemId = row.dataset.itemId;
-                const itemName = row.dataset.itemName;  // Ensure this is correctly set in the dataset
+                const itemName = row.dataset.itemName;
                 const categoryName = row.dataset.categoryName;
-                console.log(`Item id: ${itemId}, Item Name: ${itemName}, Category ID: ${categoryName}, Quantity: ${quantity}`);
                 
-                if (itemId && categoryName && itemName) {
+                if (itemId && categoryName && itemName) {  // Check all values
                     cargo.push({ itemId: itemId, itemName: itemName, categoryName: categoryName, quantity: quantity });
                 }
             }
@@ -286,7 +297,7 @@ document.getElementById('loadButton').addEventListener('click', async function()
     });
 
     console.log('Cargo to be saved:', JSON.stringify(cargo));
-
+    
     try {
         const response = await fetch('/api/rescuer/saveCargo', {
             method: 'POST',
@@ -296,51 +307,81 @@ document.getElementById('loadButton').addEventListener('click', async function()
             body: JSON.stringify({ cargo: cargo })
         });
         const data = await response.json();
-
+        
         console.log('Cargo saved successfully:', data);
-
         if (!data.success) {
             console.error('Cargo save failed:', data.message);
         } else {
-            // Update the existing cargo table
+            // Check if "Cargo is currently empty!" message is there and remove it
+            const emptyMessage = document.querySelector('#loadedItems p');
+            if (emptyMessage) {
+                emptyMessage.remove(); // Remove the empty message
+            }
+
+            // Check if the cargo table exists, if not, create it
+            let tableBody = document.querySelector('#itemTable tbody');
+            if (!tableBody) {
+                let loadedItemsHtml = `
+                    <table id="itemTable">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>#</th>
+                                <th>Item</th>
+                                <th>Category</th>
+                                <th>Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                `;
+                document.getElementById('loadedItems').innerHTML = loadedItemsHtml;
+                tableBody = document.querySelector('#itemTable tbody');  // Get the new table body
+            }
+
+            // Update the cargo table
             cargo.forEach(item => {
-                let itemFound = false;
+                let existingRow = null;
+                const itemRows = document.querySelectorAll('#itemTable tbody tr');
                 
-                // Search for the row with the same itemName
-                document.querySelectorAll('#itemTable tbody tr').forEach(row => {
-                    const itemNameCell = row.querySelector('td:nth-child(3)'); // Assuming 3rd column contains the item name
+                // Loop through the rows and find if the item already exists
+                itemRows.forEach(row => {
+                    const itemNameCell = row.querySelector('td:nth-child(3)'); // Assuming the item name is in the 3rd column
                     if (itemNameCell && itemNameCell.textContent.trim() === item.itemName) {
-                        // Update the quantity if the item already exists
-                        const quantityCell = row.querySelector('.quantity-cell');
-                        const currentQuantity = parseInt(quantityCell.textContent);
-                        quantityCell.textContent = currentQuantity + item.quantity;
-                        itemFound = true;
+                        existingRow = row;
                     }
                 });
 
-                if (!itemFound) {
-                    // If the item doesn't exist, add a new row
-                    const itemTable = document.querySelector('#itemTable tbody');
-                    if (itemTable) {
-                        itemTable.insertAdjacentHTML('beforeend', createCargoRow(item, itemTable.rows.length));
-                    }
+                if (existingRow) {
+                    // Update the quantity if item already exists
+                    const quantityCell = existingRow.querySelector('.quantity-cell');
+                    const currentQuantity = parseInt(quantityCell.textContent);
+                    quantityCell.textContent = currentQuantity + item.quantity;
+                } else {
+                    // If item doesn't exist, add a new row
+                    const newRowHtml = `
+                        <tr>
+                            <td><input type="checkbox" class="item-checkbox" data-item-id="${item.itemId}"></td>
+                            <td>${tableBody.rows.length + 1}</td>
+                            <td>${item.itemName}</td>
+                            <td>${item.categoryName}</td>
+                            <td class="quantity-cell">${item.quantity}</td>
+                        </tr>`;
+                    tableBody.insertAdjacentHTML('beforeend', newRowHtml);
                 }
             });
 
-            // Fetch updated products to reflect the new stock
-            const itemsResponse = await fetch('/api/items');
-            const updatedItems = await itemsResponse.json();
-
-            // Re-render the product modal with updated stock
-            renderItemsModal(updatedItems);
+            // Optionally, close the modal after loading products
+            document.getElementById('itemsModal').style.display = 'none';
         }
-
-        document.getElementById('itemsModal').style.display = 'none';  // Optionally close the modal
 
     } catch (error) {
         console.error('Error saving cargo:', error);
     }
 });
+
+
+
 
 
 
@@ -357,8 +398,6 @@ document.getElementById('unloadButton').addEventListener('click', async function
             const quantityToReturn = parseInt(quantityInput.value, 10) || 0;
             if (quantityToReturn > 0) {
                 const itemName = checkbox.dataset.itemName;
-                console.log(selectedItems);
-                console.log(`itemName: ${itemName}, quantity: ${quantityToReturn}`);
                 selectedItems.push({
                     itemName,
                     quantity: quantityToReturn
@@ -401,6 +440,7 @@ document.getElementById('unloadButton').addEventListener('click', async function
         alert('An error occurred while unloading cargo.');
     }
 });
+
 
 
 // Handle messages from the iframe
