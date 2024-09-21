@@ -139,6 +139,7 @@ function populateCargoTab(cargo) {
     addCheckboxEventListeners();
 }
 // Function 4: Checkbox for editing the cargo items
+// Function 4: Checkbox for editing the cargo items
 function addCheckboxEventListeners() {
     document.querySelectorAll('.item-checkbox').forEach(checkbox => {
         checkbox.addEventListener('change', function() {
@@ -150,16 +151,20 @@ function addCheckboxEventListeners() {
                 return;
             }
 
-            let quantity = parseInt(quantityCell.textContent, 10);
-            if (isNaN(quantity)) {
-                console.warn('Parsed quantity is NaN, defaulting to 0');
-                quantity = 0;
-            }
-
+            // If the checkbox is checked, allow editing of quantity
             if (this.checked) {
+                // Get the current quantity from the cell and store it
+                let originalQuantity = parseInt(quantityCell.textContent, 10);
+                if (isNaN(originalQuantity)) {
+                    console.warn('Parsed quantity is NaN, defaulting to 0');
+                    originalQuantity = 0;
+                }
+                // Store the original quantity in a data attribute for later use
+                this.dataset.originalQuantity = originalQuantity;
+
                 // Replace quantity text with an input field and buttons
                 quantityCell.innerHTML = `
-                    <input type="number" class="quantity-input" value="0" min="0" max="${quantity}" style="width: 50px;">
+                    <input type="number" class="quantity-input" value="${originalQuantity}" min="0" style="width: 50px;">
                     <button class="increment-btn">+</button>
                     <button class="decrement-btn">-</button>
                 `;
@@ -171,9 +176,7 @@ function addCheckboxEventListeners() {
 
                 incrementBtn.addEventListener('click', function() {
                     let currentQuantity = parseInt(quantityInput.value, 10);
-                    if (currentQuantity < quantity) {
-                        quantityInput.value = currentQuantity + 1;
-                    }
+                    quantityInput.value = currentQuantity + 1;
                 });
 
                 decrementBtn.addEventListener('click', function() {
@@ -184,12 +187,14 @@ function addCheckboxEventListeners() {
                 });
 
             } else {
-                // Restore the original quantity text when checkbox is unchecked
-                quantityCell.innerHTML = quantity;
+                // If the checkbox is unchecked, restore the original quantity
+                const originalQuantity = this.dataset.originalQuantity || 0;
+                quantityCell.innerHTML = originalQuantity;
             }
         });
     });
 }
+
 
 
 // Function 5: Checkboxes @ Cargo editing - observing function
