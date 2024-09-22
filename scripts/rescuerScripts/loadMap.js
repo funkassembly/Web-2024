@@ -56,7 +56,11 @@ document.addEventListener("DOMContentLoaded", function() {
             })
             .then(items => {  // Use the actual data as `items`
                 console.log('Fetched items:', items);
-                
+                 // Show the storage modals
+                showStorageModals();
+            
+                // Render items in the items modal
+                renderItemsModal(items);
                 // Send a message to the parent document to show the modal and populate it
                 window.parent.postMessage({
                     type: 'showItemsModal',
