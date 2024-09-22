@@ -12,19 +12,32 @@ const passwordValidator = (password) => {
     return passwordRegex.test(password);
 };
 
-const getCoordinates = async (address) => {
-    const accessKey = 'bd3521cab3babdc77f86ccb2feabbdae'; // Replace with your Positionstack access key
-    const apiUrl = `http://api.positionstack.com/v1/forward?access_key=${accessKey}&query=${encodeURIComponent(address)}`;
-    // Use dynamic import for node-fetch
-    const fetch = (await import('node-fetch')).default;
-    const response = await fetch(apiUrl);
-    const data = await response.json();
+// Updated getCoordinates using Nominatim API
+const getCoordinates = async (street, number, city) => {
+    
+    const fullAddress = `${number}%20${street},%20${city},%20Greece`;
+    // const encodedAddress = encodeURIComponent(fullAddress);
+    const apiUrl = `https://nominatim.openstreetmap.org/search?q=${fullAddress}&format=json&limit=1`;
+    console.log(`Nominatim API URL: ${apiUrl}`); // Log the full URL
+    try {
+        // Use node-fetch to make the API call
+        const fetch = (await import('node-fetch')).default;
+        const response = await fetch(apiUrl, {
+            headers: {
+                'User-Agent': 'Web_2024/1.0' // Customize the User-Agent string
+            }
+        });
+        const data = await response.json();
 
-    if (data.data && data.data.length > 0) {
-        const { latitude, longitude } = data.data[0];
-        return { lat: latitude, lng: longitude };
-    } else {
-        throw new Error('Could not retrieve coordinates.');
+        if (data && data.length > 0) {
+            const { lon, lat } = data[0]; // Nominatim returns lon/lat
+            return { lat: parseFloat(lat), lng: parseFloat(lon) };
+        } else {
+            throw new Error('Could not retrieve coordinates from Nominatim.');
+        }
+    } catch (error) {
+        console.error('Error in Nominatim geocoding:', error.message);
+        throw error; // Re-throw the error to handle it in the calling function
     }
 };
 
@@ -62,10 +75,10 @@ router.post('/signup', async (req, res) => {
         return res.render('signup', { error: 'Password does not meet security requirements.' });
     }
 
-    const fullAddress = `${number} ${street}, ${city}, ${zip}, ${country}`;
-
+    
+    
     try {
-        const {lng, lat} = await getCoordinates(fullAddress);
+        const {lng, lat} = await getCoordinates(street, number, city);
         
         // Create the new user with all the fields
         const newUser = await Civilian.create({
