@@ -44,6 +44,16 @@ const reverseGeocodeNominatim = async (lat, lng) => {
     }
 };
 
+// Route to get the logged-in user's ID
+router.get('/id', (req, res) => {
+    // Check if the session contains a userId (civilianId)
+    if (req.session && req.session.userId) {
+        res.json({ civilianId: req.session.userId });
+    } else {
+        // If not authenticated, return 401 Unauthorized
+        res.status(401).json({ message: 'Not authenticated' });
+    }
+});
 
 router.get('/location', async (req, res) => {
     try {
@@ -114,5 +124,84 @@ router.post('/updateLocation', async (req, res) => {
         res.status(500).json({ message: 'Error updating location', error });
     }
 });
+
+
+// Route to get the civilian's address based on their username or email
+// Route to get the civilian's address based on their userId in the session
+router.get('/address', async (req, res) => {
+    try {
+        // Debugging: Log the session data
+        console.log("Fetching address for the civilian...");
+        console.log("Session data:", req.session);
+
+        // Get the userId from the session
+        const userId = req.session.userId;
+        console.log("UserId for fetching address:", userId);
+
+        if (!userId) {
+            return res.status(400).json({ message: 'UserId is missing from the request.' });
+        }
+
+        // Find the civilian by userId (_id)
+        const civilian = await Civilian.findById(userId).select('address');
+        console.log("Civilian fetched from DB:", civilian);
+
+        if (!civilian) {
+            return res.status(404).json({ message: 'No civilian found for this userId' });
+        }
+
+        if (!civilian.address) {
+            return res.status(404).json({ message: 'No address found for this civilian' });
+        }
+
+        // Debug: Log the fetched address
+        console.log("Address found:", civilian.address);
+
+        res.json(civilian.address);
+    } catch (error) {
+        console.error('Error fetching civilian address:', error);
+        res.status(500).json({ message: 'Failed to fetch address' });
+    }
+});
+
+
+// Route to submit a new task (request or donation)
+router.post('/tasks', async (req, res) => {
+    try {
+        const { type, status, address, item, itemCategory, quantity } = req.body;
+
+        // Assuming the user is logged in and we have their ID stored in the session
+        const civilianId = req.session.userId;
+
+        // Find the civilian
+        const civilian = await Civilian.findById(civilianId);
+        if (!civilian) {
+            return res.status(404).json({ message: 'Civilian not found' });
+        }
+
+        // Create a new task object
+        const newTask = {
+            type,
+            status,
+            civilianId,
+            address,
+            item,
+            itemCategory,
+            quantity
+        };
+
+        // Add the task to the civilian's tasks array
+        civilian.tasks.push(newTask);
+
+        // Save the civilian
+        await civilian.save();
+
+        res.status(200).json({ message: 'Task submitted successfully', task: newTask });
+    } catch (error) {
+        console.error('Error submitting task:', error);
+        res.status(500).json({ message: 'Error submitting task' });
+    }
+});
+
 
 module.exports = router;

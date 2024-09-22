@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const e = require('express');
 
 // Base user schema
 const baseOptions = {
@@ -49,8 +50,8 @@ const taskSchema = new mongoose.Schema({
         zip: String,
         country: String,
     },
-    item: { type: mongoose.Schema.Types.ObjectId, ref: 'Item', required: true },
-    itemCategory: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: true }, // Reference to Category
+    item: { type: String, ref: 'Item', required: true },
+    itemCategory: { type: String, ref: 'Category', required: true }, // Reference to Category
     quantity: { type: Number, required: true },
     dateSubmitted: { type: Date, default: Date.now },
     rescuerUsername: { type: mongoose.Schema.Types.ObjectId, ref: 'User'}, // Filled when processed

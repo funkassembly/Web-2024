@@ -178,6 +178,8 @@ body {
     width: 100%;
     border-collapse: collapse; /* Remove gaps between cells */
     margin-bottom: 20px;
+    max-height: 70vh; /* Adjust this value depending on the screen size, can also use media queries */
+    overflow-y: auto; /* Enable vertical scroll if content exceeds the height */
 }
 
 .items-list th, 
@@ -214,7 +216,7 @@ body {
 
 /* Search input style */
 #searchInput {
-    width: 80%;
+    width: 90%;
     padding: 10px;
     margin-bottom: 15px;
     font-size: 16px;
@@ -288,12 +290,12 @@ h1 {
     width: 100%;
 }
 
-/* Styling for product selection and delivery date sections */
-.product-delivery-container {
+/* Styling for item selection and delivery date sections */
+.item-delivery-container {
     margin-top: 15px;
 }
 
-.product-select-container,
+.item-select-container,
 .delivery-date-container {
     display: flex;
     align-items: center;
@@ -305,14 +307,14 @@ h1 {
     flex-wrap: wrap;
 }
 
-.product-select-container label,
+.item-select-container label,
 .delivery-date-container label {
     margin-right: 10px;
     font-weight: bold;
     color: #555;
 }
 
-.product-select-container select,
+.item-select-container select,
 .delivery-date-container input,
 .delivery-date-container select {
     margin-right: 20px;
@@ -365,23 +367,6 @@ select:hover {
     background-color: #e68a00;
 }
 
-/* Styling for the Add Product button */
-.add-product-button {
-    display: block;
-    margin-top: 15px;
-    padding: 10px 20px;
-    font-size: 14px;
-    background-color: #ccc;
-    color: #333;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.add-product-button:hover {
-    background-color: #bbb;
-}
 
 /* General table styling for History tab (requests and donations) */
 #requestHistoryTable, #donationHistoryTable {
@@ -501,7 +486,7 @@ select:hover {
         font-size: 14px;
     }
 
-    .date-time-container, .address-row, .product-select-container, .delivery-date-container {
+    .date-time-container, .address-row, .item-select-container, .delivery-date-container {
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;

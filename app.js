@@ -27,7 +27,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
     secret: 'mysecret', 
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
     cookie: { maxAge: 3600000 } // 1 hour
 }));
 app.use(cors());

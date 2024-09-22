@@ -41,7 +41,7 @@
     <div class="modal-content">
         <span class="close-modal">&times;</span>
         <h2>Available Products in General Storage</h2>
-        <input type="text" id="searchInput" placeholder="Search items..." style="width: 100%; padding: 8px; margin-bottom: 10px;" />
+        <input type="text" id="searchInput" placeholder="Search items..." />
         <div class="items-list">
             <table id="itemsTable">
                 <thead>
@@ -68,7 +68,7 @@
         <div class="request-history-container">
             <div class="checkbox-container">
                 <label class="checkbox-label">
-                    <input type="checkbox" id="requestCheckbox"> Request
+                    <input type="checkbox" id="requestCheckbox" checked> Request
                 </label>
                 <label class="checkbox-label">
                     <input type="checkbox" id="donateCheckbox"> Donate
@@ -125,5 +125,31 @@
 </body>
 
 <script src="/civilianScript.js"></script>
+<script>
+    function openTab(tabId, element) {
+        // Hide all tab contents
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabContents.forEach(tabContent => tabContent.style.display = 'none');
+
+        // Remove active class from all tab buttons
+        const tabButtons = document.querySelectorAll('.tab-button');
+        tabButtons.forEach(tabButton => tabButton.classList.remove('active'));
+
+        // Show the clicked tab's content and mark the button as active
+        document.getElementById(tabId).style.display = 'block';
+        element.classList.add('active');
+
+        // Check if it's the request tab and call generateTaskForm if it is
+        if (tabId === 'requestTab') {
+            generateTaskForm();  // Ensure the form is generated when the request tab is opened
+        }
+    }
+    // Open the Request tab by default and generate the form
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('requestCheckbox').checked = true;  // Default to checked
+        openTab('requestTab', document.getElementById('requestTabBtn'));  // Open Request tab
+    });
+
+</script>
 
 </html>
