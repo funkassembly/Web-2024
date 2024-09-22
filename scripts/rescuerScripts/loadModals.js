@@ -616,12 +616,6 @@ document.getElementById('unloadButton').addEventListener('click', async function
 });
 
 
-
-
-
-
-
-
 // Handle messages from the iframe
 window.addEventListener('message', function(event) {
     if (event.data.type === 'updateUnloadButtonState') {
