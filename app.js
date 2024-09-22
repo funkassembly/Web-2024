@@ -10,6 +10,7 @@ const fs = require('fs');
 const userRoutes = require('./routes/newuserRoutes');
 const statsRoutes = require('./routes/statsRoutes');
 const rescuerRoutes = require('./routes/rescuerRoutes');
+const civilianRoutes = require('./routes/civilianRoutes');
 
 const app = express();
 
@@ -86,6 +87,7 @@ app.use('/api/stats', statsRoutes);
 //app.use('/api/categories', categoryRoutes);
 app.use('/api/items', itemRoutes);
 app.use('/api/rescuer', rescuerRoutes);
+app.use('/api/civilian', civilianRoutes);
 
 
 // // Multer setup for JSON file upload

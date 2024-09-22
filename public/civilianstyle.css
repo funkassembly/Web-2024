@@ -1,0 +1,470 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    overflow: hidden;
+    background: linear-gradient(135deg, #ff9900, #ffffff); /* Gradient background like rescuer's */
+    color: #333;
+}
+
+/* General styling for container and elements */
+.dashboard-container {
+    display: flex;
+    justify-content: space-between;
+    height: 90vh;
+    width: 90%;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.8); /* Transparent white for consistency */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+/* Map container */
+.map-container {
+    flex: 1;
+    margin-right: 20px;
+    height: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
+
+/* Request and history container */
+.request-history-container {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.7); /* Transparent white for consistency */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    height: 100%;
+    position: relative;
+    overflow-y: auto;
+}
+
+/* Checkbox styling */
+.checkbox-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.checkbox-label {
+    margin: 0 10px;
+    font-size: 16px;
+    color: #333;
+}
+
+.checkbox-label input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+/* Tab styling */
+.tabs {
+    display: flex;
+    justify-content: space-between;
+    background-color: rgba(255, 255, 255, 0.8); /* Transparent white for consistency */
+    border-bottom: 2px solid #ddd;
+    border-radius: 10px 10px 0 0;
+}
+
+.tab-button {
+    flex: 1;
+    padding: 12px;
+    cursor: pointer;
+    border: none;
+    background-color: #e0e0e0;
+    font-size: 16px;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+.tab-button:hover {
+    background-color: #ccc;
+}
+
+.tab-button.active {
+    background-color: #ff9900; /* Rescuer's dashboard color */
+    color: white;
+    font-weight: bold;
+    border-bottom: 3px solid #e68a00;
+}
+
+.tab-content {
+    display: none;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-top: none;
+    overflow-y: auto;
+    flex-grow: 1;
+    background-color: #fff;
+    border-radius: 0 0 10px 10px;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.header-links {
+    width: 100%;
+    position: relative;
+    margin-bottom: 5px;
+    margin-top: 60px;
+}
+
+.header-links .left-link, .header-links .right-link {
+    position: absolute;
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+}
+
+.header-links .left-link {
+    left: 20px;
+}
+
+.header-links .right-link {
+    right: 20px;
+}
+
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 60%;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.close-modal {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-modal:hover, .close-modal:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+h1 {
+    margin-bottom: 10px;
+    font-size: 36px;
+    text-align: center;
+    color: #000000;
+    width: 100%;
+}
+
+/* Styling for date and time fields */
+.date-time-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.date-time-container label {
+    margin-right: 10px;
+    font-weight: bold;
+    color: #555;
+}
+
+.date-time-container input[type="text"] {
+    width: 45%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+/* Styling for address display */
+.address-display {
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    margin-bottom: 20px;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.address-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.address-row label {
+    margin-right: 10px;
+    font-weight: bold;
+    color: #555;
+}
+
+.address-row input[type="text"] {
+    flex-grow: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    width: 100%;
+}
+
+/* Styling for product selection and delivery date sections */
+.product-delivery-container {
+    margin-top: 15px;
+}
+
+.product-select-container,
+.delivery-date-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0px;
+    justify-content: space-between;
+}
+
+.delivery-date-container {
+    flex-wrap: wrap;
+}
+
+.product-select-container label,
+.delivery-date-container label {
+    margin-right: 10px;
+    font-weight: bold;
+    color: #555;
+}
+
+.product-select-container select,
+.delivery-date-container input,
+.delivery-date-container select {
+    margin-right: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 8px;
+    background-color: #f9f9f9;
+}
+
+/* General styling for dropdowns */
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    transition: background-color 0.3s ease;
+}
+
+select:hover {
+    background-color: #e9e9e9;
+}
+
+/* Styling for smaller dropdowns */
+.small-select {
+    width: auto;
+    padding: 5px;
+    font-size: 14px;
+    margin-right: 10px;
+}
+
+/* Styling for the request and donate buttons */
+.request-button, .donate-button {
+    float: right;
+    padding: 12px 20px;
+    font-size: 24px;
+    background-color: #ff9900; /* Rescuer's button color */
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+    align-self: flex-end;
+    margin-left: auto;
+    margin-bottom: -60px;
+}
+
+.request-button:hover, .donate-button:hover {
+    background-color: #e68a00;
+}
+
+/* Styling for the Add Product button */
+.add-product-button {
+    display: block;
+    margin-top: 15px;
+    padding: 10px 20px;
+    font-size: 14px;
+    background-color: #ccc;
+    color: #333;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.add-product-button:hover {
+    background-color: #bbb;
+}
+
+/* General table styling for History tab (requests and donations) */
+#requestHistoryTable, #donationHistoryTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #f9f9f9;
+}
+
+#requestHistoryTable th, #requestHistoryTable td,
+#donationHistoryTable th, #donationHistoryTable td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+#requestHistoryTable th, #donationHistoryTable th {
+    background-color: #ff9900; /* Rescuer's orange */
+    color: white;
+    text-align: center;
+    font-weight: bold;
+}
+
+#requestHistoryTable tr:nth-child(even), #donationHistoryTable tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+#requestHistoryTable tr:hover, #donationHistoryTable tr:hover {
+    background-color: #ddd;
+}
+
+#requestHistoryTable td, #donationHistoryTable td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+#requestHistoryTable th, #donationHistoryTable th {
+    text-transform: uppercase;
+}
+
+#requestHistoryTable tbody tr td, #donationHistoryTable tbody tr td {
+    padding: 10px;
+}
+
+/* Title styling for history sections */
+.history-section h3 {
+    margin-top: 20px;
+    font-size: 1.5em;
+    color: #333;
+}
+
+/* Announcement table styles */
+#announcementTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #f9f9f9;
+}
+
+#announcementTable th, #announcementTable td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+#announcementTable th {
+    background-color: #ff9900; /* Rescuer's table header color */
+    color: white;
+    text-align: center;
+    font-weight: bold;
+}
+
+#announcementTable tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+#announcementTable tr:hover {
+    background-color: #ddd;
+}
+
+#announcementTable td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+#announcementTable th {
+    text-transform: uppercase;
+}
+
+#announcementTable tbody tr td {
+    padding: 10px;
+}
+
+.announcement-section h3 {
+    margin-top: 20px;
+    font-size: 1.5em;
+    color: #333;
+}
+
+/* Additional enhancements for mobile responsiveness */
+@media (max-width: 768px) {
+    .dashboard-container {
+        flex-direction: column;
+        height: auto;
+        width: 100%;
+        padding: 10px;
+    }
+
+    .map-container, .request-history-container {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
+
+    .tab-button {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .date-time-container, .address-row, .product-select-container, .delivery-date-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        width: auto;
+        margin-bottom: 5px;
+    }
+
+    .date-time-container input[type="text"], .address-row input[type="text"], select {
+        width: 100%;
+    }
+
+    .request-button, .donate-button {
+        width: 100%;
+        text-align: center;
+        margin-top: 20px;
+    }
+}
