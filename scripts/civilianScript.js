@@ -106,7 +106,118 @@ function toggleMarkerIcon(e) {
     }
 }
 
+// Function 1: Filter items in the modal based on search input
+function filterItemsModal() {
+    const searchInput = document.getElementById('searchInput');
+    const itemsTable = document.getElementById('itemsTable');
+    const allRows = itemsTable.querySelectorAll('tbody tr');
+    
+    searchInput.addEventListener('input', function() {
+        const filterText = this.value.toLowerCase();
+        
+        allRows.forEach(row => {
+            const itemName = row.dataset.itemName.toLowerCase();
+            const categoryName = row.dataset.categoryName.toLowerCase();
 
+            if (itemName.includes(filterText) || categoryName.includes(filterText)) {
+                row.style.display = '';  // Show row
+            } else {
+                row.style.display = 'none';  // Hide row
+            }
+        });
+    });
+}
+
+// Function 2: Render items in the modal 'on click' of General Storage Marker
+function renderItemsModal(items) {
+    const itemsTable = document.getElementById('itemsTable');
+
+    // Clear any existing rows in the table
+    itemsTable.innerHTML = `
+        <thead>
+            <tr>
+                <th>Item Name</th>
+                <th>Category</th>
+                <th>Details</th>
+                <th>In Stock?</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    `;
+
+    const tableBody = itemsTable.querySelector('tbody');
+
+    // Loop through each product and create a row
+    items.forEach(item => {
+        const row = document.createElement('tr');
+        row.dataset.itemId = item.id;
+        row.dataset.itemName = item.name;   // Needed for search filter
+        row.dataset.categoryName = item.category;   // Needed for search filter
+
+        // Product Name
+        const nameCell = document.createElement('td');
+        nameCell.innerText = item.name;
+        row.appendChild(nameCell);
+
+        // Category
+        const categoryCell = document.createElement('td');
+        categoryCell.innerText = item.category;
+        row.appendChild(categoryCell);
+
+        // Details
+        const detailsCell = document.createElement('td');
+        detailsCell.innerText = item.details;
+        row.appendChild(detailsCell);
+
+        // inStock (✓ for true, ✗ for false)
+        const stockCell = document.createElement('td');
+        stockCell.innerText = item.stock ? '✓' : '✗';
+        row.appendChild(stockCell);
+
+        // Append the row to the table body
+        tableBody.appendChild(row);
+    });
+
+    // Call the filter function after rendering the items
+    filterItemsModal();
+}
+
+// Function 3: Show the items modal when General Storage Marker is clicked
+function showItemsModal(items) {
+    const itemsModal = document.getElementById('itemsModal');
+    const closeBtn = document.querySelector('.close-modal');
+
+    // Render the items in the modal
+    renderItemsModal(items);
+
+    // Display the modal
+    itemsModal.style.display = 'block';
+
+    // Add event listener to close the modal
+    closeBtn.addEventListener('click', () => {
+        itemsModal.style.display = 'none';
+    });
+
+    // Close modal when clicking outside of the content
+    window.onclick = function(event) {
+        if (event.target === itemsModal) {
+            itemsModal.style.display = 'none';
+        }
+    };
+}
+// Fetch items from your API and show the modal when marker is clicked
+markerStorage.on('click', async function() {
+    try {
+        // Fetch items from your API
+        const itemsResponse = await fetch('/api/items');
+        const items = await itemsResponse.json();
+
+        // Show the items modal with the fetched items
+        showItemsModal(items);
+    } catch (error) {
+        console.error('Error fetching items:', error);
+    }
+});
 
 
 document.addEventListener('DOMContentLoaded', function () {

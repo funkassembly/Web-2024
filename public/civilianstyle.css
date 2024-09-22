@@ -134,41 +134,92 @@ body {
     right: 20px;
 }
 
-/* Modal styles */
+/* Style the modal itself */
 .modal {
     display: none;
     position: fixed;
-    z-index: 1000;
-    padding-top: 100px;
+    z-index: 1001;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.4); /* Background overlay */
 }
 
+/* Modal content */
 .modal-content {
-    background-color: #fefefe;
-    margin: auto;
+    background-color: #fff;
+    margin: 10% auto;
     padding: 20px;
-    border: 1px solid #888;
-    width: 60%;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 80%; /* Adjust the width */
+    max-width: 1000px;
 }
 
+/* Close button */
 .close-modal {
     color: #aaa;
     float: right;
     font-size: 28px;
     font-weight: bold;
+    cursor: pointer;
 }
 
-.close-modal:hover, .close-modal:focus {
+.close-modal:hover,
+.close-modal:focus {
     color: black;
     text-decoration: none;
     cursor: pointer;
+}
+
+/* Table formatting */
+.items-list table {
+    width: 100%;
+    border-collapse: collapse; /* Remove gaps between cells */
+    margin-bottom: 20px;
+}
+
+.items-list th, 
+.items-list td {
+    border: 1px solid #ddd;
+    text-align: left;
+    padding: 12px;
+    font-size: 16px;
+}
+
+.items-list th {
+    background-color: #f2f2f2;
+    color: #333;
+    font-weight: bold;
+    text-align: center; /* Center the headers */
+}
+
+.items-list tr:nth-child(even) {
+    background-color: #f9f9f9; /* Alternating row colors */
+}
+
+.items-list tr:hover {
+    background-color: #f1f1f1; /* Highlight row on hover */
+}
+
+.items-list td {
+    text-align: center; /* Center text in cells */
+}
+
+.items-list td:first-child, 
+.items-list th:first-child {
+    text-align: left; /* Align the first column to the left */
+}
+
+/* Search input style */
+#searchInput {
+    width: 80%;
+    padding: 10px;
+    margin-bottom: 15px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
 }
 
 h1 {

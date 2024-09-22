@@ -36,27 +36,29 @@
         </div>
     </div>
 
-    <!-- Product Modal -->
-    <div id="productModal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h2>Available Products in General Storage</h2>
-            <div class="product-list">
-                <table id="productTable">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Category</th>
-                            <th>Details</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Table will be populated by JavaScript -->
-                    </tbody>
-                </table>
-            </div>
+    <!-- Items Modal -->
+<div id="itemsModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h2>Available Products in General Storage</h2>
+        <input type="text" id="searchInput" placeholder="Search items..." style="width: 100%; padding: 8px; margin-bottom: 10px;" />
+        <div class="items-list">
+            <table id="itemsTable">
+                <thead>
+                    <tr>
+                        <th>Item Name</th>
+                        <th>Category</th>
+                        <th>Details</th>
+                        <th>In Stock?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Table will be populated by JavaScript -->
+                </tbody>
+            </table>
         </div>
     </div>
+</div>
 
     <h1>Dashboard Civilian</h1>
     <div class="dashboard-container">
