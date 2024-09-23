@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Civilian, User } = require('../models/usersModel');
+const { Civilian, User, Task, Admin } = require('../models/usersModel');
 const { Item, Category, Data } = require('../models/dataModel');
 
 // Reverse geocoding function to get address from lat/lng
@@ -126,17 +126,15 @@ router.post('/updateLocation', async (req, res) => {
 });
 
 
-// Route to get the civilian's address based on their username or email
 // Route to get the civilian's address based on their userId in the session
 router.get('/address', async (req, res) => {
     try {
         // Debugging: Log the session data
         console.log("Fetching address for the civilian...");
-        console.log("Session data:", req.session);
 
         // Get the userId from the session
         const userId = req.session.userId;
-        console.log("UserId for fetching address:", userId);
+        
 
         if (!userId) {
             return res.status(400).json({ message: 'UserId is missing from the request.' });
@@ -144,7 +142,6 @@ router.get('/address', async (req, res) => {
 
         // Find the civilian by userId (_id)
         const civilian = await Civilian.findById(userId).select('address');
-        console.log("Civilian fetched from DB:", civilian);
 
         if (!civilian) {
             return res.status(404).json({ message: 'No civilian found for this userId' });
@@ -153,9 +150,6 @@ router.get('/address', async (req, res) => {
         if (!civilian.address) {
             return res.status(404).json({ message: 'No address found for this civilian' });
         }
-
-        // Debug: Log the fetched address
-        console.log("Address found:", civilian.address);
 
         res.json(civilian.address);
     } catch (error) {
@@ -168,7 +162,7 @@ router.get('/address', async (req, res) => {
 // Route to submit a new task (request or donation)
 router.post('/tasks', async (req, res) => {
     try {
-        const { type, status, address, item, itemCategory, quantity } = req.body;
+        const { type, status, address, item, itemCategory, quantity, rescuerUsername, dateServed } = req.body;
 
         // Assuming the user is logged in and we have their ID stored in the session
         const civilianId = req.session.userId;
@@ -187,7 +181,9 @@ router.post('/tasks', async (req, res) => {
             address,
             item,
             itemCategory,
-            quantity
+            quantity,
+            rescuerUsername,
+            dateServed
         };
 
         // Add the task to the civilian's tasks array
@@ -200,6 +196,63 @@ router.post('/tasks', async (req, res) => {
     } catch (error) {
         console.error('Error submitting task:', error);
         res.status(500).json({ message: 'Error submitting task' });
+    }
+});
+
+// Assuming you have a tasks collection and a civilian model in your database
+router.get('/loadtasks', async (req, res) => {
+    try {
+        const userId = req.session.userId; 
+        console.log('Fetching tasks for civilian ID:', userId);
+        if (!userId) {
+            return res.status(401).json({ message: 'User not authenticated' });
+        }
+        const tasks = await Civilian.findById(userId).select('tasks');
+        // Fetch tasks from the database by civilianId
+        // const tasks = await Task.find({ civilianId: civilianId }); // Assuming a Task model
+        console.log(`Tasks: ${tasks}`);
+        if (tasks.length === 0) {
+            return res.status(404).json({ message: 'No tasks found' });
+        }
+
+        res.json(tasks);
+    } catch (error) {
+        console.error('Error fetching tasks:', error);
+        res.status(500).json({ message: 'Error fetching tasks' });
+    }
+});
+
+// router.get('/announcements', async (req, res) => {
+//     try {
+//         const admin = await Admin.findOne({ role: 'admin' }, 'announcements').select('announcements');  // Fetch only the first admin's announcements field
+//         console.log(`data: ${JSON.stringify(admin)}`);
+//         const type = admin.announcements;
+//         console.log(`Type: ${type}`);
+
+
+//         res.json(type);  // Send the announcements back to the client
+//     } catch (error) {
+//         console.error('Error fetching announcements:', error);
+//         res.status(500).json({ message: 'Error fetching announcements' });
+//     }
+// });
+
+router.get('/announcements', async (req, res) => {
+    try {
+        const admin = await Admin.findOne({ role: 'admin' }, 'announcements').select('announcements');  // Fetch only the first admin's announcements field
+        console.log(`data: ${JSON.stringify(admin)}`);
+        
+        // Flatten the nested announcements structure
+        const flattenedAnnouncements = admin.announcements.flat();  // Assuming there's just one level of nesting
+        
+        if (!flattenedAnnouncements || flattenedAnnouncements.length === 0) {
+            return res.status(404).json({ message: 'No announcements found' });
+        }
+
+        res.json(flattenedAnnouncements);  // Send the flattened announcements back to the client
+    } catch (error) {
+        console.error('Error fetching announcements:', error);
+        res.status(500).json({ message: 'Error fetching announcements' });
     }
 });
 

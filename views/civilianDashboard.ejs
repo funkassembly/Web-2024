@@ -88,32 +88,18 @@
                 </form>
             </div>
         
-            <div id="historyTab" class="tab-content">
-                <h3>Your Request History</h3>
-                <table id="requestHistoryTable">
-                    
-                    <tbody id="requestHistoryContent">
-                        <!-- Request rows will be dynamically added here -->
+            <div id="historyTab" class="tab-content"> 
+                <h3>Your Tasks History</h3>
+                <div id="taskHistoryTable"></div>
+                <!-- <table id="taskHistoryTable"> 
+                    <tbody id="taskHistoryContent"> 
+                        
                     </tbody>
-                </table>
-                <h3>Your Donation History</h3>
-                <table id="donationHistoryTable">
-                    
-                    <tbody id="donationHistoryContent">
-                        <!-- Request rows will be dynamically added here -->
-                    </tbody>
-                </table>
+                </table> -->
             </div>
             <div id="announcementTab" class="tab-content">
                 <h3>Announcements</h3>
                 <table id="announcementTable">
-                <thead>
-                <tr>
-                <th>Date</th>
-                <th>Announcement</th>
-                <th>Items</th>
-                </tr>
-                </thead>
                 <tbody id="announcementContent">
                 </tbody>
                 </table>
@@ -141,15 +127,25 @@
 
         // Check if it's the request tab and call generateTaskForm if it is
         if (tabId === 'requestTab') {
-            generateTaskForm();  // Ensure the form is generated when the request tab is opened
+            generateTaskForm();  
+        }
+        else if (tabId === 'historyTab') {
+            fetchTasks(); 
+        }
+        // Handle the announcements tab if needed
+        else if (tabId === 'announcementTab') {
+            fetchAnnouncements();
         }
     }
+
     // Open the Request tab by default and generate the form
     document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('requestCheckbox').checked = true;  // Default to checked
         openTab('requestTab', document.getElementById('requestTabBtn'));  // Open Request tab
     });
+    
 
+    
 </script>
 
 </html>

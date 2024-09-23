@@ -6,6 +6,9 @@ function debounce(func, wait) {
         timeout = setTimeout(() => func.apply(this, args), wait);
     };
 }
+//-------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+// Map Init
 const StorageIcon = L.icon({
     iconUrl: '/icons/Storage.png', 
     iconSize: [40, 40],
@@ -26,11 +29,17 @@ const DonateIcon = L.icon({
 });
 const map = L.map('map').setView([38.2462420, 21.7350847], 16);
 let markerCivilian=null;
+let currentTaskType = 'request';
+
+
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(map);
 var markerStorage = L.marker([38.24600, 21.73500], {icon: StorageIcon}).addTo(map);
+//-------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+// Functions
 
 // Fetch and place civilian marker
 async function getCivilianLocation() {
@@ -64,6 +73,7 @@ async function getCivilianLocation() {
         console.error('Error fetching civilian location:', error);
     }
 };
+
 // Debounced update function for marker movement
 const debouncedUpdateAddress = debounce(async function() {
     if (markerCivilian) {
@@ -101,7 +111,6 @@ const debouncedUpdateAddress = debounce(async function() {
     }
 }, 300); // 300ms debounce delay
 
-let currentTaskType = 'request';
 
 // Function to toggle the marker icon based on checkbox selection
 function toggleMarkerIcon(e) {
@@ -119,7 +128,7 @@ function toggleMarkerIcon(e) {
     generateTaskForm(currentTaskType);
 }
 
-// Function 1: Filter items in the modal based on search input
+// Function 2: Filter items in the modal based on search input
 function filterItemsModal() {
     const searchInput = document.getElementById('searchInput');
     const itemsTable = document.getElementById('itemsTable');
@@ -428,8 +437,9 @@ async function submitTask() {
     }
 
     const itemId = itemSelect.value;  // The selected item id
-    const selectedItemOption = itemSelect.options[itemSelect.selectedIndex];
     
+    const selectedItemOption = itemSelect.options[itemSelect.selectedIndex];
+    const itemName = selectedItemOption.textContent;  // Get the item name
     // Check if the selected option has the 'data-category' attribute
     if (!selectedItemOption || !selectedItemOption.getAttribute('data-category')) {
         console.error("No valid item selected or item is missing its category.");
@@ -455,9 +465,11 @@ async function submitTask() {
         status: 'pending',
         civilianId: civilianId,
         address: { street, number, city, zip, country },
-        item: itemId,  // Pass the selected item id
+        item: itemName,  // Pass the selected item id
         itemCategory: itemCategory,  // Use the category id associated with the selected item
-        quantity
+        quantity,
+        rescuerUsername: null, 
+        dateServed: null 
     };
 
     console.log("Submitting task data:", taskData);
@@ -484,6 +496,124 @@ async function submitTask() {
     }
 }
 
+async function fetchTasks() {
+    try {
+        const response = await fetch('/api/civilian/loadtasks'); // API to get the civilian's tasks
+        const data = await response.json();
+        
+        const tasks = data.tasks;
+
+        if (response.ok && tasks.length > 0) {
+            renderTaskTable(tasks);  // Call to render tasks in the table
+        } 
+    } catch (error) {
+        console.error('Error fetching tasks:', error);
+    }
+}
+
+function renderTaskTable(tasks) {
+    const taskTableDiv = document.getElementById('taskHistoryTable'); // The div where the table will be placed
+
+    if (!tasks || tasks.length === 0) {
+        taskTableDiv.innerHTML = '<p>No tasks found</p>';
+        return;
+    }
+
+    // Create the table structure with the headers and an empty body
+    let tableHTML = `
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Type</th>
+                    <th>Item</th>
+                    <th>Category</th>
+                    <th>Quantity</th>
+                    <th>Date Submitted</th>
+                    <th>Status</th>
+                    <th>Rescuer</th>
+                    <th>Date Served</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    // Loop through the tasks and create rows for each task
+    tasks.forEach((task, index) => {
+        tableHTML += `
+            <tr>
+                <td>${index+1}</td>
+                <td>${task.type}</td>
+                <td>${task.item}</td>
+                <td>${task.itemCategory}</td>
+                <td>${task.quantity}</td>
+                <td>${new Date(task.dateSubmitted).toLocaleDateString()}</td>
+                <td>${task.status}</td>
+                <td>${task.rescuerUsername || 'N/A'}</td>
+                <td>${task.dateServed ? new Date(task.dateServed).toLocaleDateString() : 'N/A'}</td>
+            </tr>
+        `;
+    });
+
+    // Close the table body and table tag
+    tableHTML += `
+            </tbody>
+        </table>
+    `;
+
+    // Insert the table into the div
+    taskTableDiv.innerHTML = tableHTML;
+}
+
+// Function to fetch announcements from the API and render them in the table
+async function fetchAnnouncements() {
+    try {
+        const response = await fetch('/api/civilian/announcements'); // API route to fetch announcements
+        const announcements = await response.json();
+        renderAnnouncementsTable(announcements);
+        
+    } catch (error) {
+        console.error('Error fetching announcements:', error);
+    }
+}
+
+// Function to render announcements in the table
+function renderAnnouncementsTable(announcements) {
+    let tableHTML = `
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Announcement</th>
+                    <th>Items</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    // Loop through the announcements and create rows for each announcement
+    announcements.forEach((announcementObj) => {
+        announcementObj.type.forEach(announcement => {
+            tableHTML += `
+                <tr>
+                    <td>${announcement.date}</td>
+                    <td>${announcement.announcement}</td>
+                    <td>${announcement.items}</td>
+                </tr>
+            `;
+        });
+    });
+
+    // Close the table
+    tableHTML += `
+        </tbody>
+        </table>
+    `;
+
+    // Insert the table into the DOM (you need to specify where to insert the tableHTML)
+    document.getElementById('announcementContent').innerHTML = tableHTML;
+}
+
 
 
 
@@ -491,9 +621,12 @@ document.addEventListener('DOMContentLoaded', function () {
     fetchCivilianId();
     getCivilianLocation();
     generateTaskForm(currentTaskType); // Initialize with 'request'
+    
 
-    // Event listeners for the checkboxes
+    // Event listeners for request/donate checkboxes
     document.getElementById('requestCheckbox').addEventListener('change', toggleMarkerIcon);
     document.getElementById('donateCheckbox').addEventListener('change', toggleMarkerIcon);
+    // Open the Request tab by default
+    openTab('requestTab', document.getElementById('requestTabBtn'));
 });
 

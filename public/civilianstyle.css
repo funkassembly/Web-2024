@@ -369,45 +369,44 @@ select:hover {
 
 
 /* General table styling for History tab (requests and donations) */
-#requestHistoryTable, #donationHistoryTable {
+#taskHistoryTable {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
     background-color: #f9f9f9;
 }
 
-#requestHistoryTable th, #requestHistoryTable td,
-#donationHistoryTable th, #donationHistoryTable td {
+#tasktHistoryTable th, #taskHistoryTable td {
     border: 1px solid #ddd;
     padding: 10px;
     text-align: left;
 }
 
-#requestHistoryTable th, #donationHistoryTable th {
+#taskHistoryTable th {
     background-color: #ff9900; /* Rescuer's orange */
     color: white;
     text-align: center;
     font-weight: bold;
 }
 
-#requestHistoryTable tr:nth-child(even), #donationHistoryTable tr:nth-child(even) {
+#taskHistoryTable tr:nth-child(even) {
     background-color: #f2f2f2;
 }
 
-#requestHistoryTable tr:hover, #donationHistoryTable tr:hover {
+#taskHistoryTable tr:hover {
     background-color: #ddd;
 }
 
-#requestHistoryTable td, #donationHistoryTable td {
+#taskHistoryTable td {
     text-align: center;
     vertical-align: middle;
 }
 
-#requestHistoryTable th, #donationHistoryTable th {
+#taskHistoryTable th {
     text-transform: uppercase;
 }
 
-#requestHistoryTable tbody tr td, #donationHistoryTable tbody tr td {
+#taskHistoryTable tbody tr td {
     padding: 10px;
 }
 

@@ -54,8 +54,8 @@ const taskSchema = new mongoose.Schema({
     itemCategory: { type: String, ref: 'Category', required: true }, // Reference to Category
     quantity: { type: Number, required: true },
     dateSubmitted: { type: Date, default: Date.now },
-    rescuerUsername: { type: mongoose.Schema.Types.ObjectId, ref: 'User'}, // Filled when processed
-    dateServed: { type: Date }
+    rescuerUsername: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null}, // Filled when processed
+    dateServed: { type: Date , default: null}
 
 })
 
@@ -105,10 +105,12 @@ const User = mongoose.model('User', baseUserSchema);
 const Civilian = User.discriminator('civilian', civilianSchema);
 const Rescuer = User.discriminator('rescuer', rescuerSchema);
 const Admin = User.discriminator('admin', adminSchema);
+const Task = mongoose.model('Task', taskSchema);
 
 module.exports = {
     User,
     Civilian,
     Rescuer,
-    Admin
+    Admin,
+    Task
 };
