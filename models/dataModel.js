@@ -3,22 +3,22 @@ const Schema = mongoose.Schema;
 
 // Define the details schema for items
 const DetailSchema = new Schema({
-  detail_name: { type: String},
-  detail_value: { type: String}
+  detail_name: { type: String, default: null},
+  detail_value: { type: String, default: null}
 });
 
 // Define the categories schema
 const CategorySchema = new Schema({
   id: { type: String, auto: true },
-  category_name: { type: String}  //, required: true }
+  category_name: { type: String, default: null}  
 });
 
 // Define the items schema with a reference to categories
 const ItemSchema = new Schema({
   id: { type: String, auto: true },
-  name: { type: String}, //, required: true },
-  category: { type: Schema.Types.String, ref: 'Category', required: true }, // Reference to category id
-  details: [DetailSchema], // Embedded array of details
+  name: { type: String, default: null}, 
+  category: { type: Schema.Types.String, ref: 'Category', required: true, default: null }, // Reference to category id
+  details: { type: [DetailSchema], default: null }, // Embedded array of details
   stock: { type: Number, required: true }
 });
 

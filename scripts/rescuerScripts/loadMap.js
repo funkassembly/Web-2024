@@ -18,7 +18,12 @@ const peopleServedIcon = L.icon({
     iconAnchor: [15, 30],
     popupAnchor: [0, -30]
 });
-
+const peoplePendingIcon = L.icon({
+    iconUrl: '/icons/peoplePending.png',
+    iconSize: [35, 35],
+    iconAnchor: [15, 30],
+    popupAnchor: [0, -30]
+});
 document.addEventListener("DOMContentLoaded", function() {
     console.log('DOM completed - Map is LOADING ...');
     // map init
@@ -36,6 +41,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }).addTo(map);
     markerRescuer.bindPopup('Drag and Drop me to your location!').openPopup();
     updateUnloadButtonState();
+    fetchCivilianInfo();
     
     // markerStorage on Click event *Trigger*
     markerStorage.on('click', async function() {
@@ -131,6 +137,77 @@ function updateUnloadButtonState() {
     }, '*');
 }
 
+// Fetch civilian locations and add them to the map
+async function fetchCivilianInfo() {
+    try {
+        const response = await fetch('/api/rescuer/civInfo');  // Correct route for rescuer
+        const civilians = await response.json();
+
+        if (response.ok) {
+            civilians.forEach(civilian => {
+                if (civilian.location && civilian.location.coordinates) {
+                    const lat = civilian.location.coordinates[0];
+                    const lng = civilian.location.coordinates[1];
+                    const name = civilian.name;
+                    const phone = civilian.cellphone;
+                    const address = `${civilian.address.street}, ${civilian.address.number}, ${civilian.address.city}, ${civilian.address.zip}, ${civilian.address.country}`;
+                    const tasks = civilian.tasks;
+
+                    const hasProcessedTask = tasks.some(task => task.status === 'processed');
+                    const icon = hasProcessedTask ? peopleServedIcon : peoplePendingIcon;
+                    
+                    let tasksTable = `<table>
+                                        <thead>
+                                            <tr>
+                                                <th>Select</th>
+                                                <th>Type</th>
+                                                <th>Status</th>
+                                                <th>Item</th>
+                                                <th>Category</th>
+                                                <th>Quantity</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>`;
+                    tasks.forEach((task, index) => {
+                        tasksTable += `
+                            <tr>
+                                <td><input type="checkbox" class="task-checkbox" value="${task._id}" id="task-${index}"></td>
+                                <td>${task.type}</td>
+                                <td>${task.status}</td>
+                                <td>${task.item}</td>
+                                <td>${task.itemCategory}</td>
+                                <td>${task.quantity}</td>
+                            </tr>`;
+                    });
+                    
+                    tasksTable += `</tbody></table>`;
+                    // Add the "Serve" button at the bottom of the popup
+                    
+
+
+
+                    // Add a marker for each civilian on the map with a popup showing their info
+                    L.marker([lat, lng], { icon: icon }).addTo(map)
+                      .bindPopup(`
+                          <b>Name:</b> ${name}<br>
+                          <b>Phone:</b> ${phone}<br>
+                          <b>Address:</b> ${address}<br><br>
+                          <b>Tasks:</b><br>
+                          ${tasksTable}
+                          <button onclick="serveTasks('${civilian._id}')">Select</button>
+                    `);
+                }
+            });
+        } else {
+            console.log(civilians.message || 'No civilians found');
+        }
+    } catch (error) {
+        console.error('Error fetching civilians locations:', error);
+    }
+}
+
+
+
 
     
     
@@ -139,6 +216,35 @@ function updateUnloadButtonState() {
 
 
 
+async function serveTasks(civilianId) {
+    // Get all selected task checkboxes
+    const selectedTasks = document.querySelectorAll('.task-checkbox:checked');
+    const taskIds = Array.from(selectedTasks).map(checkbox => checkbox.value);
 
+    if (taskIds.length === 0) {
+        alert('Please select at least one task to serve.');
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/rescuer/serveTasks', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ civilianId, taskIds })
+        });
+
+        if (response.ok) {
+            alert('Tasks successfully served!');
+        } else {
+            const errorData = await response.json();
+            alert(`Error serving tasks: ${errorData.message}`);
+        }
+    } catch (error) {
+        console.error('Error serving tasks:', error);
+        alert('Error serving tasks');
+    }
+}
 
 

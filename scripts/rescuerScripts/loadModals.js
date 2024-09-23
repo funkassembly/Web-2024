@@ -344,12 +344,14 @@ document.getElementById('instructionsLink').addEventListener('click', function(e
 document.querySelectorAll('.close-modal').forEach(closeBtn => {
     closeBtn.addEventListener('click', function() {
         closeAllModals();
+        document.getElementById('map').style.zIndex= 2005;
     });
 });
 
 // Function to show the modals when the General Storage marker is clicked
 function showStorageModals() {
     console.log('Showing storage modals'); // Debugging log
+    document.getElementById('map').style.zIndex= 1000;
     closeAllModals();  // Close any open modals first
     document.getElementsByClassName('modal-container')[0].style.display = 'block';
     const itemsModal = document.getElementById('itemsModal');

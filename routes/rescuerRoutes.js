@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Rescuer } = require('../models/usersModel');
+const { Rescuer, User } = require('../models/usersModel');
 const { Item, Category, Data } = require('../models/dataModel');
 
 
@@ -191,6 +191,91 @@ router.post('/unloadCargo', async (req, res) => {
 });
 
 
+// Route to fetch all civilians' locations
+router.get('/civInfo', async (req, res) => {
+    try {
+        // Find all users with the role 'civilian' and return their locations and usernames
+        const civilians = await User.find({ role: 'civilian' }, 'location name cellphone address tasks');
+
+        if (!civilians || civilians.length === 0) {
+            return res.status(404).json({ message: 'No civilians found' });
+        }
+
+        res.json(civilians);  
+    } catch (error) {
+        console.error('Error fetching civilians locations:', error);
+        res.status(500).json({ message: 'Error fetching civilians locations' });
+    }
+});
+
+// Route for serving selected tasks
+// Route to serve tasks and update them with rescuer details
+router.post('/serveTasks', async (req, res) => {
+    try {
+        const rescuerId = req.session.userId; // Get rescuer ID from session
+        const { civilianId, taskIds } = req.body; // Get civilian ID and task IDs from the request body
+        console.log(`\ncivilianId: ${civilianId}\n, taskIds: ${taskIds}\n, rescuerId: ${rescuerId}`);
+
+        const taskIdsArray = Array.isArray(taskIds) ? taskIds : [taskIds]; // Ensure taskIds is an array
+        const currentDate = new Date(); // Get the current date when serving the tasks
+
+        // Find the rescuer by ID
+        const rescuer = await User.findById(rescuerId);
+
+        if (!rescuer) {
+            return res.status(404).json({ message: 'Rescuer not found' });
+        }
+
+        // Check how many tasks the rescuer currently has
+        const rescuerTasksCount = rescuer.tasks.length;
+
+        if (rescuerTasksCount >= 4) {
+            return res.status(400).json({ message: 'You have already reached the limit of 4 tasks.' });
+        }
+
+        // Calculate how many more tasks can be added
+        const remainingTaskSlots = 4 - rescuerTasksCount;
+
+        if (taskIdsArray.length > remainingTaskSlots) {
+            return res.status(400).json({ message: `You can only serve ${remainingTaskSlots} more task(s).` });
+        }
+
+        // Find the civilian by ID
+        const civilian = await User.findById(civilianId);
+
+        if (!civilian) {
+            return res.status(404).json({ message: 'Civilian not found' });
+        }
+
+        // Loop through the civilian's tasks and update the matching ones
+        civilian.tasks.forEach(task => {
+            if (taskIdsArray.includes(task._id.toString())) { // Match tasks by _id
+                task.rescuerUsername = rescuerId; // Update rescuer's ID
+                task.dateServed = currentDate; // Update the served date
+                task.status = 'processed'; // Update status to processed
+
+                // Add the task to the rescuer's task list
+                const taskCopy = {
+                    ...task.toObject(), // Copy the task fields
+                    rescuerUsername: rescuerId, // Make sure rescuerUsername is updated
+                    dateServed: currentDate, // Ensure dateServed is current
+                    status: 'processed' // Ensure status is 'processed'
+                };
+
+                rescuer.tasks.push(taskCopy); // Add to rescuer's tasks list
+            }
+        });
+
+        // Save the updated civilian and rescuer documents
+        await civilian.save();
+        await rescuer.save();
+
+        res.json({ success: true, message: 'Tasks served successfully and updated for both civilian and rescuer.' });
+    } catch (error) {
+        console.error('Error serving tasks:', error);
+        res.status(500).json({ message: 'Error serving tasks' });
+    }
+});
 
 
 
