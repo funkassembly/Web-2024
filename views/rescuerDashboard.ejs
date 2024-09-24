@@ -114,9 +114,12 @@
         <!-- Content for Tasks tab -->
         <div id="taskTab" class="tab-content">
             <h3>Your Tasks</h3>
+            <button id="cancelTasksButton" class="cancel-button">❌ Cancel</button>
+            <button id="deliverTasksButton" class="deliver-button">✅ Deliver</button>
             <table id="rescuerTasksTable">
                 <thead>
                     <tr>
+                        <th><input type="checkbox" id="selectAllTasks"></th>
                         <th>No</th>
                         <th>Name</th>
                         <th>Phone</th>
@@ -216,6 +219,117 @@
         console.error('No default tab button found');
     }
 
-        
+    // Function to enable/disable buttons based on checkbox selection
+    function updateActionButtons() {
+        const checkboxes = document.querySelectorAll('.task-checkbox:checked');
+        const cancelBtn = document.getElementById('cancelTasksButton');
+        const deliverBtn = document.getElementById('deliverTasksButton');
+
+        if (checkboxes.length > 0) {
+            cancelBtn.disabled = false;
+            deliverBtn.disabled = false;
+        } else {
+            cancelBtn.disabled = true;
+            deliverBtn.disabled = true;
+        }
+    }
+
+    // Listen for changes on checkboxes
+    document.addEventListener('change', function(e) {
+        if (e.target.classList.contains('task-checkbox')) {
+            updateActionButtons();
+        }
+    });
+
+    // Select/Deselect all tasks
+    document.getElementById('selectAllTasks').addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('.task-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
+        });
+        updateActionButtons();
+    });
+
+
+    // Cancel Selected Tasks
+    document.getElementById('cancelTasksButton').addEventListener('click', async function() {
+        const selectedTasks = getSelectedTasks();
+
+        if (selectedTasks.length === 0) {
+            alert('No tasks selected.');
+            return;
+        }
+
+        const confirmed = confirm('Are you sure you want to cancel the selected tasks?');
+        if (confirmed) {
+            try {
+                const response = await fetch('/api/rescuer/cancelTasks', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ taskIds: selectedTasks })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    alert('Tasks canceled successfully.');
+                    // Optionally, reload the task table
+                    fetchRescuerTasks(); // Reload tasks
+                } else {
+                    alert('Failed to cancel tasks: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error canceling tasks:', error);
+                alert('An error occurred while canceling tasks.');
+            }
+        }
+    });
+
+    // Deliver Selected Tasks
+    document.getElementById('deliverTasksButton').addEventListener('click', async function() {
+        const selectedTasks = getSelectedTasks();
+        document.querySelectorAll('.task-checkbox:checked').forEach(checkbox => {
+            selectedTasks.push(checkbox.value); // Collect the task IDs
+        });
+
+
+        if (selectedTasks.length === 0) {
+            alert('No tasks selected.');
+            return;
+        }
+ 
+
+        const confirmed = confirm('Are you sure you want to deliver the selected tasks?');
+        if (confirmed) {
+            try {
+                const response = await fetch('/api/rescuer/deliverTasks', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        taskIds: selectedTasks
+                        
+                    })
+                });
+            
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('Tasks successfully delivered!');
+                } else {
+                    alert('Failed to deliver tasks: ' + result.message);
+                }
+    
+            } catch (error) {
+                console.error('Error delivering tasks:', error);
+                alert('An error occurred while delivering tasks.');
+            }
+        }
+});
+
+    // Helper function to get selected task IDs
+    function getSelectedTasks() {
+        const checkboxes = document.querySelectorAll('.task-checkbox:checked');
+        return Array.from(checkboxes).map(checkbox => checkbox.value);
+    }
+
 </script>
 </html>

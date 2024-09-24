@@ -459,6 +459,31 @@ function updateSelectedItemsModal(item, quantity) {
     }
 }
 
+function updateSelectedItems(cargo) {
+    const selectedItemsBody = document.getElementById('selectedItemsBody');
+
+    // Clear the current list
+    selectedItemsBody.innerHTML = '';
+
+    // Loop through the cargo items and add them to the selected items table
+    cargo.forEach(item => {
+        const row = document.createElement('tr');
+
+        const itemNameCell = document.createElement('td');
+        itemNameCell.textContent = item.itemName;
+        row.appendChild(itemNameCell);
+
+        const categoryCell = document.createElement('td');
+        categoryCell.textContent = item.categoryName;
+        row.appendChild(categoryCell);
+
+        const quantityCell = document.createElement('td');
+        quantityCell.textContent = item.quantity;
+        row.appendChild(quantityCell);
+
+        selectedItemsBody.appendChild(row);
+    });
+}
 
 
 
@@ -658,6 +683,7 @@ async function fetchRescuerTasks() {
                     : 'Unknown Address';
                 taskTable += `
                 <tr>
+                    <td><input type="checkbox" class="task-checkbox" value="${task._id}"></td>
                     <td>${index + 1}</td>
                     <td>${name}</td> 
                     <td>${phone}</td> 

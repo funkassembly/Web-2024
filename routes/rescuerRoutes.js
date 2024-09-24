@@ -1,8 +1,23 @@
 const express = require('express');
 const router = express.Router();
-const { Rescuer, User } = require('../models/usersModel');
+const { Rescuer, User, Civilian } = require('../models/usersModel');
 const { Item, Category, Data } = require('../models/dataModel');
 
+// Utility function to calculate haversine distance between two coordinates
+const haversineDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371e3; // Earth's radius in meters
+    const φ1 = lat1 * Math.PI / 180;
+    const φ2 = lat2 * Math.PI / 180;
+    const Δφ = (lat2 - lat1) * Math.PI / 180;
+    const Δλ = (lon2 - lon1) * Math.PI / 180;
+
+    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+              Math.cos(φ1) * Math.cos(φ2) *
+              Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c; // Distance in meters
+};
 
 // Update Rescuer's Location
 router.post('/updateRescuerLocation', async (req, res) => {
@@ -298,6 +313,154 @@ router.get('/myTasks', async (req, res) => {
     }
 });
 
+// Route to cancel tasks
+router.post('/cancelTasks', async (req, res) => {
+    const { taskIds } = req.body;
+    const rescuerId = req.session.userId; // Get the rescuer's ID
+
+    try {
+        // Find the rescuer and update the tasks
+        const rescuer = await Rescuer.findById(rescuerId);
+
+        if (!rescuer) {
+            return res.status(404).json({ success: false, message: 'Rescuer not found' });
+        }
+
+        // Loop through the tasks and cancel them
+        rescuer.tasks = rescuer.tasks.filter(task => !taskIds.includes(task._id.toString()));
+
+        await rescuer.save();
+
+        // For each task, find the corresponding civilian and update their task
+        for (let taskId of taskIds) {
+            // Find the civilian who has this task
+            const civilian = await User.findOne({ 'tasks._id': taskId, role: 'civilian' });
+
+            if (civilian) {
+                // Find the task inside the civilian's tasks and update it
+                civilian.tasks.forEach(task => {
+                    if (task._id.toString() === taskId) {
+                        task.status = 'pending';  // Set status to pending
+                        task.rescuerUsername = null;  // Set rescuerUsername to 'n/a'
+                        task.dateServed = null;  // Set dateServed to 'n/a'
+                    }
+                });
+
+                // Save the updated civilian
+                await civilian.save();
+            }
+        }
+
+
+        res.json({ success: true, message: 'Tasks canceled and updated for the civilian.' });
+    } catch (error) {
+        console.error('Error canceling tasks:', error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
+// Route to deliver tasks (this should already exist, just included for completeness)
+router.post('/deliverTasks', async (req, res) => {
+    const { taskIds } = req.body;
+    const rescuerId = req.session.userId; // Get rescuer ID from session
+
+    try {
+        // Find the rescuer by ID
+        const rescuer = await User.findById(rescuerId);
+
+        if (!rescuer|| !rescuer.location || !rescuer.location.coordinates) {
+            return res.status(404).json({ success: false, message: 'Rescuer not found' });
+        }
+        // Get rescuer's location from the database
+        const rescuerLocation = {
+            lat: rescuer.location.coordinates[0], // lat
+            lng: rescuer.location.coordinates[1]  // lng
+        };
+        console.log(rescuerLocation);
+        // Placeholder for tasks within 50 meters
+        const tasksWithinDistance = [];
+
+        // Fetch civilians who have the tasks
+        const civilians = await Civilian.find({
+            'tasks._id': { $in: taskIds } // Find civilians who have the selected task IDs
+        }, 'tasks location'); // Fetch their location and tasks only
+        console.log(`\nCivilians found: ${civilians}\n`);
+        
+
+        if (!civilians || civilians.length === 0) {
+            return res.status(404).json({ success: false, message: 'No civilians found for the selected tasks' });
+        }
+        
+
+        // 3. Loop through civilians to get the tasks and their location
+        civilians.forEach(civilian => {
+            const civilianLat = civilian.location.coordinates[0]; // Latitude
+            const civilianLng = civilian.location.coordinates[1]; // Longitude
+
+            // Calculate the distance between the rescuer and the civilian
+            const distance = haversineDistance(
+                rescuerLocation.lat,
+                rescuerLocation.lng,
+                civilianLat,
+                civilianLng
+            );
+
+            console.log(`Distance between rescuer and civilian: ${distance} meters`);
+
+            // Check if the task is within 50 meters
+            if (distance <= 50) {
+                // Filter out the task IDs that match and are within distance
+                civilian.tasks.forEach(task => {
+                    if (taskIds.includes(task._id.toString())) {
+                        tasksWithinDistance.push({
+                            taskId: task._id,
+                            civilianId: civilian._id
+                        });
+                    }
+                });
+            }
+        });
+
+        // 4. Process tasks that are within the distance
+        if (tasksWithinDistance.length > 0) {
+            console.log('Tasks within 50 meters:', tasksWithinDistance);
+
+            for (const task of tasksWithinDistance) {
+                const { taskId, civilianId } = task;
+
+                // Find the civilian by ID and update the corresponding task
+                const civilian = await User.findById(civilianId);
+                console.log(`civilian: ${civilian}`);
+                if (civilian) {
+                    civilian.tasks.forEach(civilianTask => {
+                        if (civilianTask._id.toString() === taskId.toString()) {
+                            civilianTask.status = 'delivered';
+                            civilianTask.dateServed = new Date(); // Set current date as the delivery date
+                        }
+                    });
+
+                    // Save the updated civilian document
+                    await civilian.save();
+
+                    // Remove the task from the rescuer's task list
+                    rescuer.tasks = rescuer.tasks.filter(rescuerTask => rescuerTask._id.toString() !== taskId.toString());
+                }
+            }
+
+            // Save the updated rescuer document
+            await rescuer.save();
+
+            res.json({ success: true, message: 'Tasks successfully delivered and updated' });
+        } else {
+            console.log('No tasks within 50 meters');
+            res.json({ success: true, message: 'No tasks within 50 meters' });
+        }
+
+    } catch (error) {
+        console.error('Error delivering tasks:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
 
 
 
