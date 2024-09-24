@@ -216,6 +216,12 @@ body {
     border-radius: 10px 10px 0 0;
     overflow: hidden;
     padding: 10px; /* Add padding around the tab container */
+    margin-bottom: 20px;
+}
+.tabs {
+    display: flex;
+    justify-content: center; /* Center the tab buttons horizontally */
+    margin-bottom: 20px;
 }
 
 .tab-button {
@@ -261,24 +267,6 @@ button:disabled {
     cursor: not-allowed;
 }
 
-/* Table styles */
-#productTable, #loadedProducts table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-}
-
-#productTable th, #productTable td,
-#loadedProducts th, #loadedProducts td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-}
-
-#productTable th, #loadedProducts th {
-    background-color: #f2f2f2;
-    font-weight: bold;
-}
 
 /* Modal button positioning */
 .modal-buttons {
@@ -289,106 +277,6 @@ button:disabled {
     gap: 10px;
 }
 
-/* Scrollable content */
-#requestsDonations {
-    overflow-y: auto;
-    height: calc(100% - 60px);
-}
-
-#navigationButtonContainer {
-    position: absolute;
-    top: 50px;
-    right: 10px;
-}
-
-#navRouteButton {
-    background-color: #ff9900;
-    color: white;
-    border: none;
-    padding: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-#navRouteButton:hover {
-    background-color: #e68a00;
-}
-
-/* Popup window styling for civilian markers */
-.leaflet-popup-content-wrapper {
-    background-color: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-}
-
-.leaflet-popup-content {
-    margin: 0;
-    padding: 0;
-    color: #333;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-size: 14px;
-}
-
-.leaflet-popup-content strong {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-    color: #333;
-}
-
-.leaflet-popup-content ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-}
-
-.leaflet-popup-content ul li {
-    margin-bottom: 10px;
-}
-
-.leaflet-popup-content ul li label {
-    font-weight: normal;
-    color: #666;
-}
-
-.leaflet-popup-content table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 10px;
-}
-
-.leaflet-popup-content table th, 
-.leaflet-popup-content table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-}
-
-.leaflet-popup-content table th {
-    background-color: #f2f2f2;
-    font-weight: bold;
-}
-
-.leaflet-popup-content table td {
-    background-color: #fff;
-}
-
-.leaflet-popup-content .serve-button {
-    background-color: #ff9900;
-    color: white;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    text-align: center;
-    width: 100%;
-    margin-top: 10px;
-}
-
-.leaflet-popup-content .serve-button:hover {
-    background-color: #e68a00;
-}
 
 .checkmark-button {
     background: none;
@@ -491,7 +379,187 @@ button:disabled {
     font-weight: bold;
 }
 
+/* Leaflet Popup Styles */
+.leaflet-popup-content {
+    font-size: 1em;
+    line-height: 1.5em;
+    overflow-x: auto; /* Allow horizontal scrolling for large tables */
+}
 
+.leaflet-popup-content-wrapper {
+    width: auto !important;
+    max-width: 100% !important;
+    white-space: nowrap; /* Prevent content from breaking into new lines */
+}
+
+/* Responsive table inside Leaflet popup */
+.leaflet-popup-content table {
+    width: 100%; /* Ensure table takes full width */
+    border-collapse: collapse;
+    margin-top: 10px;
+    table-layout: auto; /* Allow table to auto adjust based on content */
+}
+
+.leaflet-popup-content th, 
+.leaflet-popup-content td {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.leaflet-popup-content thead {
+    background-color: #ff9900; /* Accent color */
+    color: white;
+}
+
+.leaflet-popup-content tbody tr:nth-child(even) {
+    background-color: rgba(0, 0, 0, 0.05); /* Alternating row background */
+}
+
+/* Ensure the popup adjusts to its content dynamically */
+.leaflet-popup {
+    max-width: none !important; /* Remove default Leaflet popup width limit */
+    width: auto;
+}
+
+.leaflet-popup-content table th,
+.leaflet-popup-content table td {
+    word-wrap: break-word; /* Ensure long text breaks into new lines within cells */
+}
+
+/* Base Table Styles for Both Cargo and Tasks Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: rgba(255, 255, 255, 0.8); /* Transparent white background */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden; /* Make sure long content is contained */
+}
+
+/* Table Header Styling */
+table thead {
+    background-color: #ff9900; /* Solid orange color */
+    color: white;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+table thead th {
+    padding: 12px 15px;
+    border-bottom: 2px solid #ddd;
+    text-align: left;
+    white-space: nowrap;
+}
+
+/* Table Body Styling */
+table tbody tr {
+    border-bottom: 1px solid #ddd;
+}
+
+/* Alternating Row Color */
+table tbody tr:nth-child(even) {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+table tbody tr:nth-child(odd) {
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+/* Table Cell Padding and Text Alignment */
+table td {
+    padding: 12px 15px;
+    text-align: left;
+    word-wrap: break-word; /* Prevent text overflow */
+}
+
+/* Hover Effect for Table Rows */
+table tbody tr:hover {
+    background-color: rgba(255, 153, 0, 0.1); /* Subtle hover effect */
+}
+
+/* Responsive Table - Ensure the table fits within smaller screens */
+@media screen and (max-width: 768px) {
+    table {
+        font-size: 0.9em; /* Slightly smaller font for smaller screens */
+    }
+    
+    table thead th, table td {
+        padding: 8px 10px; /* Reduce padding for smaller screens */
+    }
+}
+
+/* Specific Styles for Cargo Tab */
+#cargoTab table {
+    background-color: rgba(255, 255, 255, 0.85); /* Slightly more opaque for cargo tab */
+}
+
+#cargoTab table thead {
+    background-color: #ff9900; /* Solid orange for cargo tab */
+}
+
+/* Specific Styles for Task Tab */
+#taskTab table {
+    background-color: rgba(255, 255, 255, 0.85); /* Slightly more opaque for tasks tab */
+}
+
+#taskTab table thead {
+    background-color: #ff9900; /* Solid orange for tasks tab */
+}
+
+/* Button Styles */
+.button-active, .button-inactive {
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+.button-active {
+    background-color: #ff9900;
+    color: white;
+}
+
+.button-inactive {
+    background-color: #ddd;
+    color: #666;
+}
+
+/* Center Content Within Table Cells */
+table td {
+    vertical-align: middle;
+}
+
+#unloadButton {
+    background-color: #ff9900;
+    color: white;
+    border: none;
+    
+    padding: 15px 30px;      /* Make the button bigger */
+    font-size: 1em;        /* Increase font size */
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+}
+
+/* Add hover effect to the unload button */
+#unloadButton:hover {
+    background-color: #e68a00; /* Slightly darker orange on hover */
+}
+/* Style for the table headers */
+#itemsTable thead th, 
+#selectedItemsBody thead th,
+#selectedItemsList thead th {
+    background-color: #ff9900; /* Your orange color */
+    color: white;  /* White text for contrast */
+    font-weight: bold;
+    padding: 10px;
+    text-align: left; /* Align the text to the left */
+    border-bottom: 2px solid #ddd; /* Add a subtle border at the bottom */
+}
 
 /* Adjusted for better mobile responsiveness */
 @media (max-width: 768px) {

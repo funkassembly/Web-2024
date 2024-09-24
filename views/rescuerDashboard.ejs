@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="/rescuerstyle.css">
     <link rel="icon" href="/icons/favicon.ico" type="image/x-icon">
-    <title>Rescuer's Dashboard</title>
+    <title>Rescuer Dashboard</title>
     <!-- Leaflet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
@@ -89,7 +89,7 @@
 
 
 
-<h1>Rescuer's Dashboard</h1>
+<h1>Rescuer Dashboard</h1>
 
 <div class="dashboard-container">
     
@@ -101,7 +101,7 @@
         <!-- Tabs for switching between Cargo and Tasks -->
         <div class="tabs">
             <button id="cargoTabBtn" class="button-active" onclick="openTab('cargoTab', this)">Cargo</button>
-            <button id="taskTabBtn" class="button-inactive" onclick="openTab('tasksTab', this)">Tasks</button>
+            <button id="taskTabBtn" class="button-inactive" onclick="openTab('taskTab', this)">Tasks</button>
 
         </div>
     
@@ -112,27 +112,24 @@
         </div>
     
         <!-- Content for Tasks tab -->
-        <div id="tasksTab" class="tab-content" style="display: none;">
-
+        <div id="taskTab" class="tab-content">
             <h3>Your Tasks</h3>
-            <table id="tasksTable">
+            <table id="rescuerTasksTable">
                 <thead>
                     <tr>
-                        <th>#</th>
                         <th>No</th>
-                        <th>Type</th>
                         <th>Name</th>
-                        <th>Cell Phone</th>
-                        <th>Date to be delivered</th>
-                        <th>Action</th>
-                        <th></th> <!-- Placeholder for the red X button -->
+                        <th>Phone</th>
+                        <th>Item</th>
+                        <th>Quantity</th>
+                        <th>Date Served</th>
                     </tr>
                 </thead>
-                <!-- *** Commented Out for Placeholder *** -->
-                <tbody>
-                    
+                <tbody id="rescuerTasksContent">
+                    <!-- Task rows will be dynamically added here -->
                 </tbody>
             </table>
+        </div>
 
             
         </div>
@@ -192,6 +189,12 @@
         if (tabContentElement) {
             tabContentElement.style.display = "block";
             tabContentElement.classList.add('active');
+
+            // Fetch rescuer tasks if the "Tasks" tab is opened
+            if (tabName === 'taskTab') {
+                fetchRescuerTasks(); // Fetch the tasks when "Tasks" tab is clicked
+            }
+
         } else {
             console.error('Tab content element not found for:', tabName);
         }
@@ -204,11 +207,15 @@
             console.error('Element is undefined in openTab function');
         }
     }
+
+    // Default to opening the Cargo tab when the page loads
     var activeTabButton = document.getElementById('cargoTabBtn'); // Default to Cargo tab
     if (activeTabButton) {
         openTab('cargoTab', activeTabButton);
     } else {
-        console.error('No tab buttons found');
+        console.error('No default tab button found');
     }
+
+        
 </script>
 </html>

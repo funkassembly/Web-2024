@@ -75,23 +75,35 @@ function renderItemsModal(items) {
         // Quantity Input Field
         const quantityCell = document.createElement('td');
         const quantityInput = document.createElement('input');
-        // Add event listener to input for manual quantity input
-        quantityInput.addEventListener('input', function () {
-            let newQuantity = parseInt(quantityInput.value);
-
-            // If the input is a valid number and greater than or equal to 0
-            if (!isNaN(newQuantity) && newQuantity >= 0) {
-                updateSelectedItemsModal(item, newQuantity);  // Update based on input
-            } else {
-                quantityInput.value = 0;  // If invalid input, reset to 0
-                updateSelectedItemsModal(item, 0);  // Reset item in the modal
-            }
-        });
+       
         quantityInput.type = 'number';
         quantityInput.value = 0;
-        quantityInput.min = 0;
+        quantityInput.min = -1;
         quantityInput.max = item.stock || 0; // Fallback to 0 if stock is not defined
         quantityInput.style.width = '50px';
+        
+        let debounceTimer;
+        quantityInput.addEventListener('input', function () {
+            // Clear the previous timer whenever the user types
+            clearTimeout(debounceTimer);
+
+            // Set a new timer to delay the execution by 100 milliseconds (0.1 seconds)
+            debounceTimer = setTimeout(function() {
+                // Get the new value from the input
+                let newQuantity = quantityInput.value;
+                
+                // Handle the empty string (if the input is deleted by the user)
+                if (!isNaN(newQuantity) && parseInt(newQuantity) > 0) {
+                    // If the input is a valid number and >= 0, update the modal
+                    updateSelectedItemsModal(item, parseInt(newQuantity, 10));  // Convert the valid input to integer and update
+                }
+                else {
+                    // Reset the value to empty if the input is invalid (e.g., non-numeric)
+                    quantityInput.value = '';
+                    updateSelectedItemsModal(item, 0);
+                }
+            }, 700);  // Delay execution by 100 milliseconds (0.1 seconds)
+        });
         quantityCell.appendChild(quantityInput);
         row.appendChild(quantityCell);
 
@@ -289,29 +301,41 @@ function observeCheckboxes() {
 
 })();
 
-// Function 8: to update selected items list when unloading in bulk
-function updateSelectedItems(cargo) {
+// Function to update selected items modal
+function updateSelectedItemsModal(item, quantity) {
     const selectedItemsBody = document.getElementById('selectedItemsBody');
-    selectedItemsBody.innerHTML = '';  // Clear current list
 
-    cargo.forEach(item => {
+    // Remove any existing row for the item
+    let existingRow = Array.from(selectedItemsBody.children).find(row => {
+        return row.querySelector('td:first-child').textContent.trim() === item.name;
+    });
+
+    // Remove the old row if it exists
+    if (existingRow) {
+        existingRow.remove();
+    }
+
+    // If the new quantity is greater than 0, add the item with updated quantity
+    if (quantity > 0) {
         const row = document.createElement('tr');
 
         const itemNameCell = document.createElement('td');
-        itemNameCell.textContent = item.itemName;
+        itemNameCell.textContent = item.name;
         row.appendChild(itemNameCell);
 
         const categoryCell = document.createElement('td');
-        categoryCell.textContent = item.categoryName;
+        categoryCell.textContent = item.category;
         row.appendChild(categoryCell);
 
         const quantityCell = document.createElement('td');
-        quantityCell.textContent = item.quantity;
+        quantityCell.textContent = quantity;
+        quantityCell.classList.add('quantity-cell');
         row.appendChild(quantityCell);
 
         selectedItemsBody.appendChild(row);
-    });
+    }
 }
+
 
 // Close all modals by default
 function closeAllModals() {
@@ -617,6 +641,42 @@ document.getElementById('unloadButton').addEventListener('click', async function
     }
 });
 
+async function fetchRescuerTasks() {
+    try {
+        const response = await fetch('/api/rescuer/myTasks');  // Replace with your actual API endpoint for rescuer tasks
+        const data = await response.json();
+        const tasks = data.tasks;
+        console.log(tasks);
+        if (response.ok) {
+            let taskTable = '';
+            tasks.forEach((task, index) => {
+                const name = task.civilianId ? task.civilianId.name : 'Unknown';
+                const phone = task.civilianId ? task.civilianId.cellphone : 'Unknown';
+                
+                const address = task.civilianId && task.civilianId.address
+                    ? `${task.civilianId.address.street}, ${task.civilianId.address.number}, ${task.civilianId.address.city}, ${task.civilianId.address.zip}, ${task.civilianId.address.country}`
+                    : 'Unknown Address';
+                taskTable += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${name}</td> 
+                    <td>${phone}</td> 
+                    <td>${task.item}</td>
+                    <td>${task.quantity}</td>
+                    <td>${task.dateServed ? new Date(task.dateServed).toLocaleDateString() : 'N/A'}</td>
+                    
+                </tr>`;
+            });
+            
+
+            document.getElementById('rescuerTasksContent').innerHTML = taskTable;
+        } else {
+            console.log(tasks.message || 'No tasks found');
+        }
+    } catch (error) {
+        console.error('Error fetching rescuer tasks:', error);
+    }
+}
 
 // Handle messages from the iframe
 window.addEventListener('message', function(event) {

@@ -277,6 +277,27 @@ router.post('/serveTasks', async (req, res) => {
     }
 });
 
+// Route to get rescuer's tasks
+router.get('/myTasks', async (req, res) => {
+    try {
+        const rescuerId = req.session.userId; // Assuming you're storing userId in the session
+        const rescuer = await User.findById(rescuerId).populate({
+            path: 'tasks.civilianId', // Populate the civilian information for each task
+            select: 'name cellphone address' // Select the fields you want to include
+        });
+        
+
+        if (!rescuer || !rescuer.tasks || rescuer.tasks.length === 0) {
+            return res.status(404).json({ message: 'No tasks found' });
+        }
+
+        res.json({ tasks: rescuer.tasks });
+    } catch (error) {
+        console.error('Error fetching rescuer tasks:', error);
+        res.status(500).json({ message: 'Error fetching rescuer tasks' });
+    }
+});
+
 
 
 
