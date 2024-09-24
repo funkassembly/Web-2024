@@ -130,7 +130,6 @@ input[type="file"] {
 }
 
 .chart-box {
-    width: 100%;
     padding: 20px;
     background: rgba(255, 255, 255, 0.9);
     border-radius: 10px;
@@ -138,6 +137,65 @@ input[type="file"] {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.alert-box {
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#itemsTable {
+    width: 100% !important; /* Ensure it takes the full width of its container */
+}
+
+#itemsTable th {
+    text-align: center !important;
+    vertical-align: middle !important;  /* Vertically center the content */
+}
+
+/* Optionally, you can also center the body content */
+#itemsTable td {
+    text-align: center; /* Center the table data cells as well */
+}
+
+/* Button Styles */
+.button-add-category {
+    background-color: #ff9900; /* Primary theme color */
+    color: white; /* Text color */
+    border: none; /* No border */
+    padding: 12px 24px; /* Increased padding for better aesthetics */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    font-size: 16px; /* Font size */
+    font-weight: bold; /* Bold text for emphasis */
+    transition: background-color 0.3s, transform 0.2s; /* Smooth transition effects */
+    margin: 10px 0; /* Margin to separate from other elements */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+}
+
+/* Button hover effect */
+.button-add-category:hover {
+    background-color: #e68a00; /* Darker shade on hover */
+    transform: translateY(-2px); /* Slight lift effect on hover */
+}
+
+/* Button active effect */
+.button-add-category:active {
+    transform: translateY(0); /* Reset the lift effect when pressed */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Reduce shadow on press */
+}
+
+
+#datatable-category {
+    width: 100%; /* Make sure the container takes full width */
+    margin: 0 auto; /* Center it if necessary */
+}
+
+.dataTables_wrapper {
+    width: 100%;
+    overflow-x: auto; /* Enable horizontal scrolling if the content is too wide */
 }
 
 /* Styling for the chart canvas */
@@ -235,22 +293,6 @@ th, td {
     text-align: center;
 }
 
-/* #itemsTable .action-buttons {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#itemsTable .action-buttons i {
-    margin: 0 10px;
-    cursor: pointer;
-    font-size: 30px;
-    color: #ff9900; /* Optional: You can change the color */
-
-
-/* #itemsTable .action-buttons i:hover {
-    color: red; /* Optional: Color change on hover */
-
 /* Announcement Form Styles */
 #announcement-section {
     display: flex;
@@ -325,6 +367,29 @@ th, td {
     background-color: #e68a00;
 }
 
+/* Style for edit button */
+.edit-category {
+    color: green;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+/* Style for delete button */
+.delete-category {
+    color: red;
+    cursor: pointer;
+}
+
+/* Add hover effects */
+.edit-category:hover {
+    color: darkgreen;
+}
+
+.delete-category:hover {
+    color: darkred;
+}
+
+
 /* Media Query for Responsive Design */
 @media (max-width: 768px) {
     .main-content {
@@ -343,6 +408,10 @@ th, td {
     }
 
     .chart-box {
+        width: 100%;
+    }
+
+    .alert-box {
         width: 100%;
     }
 }
