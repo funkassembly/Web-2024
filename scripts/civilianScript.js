@@ -266,19 +266,19 @@ async function generateTaskForm(taskType= 'request') {
             <div id="addressDisplay" class="address-display">
                 <div class="address-row">
                     <label for="street">Street:</label>
-                    <input type="text" id="street" name="street" readonly>
+                    <input type="text" id="street" name="street" >
                     <label for="number">Number:</label>
-                    <input type="text" id="number" name="number" readonly>
+                    <input type="text" id="number" name="number" >
                 </div>
                 <div class="address-row">
                     <label for="city">City:</label>
-                    <input type="text" id="city" name="city" readonly>
+                    <input type="text" id="city" name="city" >
                     <label for="country">Country:</label>
-                    <input type="text" id="country" name="country" readonly>
+                    <input type="text" id="country" name="country" >
                 </div>
                 <div class="address-row">
                     <label for="zip">Postal Code:</label>
-                    <input type="text" id="zip" name="zip" readonly>
+                    <input type="text" id="zip" name="zip" >
                 </div>
             </div><br><br>
 
