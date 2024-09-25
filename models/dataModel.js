@@ -17,7 +17,7 @@ const CategorySchema = new Schema({
 const ItemSchema = new Schema({
   id: { type: String, required: true },
   name: { type: String, default: null },
-  category: { type: Schema.Types.String, ref: 'Category', default: null}, // Reference to category id
+  category: { type: Schema.Types.String, ref: 'Category', required: true, default: null}, // Reference to category id
   details: { type: [DetailSchema], default: null }, // Embedded array of details
   stock: { type: Number, default: null }
 });
