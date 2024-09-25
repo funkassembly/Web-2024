@@ -7,10 +7,12 @@ const User = require('./models/usersModel');
 const cors = require('cors');
 const multer = require('multer');
 const fs = require('fs');
-const userRoutes = require('./routes/newuserRoutes');
+const userRoutes = require('./routes/userRoutes');
 const statsRoutes = require('./routes/statsRoutes');
 const rescuerRoutes = require('./routes/rescuerRoutes');
 const civilianRoutes = require('./routes/civilianRoutes');
+const categoryRoutes = require('./routes/categoryRoutes');
+const itemRoutes = require('./routes/itemRoutes');
 
 const app = express();
 
@@ -39,10 +41,6 @@ app.use(express.static('maptry'));
 app.use(express.static('scripts'));
 
 app.set('view engine', 'ejs');
-
-// Import Routes
-const categoryRoutes = require('./routes/categoryRoutes');
-const itemRoutes = require('./routes/itemRoutes');
 
 // Authentication 
 const isLoggedIn = (req, res, next) => {
@@ -90,48 +88,7 @@ app.use('/api/rescuer', rescuerRoutes);
 app.use('/api/civilian', civilianRoutes);
 
 
-// // Multer setup for JSON file upload
-// const upload = multer({ dest: 'uploads/' });
 
-// // Upload JSON for categories
-// app.post('/api/upload/categories', upload.single('jsonFile'), (req, res) => {
-//     const file = req.file;
-//     const filePath = file.path;
-
-//     fs.readFile(filePath, 'utf-8', async (err, data) => {
-//         if (err) return res.status(500).json({ error: 'Error reading the file' });
-
-//         try {
-//             const categories = JSON.parse(data);
-//             await Category.insertMany(categories);
-//             res.json({ message: 'Categories uploaded successfully' });
-//         } catch (error) {
-//             res.status(500).json({ error: 'Error parsing or saving data' });
-//         } finally {
-//             fs.unlinkSync(filePath);
-//         }
-//     });
-// });
-
-// // Upload JSON for items
-// app.post('/api/upload/items', upload.single('jsonFile'), (req, res) => {
-//     const file = req.file;
-//     const filePath = file.path;
-
-//     fs.readFile(filePath, 'utf-8', async (err, data) => {
-//         if (err) return res.status(500).json({ error: 'Error reading the file' });
-
-//         try {
-//             const items = JSON.parse(data);
-//             await Item.insertMany(items);
-//             res.json({ message: 'Items uploaded successfully' });
-//         } catch (error) {
-//             res.status(500).json({ error: 'Error parsing or saving data' });
-//         } finally {
-//             fs.unlinkSync(filePath);
-//         }
-//     });
-// });
 
 app.get('/test', (req, res) => {
     res.send('Basic route test is working!');

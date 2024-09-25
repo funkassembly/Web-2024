@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin</title>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" type="text/css" href="adminstyle.css">
+    <link rel="stylesheet" type="text/css" href="/css/adminstyle.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
@@ -15,15 +15,18 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 </head>
 <body>
 <div class="sidebar">
     <ul>
-        <li><a href="#" data-section="datatable-category" class="menu-item active"><i class="fas fa-list"></i></a></li>
+        <li><a href="#" data-section="dashboard-section" class="menu-item active"><i class="fas fa-chart-bar"></i></a></li>
+        <li><a href="#" data-section="datatable-category" class="menu-item "><i class="fas fa-list"></i></a></li>
         <li><a href="#" data-section="user-form-section" class="menu-item"><i class="fas fa-user-plus"></i></a></li>
-        <li><a href="#" data-section="dashboard-section" class="menu-item"><i class="fas fa-chart-bar"></i></a></li>
         <li><a href="#" data-section="map-section" class="menu-item"><i class="fas fa-map"></i></a></li>
+        <li><a href="#" data-section="dropdown-section" class="menu-item"><i class="fas fa-filter"></i></a></li>
         <li><a href="#" data-section="announcement-section" class="menu-item"><i class="fas fa-bullhorn"></i></a></li>
     </ul>
     <ul class="bottom-menu">
@@ -35,11 +38,47 @@
 
 <div class="main-content">
     <!-- Categories Section -->
-    <div id="datatable-category">
+    <div id="datatable-category" style="width: 100%; padding: 20px;">
         <h2>Categories</h2>
-        <button id="exportBtn">Export Data</button>
         <input type="file" id="importFile" />
-        <button id="importBtn">Import Data</button>
+        <button id="importBtn">Import Data</button>        
+        <button id="exportBtn">Database Usidas</button>
+<!-- Modal for Editing Item -->
+<div id="editItemModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="editItemForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editItemModalLabel">Edit Item</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="itemId" name="itemId" />
+                    <div class="form-group">
+                        <label for="itemName">Name</label>
+                        <input type="text" class="form-control" id="itemName" name="name" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="itemDetails">Details (format: detail_name: detail_value, ...)</label>
+                        <textarea class="form-control" id="itemDetails" name="details" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="itemStock">Stock</label>
+                        <input type="number" class="form-control" id="itemStock" name="stock" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+  
 
         <table id="itemsTable" class="display">
             <thead>
@@ -106,20 +145,96 @@
             <button id="updateChart">Update Chart</button>
         </div>
 
-        <!-- Bottom Box: Chart -->
-        <div class="box chart-box">
-            <canvas id="task-chart" width="100" height="100"></canvas>
-        </div>
+        <!-- Dashboard boxes for Chart and Alerts -->
+        <div class="dashboard-boxes">
+            <!-- Box: Chart -->
+            <div class="box chart-box">
+                <h3>Task Chart</h3>
+                <canvas id="task-chart" width="400" height="200"></canvas>
+            </div>
 
-        <!-- Bottom Box: Chart
-        <div class="box chart-box">
-            <canvas id="task-chart" width="400" height="200"></canvas>
-        </div> -->
+            <!-- Box: Alerts
+            <div class="box alert-box">
+                <h3>Low Stock Alerts</h3>
+                <div id="stock-alerts">Loading...</div>
+            </div> -->
+        </div>
     </div>
 
     <div id="map-section" style="display: none;">
         
     </div>
+
+       
+<!-- Dropdown Section for Categories -->
+<div id="dropdown-section" style="display:none;">
+
+    <button type="button" class="button-add-category" data-toggle="modal" data-target="#addCategoryModal">Add Category & Item</button>
+
+    <h2>Select a Category</h2>
+    <div class="form-group">
+        <label for="categoryDropdown">Category:</label>
+        <select id="categoryDropdown" class="form-select">
+            <option value="">Select a category</option>
+            <!-- Categories will be dynamically populated here -->
+        </select>
+    </div>
+    
+
+    <h3>Items in Selected Category</h3>
+    <table id="categoryItemsTable" class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Details</th>
+                <th>Stock</th>
+                <th>In Cargo</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Items will be dynamically populated here -->
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal for Adding Category and Item -->
+<div id="addCategoryModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="addCategoryForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addCategoryModalLabel">Add Category and Item</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="newCategoryName">Category Name</label>
+                        <input type="text" class="form-control" id="newCategoryName" name="category_name" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="newItemName">Item Name</label>
+                        <input type="text" class="form-control" id="newItemName" name="item_name" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="newItemDetails">Details (format: detail_name: detail_value, ...)</label>
+                        <textarea class="form-control" id="newItemDetails" name="item_details" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="newItemStock">Stock</label>
+                        <input type="number" class="form-control" id="newItemStock" name="item_stock" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Add</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
     <div id="announcement-section" style="display: none;">
         <h2>Announcement Form</h2>
@@ -141,87 +256,96 @@
         </form>
     </div>
 </div>
+<script src="/js/general.js"></script>
+<script src="/js/graph.js"></script>
+<script src="/js/datatable.js"></script>
+<script src="/js/dropdown.js"></script>
+<script src="/js/rescuerForm.js"></script>
+<script src="/js/statsTotal.js"></script>
+<script src="/js/announcements.js"></script>
+<script src="/js/stockAlerts.js"></script>
+<script src="/js/buttons.js"></script>
 <script>
-    $(document).ready(function () {
+    // $(document).ready(function () {
     //console.log('Document is ready');
-                                                //--WORKING
-        $('.menu-item').on('click', function(e) {
-            e.preventDefault();
-            var section = $(this).data('section');
-            $('.main-content > div').hide();
-            $('#' + section).show();
-            $('.menu-item').removeClass('active');
-            $(this).addClass('active');
-            $('.sidebar').removeClass('expanded'); // Hide sidebar after selection
-        });
+    //                                             //--WORKING
+    //     $('.menu-item').on('click', function(e) {
+    //         e.preventDefault();
+    //         var section = $(this).data('section');
+    //         $('.main-content > div').hide();
+    //         $('#' + section).show();
+    //         $('.menu-item').removeClass('active');
+    //         $(this).addClass('active');
+    //         $('.sidebar').removeClass('expanded'); // Hide sidebar after selection
+    //     });
 
-        //Logout
-        $('#logoutBtn').on('click', function() {
-            window.location.href = "/logout";
-        });
+    //     //Logout
+    //     $('#logoutBtn').on('click', function() {
+    //         window.location.href = "/logout";
+    //     });
 
     
-    // Expand sidebar on hover               --WORKING
-        $('.sidebar').hover(function() {
-                $(this).addClass('expanded');
-            }, function() {
-                $(this).removeClass('expanded');
-            });
+    // // Expand sidebar on hover               --WORKING
+    //     $('.sidebar').hover(function() {
+    //             $(this).addClass('expanded');
+    //         }, function() {
+    //             $(this).removeClass('expanded');
+    //         });
 
-        
-         // Fetch chart data and render the chart
-    const today = new Date();
-    const startDate = new Date(today.getFullYear(), today.getMonth(), 1).toISOString(); // First day of the current month
-    const endDate = today.toISOString(); // Today
-    fetchChartData(startDate, endDate);
+///////////////////////////////////////////////CHART////////////////////////////////////////    
+    //      // Fetch chart data and render the chart
+    // const today = new Date();
+    // const startDate = new Date(today.getFullYear(), today.getMonth(), 1).toISOString(); // First day of the current month
+    // const endDate = today.toISOString(); // Today
+    // fetchChartData(startDate, endDate);
 
-    function fetchChartData(startDate, endDate) {
-        $.ajax({
-            url: `/api/stats/chart-data`,
-            method: 'GET',
-            data: { startDate: startDate, endDate: endDate },
-            success: function (data) {
-                renderChart(data);
-            },
-            error: function (error) {
-                console.error('Error fetching chart data:', error);
-            }
-        });
-    }
+    // function fetchChartData(startDate, endDate) {
+    //     $.ajax({
+    //         url: `/api/stats/chart-data`,
+    //         method: 'GET',
+    //         data: { startDate: startDate, endDate: endDate },
+    //         success: function (data) {
+    //             renderChart(data);
+    //         },
+    //         error: function (error) {
+    //             console.error('Error fetching chart data:', error);
+    //         }
+    //     });
+    // }
 
-    function renderChart(data) {
-        const ctx = document.getElementById('task-chart').getContext('2d');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Total Requests', 'Total Donations', 'Completed Requests', 'Completed Donations'],
-                datasets: [{
-                    label: 'Amount',
-                    data: [data.totalRequests, data.totalDonations, data.completedRequests, data.completedDonations],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    }
+    // function renderChart(data) {
+    //     const ctx = document.getElementById('task-chart').getContext('2d');
+    //     new Chart(ctx, {
+    //         type: 'bar',
+    //         data: {
+    //             labels: ['Total Requests', 'Total Donations', 'Completed Requests', 'Completed Donations'],
+    //             datasets: [{
+    //                 label: 'Amount',
+    //                 data: [data.totalRequests, data.totalDonations, data.completedRequests, data.completedDonations],
+    //                 backgroundColor: [
+    //                     'rgba(255, 99, 132, 0.2)',
+    //                     'rgba(54, 162, 235, 0.2)',
+    //                     'rgba(255, 206, 86, 0.2)',
+    //                     'rgba(75, 192, 192, 0.2)',
+    //                 ],
+    //                 borderColor: [
+    //                     'rgba(255, 99, 132, 1)',
+    //                     'rgba(54, 162, 235, 1)',
+    //                     'rgba(255, 206, 86, 1)',
+    //                     'rgba(75, 192, 192, 1)',
+    //                 ],
+    //                 borderWidth: 1
+    //             }]
+    //         },
+    //         options: {
+    //             scales: {
+    //                 y: {
+    //                     beginAtZero: true
+    //                 }
+    //             }
+    //         }
+    //     });
+    // }
 
 
         //     const today = new Date();
@@ -289,400 +413,303 @@
         // }
 
        ///////////////////////////////////-------WORKING     
-    $.ajax({
-            url: '/api/stats/rescuer-civilian-count',
-            method: 'GET',
-            success: function(data) {
-                $('#total-rescuers').text(data.totalRescuers);
-                $('#total-civilians').text(data.totalCivilians);
-            },
-            error: function(err) {
-                console.error('Error fetching counts:', err);
-            }
-        });
+       //////////////////////////// STATS//////////////////////////
+    // $.ajax({
+    //         url: '/api/stats/rescuer-civilian-count',
+    //         method: 'GET',
+    //         success: function(data) {
+    //             $('#total-rescuers').text(data.totalRescuers);
+    //             $('#total-civilians').text(data.totalCivilians);
+    //         },
+    //         error: function(err) {
+    //             console.error('Error fetching counts:', err);
+    //         }
+    //     });
 
+// ////////////////////////////////////////CREATE USER///////////////////////////////////
+//         // Form submission logic for creating a new rescuer  --WORKING
+//         $('#createRescuerForm').on('submit', function(e) {
+//             e.preventDefault();
 
-        // Form submission logic for creating a new rescuer  --WORKING
-        $('#createRescuerForm').on('submit', function(e) {
-            e.preventDefault();
+//             const formData = {
+//                 username: $('#username').val(),
+//                 email: $('#email').val(),
+//                 password: $('#password').val(),
+//                 role: $('#role').val() // Hidden field for the role
+//             };
 
-            const formData = {
-                username: $('#username').val(),
-                email: $('#email').val(),
-                password: $('#password').val(),
-                role: $('#role').val() // Hidden field for the role
-            };
-
-            $.ajax({
-                url: '/api/users/create', // API endpoint to create a user
-                method: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(formData),
-                success: function(response) {
-                    alert('Rescuer created successfully');
-                    // Clear form after success
-                    $('#createRescuerForm')[0].reset();
-                },
-                error: function (xhr) {
-                    // Safely access the responseText
-                    let errorMessage = 'An error occurred while creating the rescuer.';
-                    if (xhr.responseJSON && xhr.responseJSON.message) {
-                        errorMessage = xhr.responseJSON.message;
-                    } else if (xhr.responseText) {
-                        errorMessage = xhr.responseText;
-                    }
-                    alert('Error: ' + errorMessage);
-                }
-            });
-        });
-
-         // Initialize DataTable for Categories
-    const table = $('#itemsTable').DataTable({
-        ajax: {
-            url: '/api/items',
-            dataSrc: ''
-        },
-        columns: [
-            { data: 'id' },
-            { data: 'name' },
-            { data: 'category' },
-            { data: 'details' },
-            { data: 'stock'},
-            {
-                data: null,
-                render: function(data, type, row) {
-                    return `
-                        <i class="fas fa-edit edit-category" data-id="${row.id}" title="Edit"></i>
-                        <i class="fas fa-trash delete-category" data-id="${row.id}" title="Delete"></i>
-                    `;
-                }
-            }
-        ],
-        
-        
-    });
-
-    
-
-    // Handle Import JSON for Categories
-    $('#importBtn').on('click', function() {
-        const fileInput = $('#importFile')[0];
-        if (fileInput.files.length === 0) {
-            alert('Please select a file first.');
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append('file', fileInput.files[0]);
-
-        $.ajax({
-            url: '/api/items/categories/import',
-            type: 'POST',
-            data: formData,
-            contentType: false,
-            processData: false,
-            success: function(response) {
-                alert(response.message);
-                table.ajax.reload(); // Refresh the DataTable
-            },
-            error: function(xhr, status, error) {
-                alert('Error importing data: ' + xhr.responseText);
-            }
-        });
-    });
-
-    // Handle Export JSON for Categories
-    $('#exportBtn').on('click', function() {
-        window.location.href = '/api/items/categories/export';
-    });
-
-    // Handle Edit and Delete operations
-    $('#itemsTable').on('click', '.edit-category', function() {
-        const id = $(this).data('id');
-        console.log('Edit category with ID:', id);
-        // Implement your edit functionality here
-    });
-
-    $('#itemsTable').on('click', '.delete-category', function() {
-        const id = $(this).data('id');
-        if (confirm('Are you sure you want to delete this category?')) {
-            $.ajax({
-                url: `/api/items/categories/${id}`,
-                type: 'DELETE',
-                success: function() {
-                    table.ajax.reload(); // Refresh the DataTable
-                },
-                error: function(xhr, status, error) {
-                    alert('Error deleting category: ' + xhr.responseText);
-                }
-            });
-        }
-    });
-});
-//     // Fetch data with $.ajax
-//     $.ajax({
-//         url: "/api/categories", // API route
-//         method: 'GET',          // Using GET method
-//         dataType: 'json',       // Expecting JSON data in response
-//         success: function (data) {
-//             console.log('Data received from API:', data); // Debugging the received data
-            
-//             let processedData = []; // Array to hold formatted data for DataTable
-            
-//             // Loop through the response and extract categories
-//             data.forEach(doc => {
-//                 if (doc.categories && doc.categories.length > 0) {
-//                     doc.categories.forEach(category => {
-//                         // Push each category's id and category_name into processedData
-//                         processedData.push({
-//                             id: category.id,
-//                             name: category.category_name
-//                         });
-//                     });
-//                 }
-//             });
-
-//             console.log('Processed Data:', processedData[0]); // Debugging the formatted data
-            
-//             // Now initialize the DataTable with the processed data
-//             $('#categoryTable').DataTable({
-//                 data: processedData, // Pass the formatted data directly
-//                 columns: [
-//                     { data: 'id' },  // Display category ID
-//                     { data: 'name' }, // Display category name
-//                     {
-//                         data: null,
-//                         render: function (data, type, row) {
-//                             // Render buttons with category ID for edit/delete actions
-//                             return `<button class="editCategory" data-id="${row.id}">Edit</button> 
-//                                     <button class="deleteCategory" data-id="${row.id}">Delete</button>`;
-//                         }
+//             $.ajax({
+//                 url: '/api/users/create', // API endpoint to create a user
+//                 method: 'POST',
+//                 contentType: 'application/json',
+//                 data: JSON.stringify(formData),
+//                 success: function(response) {
+//                     alert('Rescuer created successfully');
+//                     // Clear form after success
+//                     $('#createRescuerForm')[0].reset();
+//                 },
+//                 error: function (xhr) {
+//                     // Safely access the responseText
+//                     let errorMessage = 'An error occurred while creating the rescuer.';
+//                     if (xhr.responseJSON && xhr.responseJSON.message) {
+//                         errorMessage = xhr.responseJSON.message;
+//                     } else if (xhr.responseText) {
+//                         errorMessage = xhr.responseText;
 //                     }
-//                 ]
-//             });
-//         },
-//         error: function (jqXHR, textStatus, errorThrown) {
-//             console.error('Error in AJAX call:', textStatus, errorThrown); // Debugging error
-//         }
-//     });
-
-// //add category
-//     $('#addCategory').on('click', function () {
-//     const id = prompt("Enter Category ID:");
-//     const category_name = prompt("Enter Category Name:");
-
-//     if (id && category_name) {
-//         $.ajax({
-//             url: '/api/categories',
-//             method: 'POST',
-//             contentType: 'application/json',
-//             data: JSON.stringify({ id, category_name }),  // Send new ID and category name
-//             success: function (response) {
-//                 alert('Category added successfully');
-//                 $('#categoryTable').DataTable().ajax.reload();  // Reload DataTable to show new category
-//             },
-//             error: function (jqXHR) {
-//                 alert(`Error: ${jqXHR.responseJSON.error}`);
-//             }
-//         });
-//     }
-// });
-
-
-//             // Edit Category - Update Existing Category
-//             $('#categoryTable').on('click', '.editCategory', function () {
-//     const categoryId = $(this).data('id'); // The original ID from the row
-//     const categoryName = $(this).data('name'); // The original category name
-
-//     let newCategoryId = prompt("Enter the new category ID:", categoryId);  // New ID input
-//     let newCategoryName = prompt("Enter the new category name:", categoryName);  // New Name input
-
-//     if (newCategoryId && newCategoryName) {
-//         $.ajax({
-//             url: `/api/categories/${categoryId}`,  // Send the original ID in the URL
-//             method: 'PUT',
-//             contentType: 'application/json',
-//             data: JSON.stringify({ id: newCategoryId, category_name: newCategoryName }),  // Send the new ID and name
-//             success: function () {
-//                 alert('Category updated successfully');
-//                 $('#categoryTable').DataTable().ajax.reload();  // Reload the table after success
-//             },
-//             error: function (jqXHR) {
-//                 alert(`Error: ${jqXHR.responseJSON.error}`);
-//             }
-//         });
-//     }
-// });
-
-
-//             // Delete Category
-//             $('#categoryTable').on('click', '.deleteCategory', function () {
-//                 const categoryId = $(this).data('id');
-//                 if (confirm("Are you sure you want to delete this category?")) {
-//                     $.ajax({
-//                         url: `/api/categories/${categoryId}`,
-//                         method: 'DELETE',
-//                         success: function () {
-//                             alert('Category deleted successfully');
-//                             categoryTable.ajax.reload();
-//                         },
-//                         error: function (jqXHR, textStatus, errorThrown) {
-//                             console.error('Error deleting category:', textStatus, errorThrown);
-//                         }
-//                     });
+//                     alert('Error: ' + errorMessage);
 //                 }
 //             });
 //         });
-//THE WORKING AJAX CODE
-// $(document).ready(function () {
-//     console.log('Document is ready');
 
-//     // Fetch data with $.ajax
-//     $.ajax({
-//         url: "/api/categories", // API route
-//         method: 'GET',          // Using GET method
-//         dataType: 'json',       // Expecting JSON data in response
-//         success: function (data) {
-//             console.log('Data received from API:', data); // Debugging the received data
-            
-//             let processedData = []; // Array to hold formatted data for DataTable
-            
-//             // Loop through the response and extract categories
-//             data.forEach(doc => {
-//                 if (doc.categories && doc.categories.length > 0) {
-//                     doc.categories.forEach(category => {
-//                         // Push each category's id and category_name into processedData
-//                         processedData.push({
-//                             id: category.id,
-//                             name: category.category_name
-//                         });
-//                     });
-//                 }
-//             });
+////////////////////////////////////////////////////DATATABLE/////////////////////////
 
-//             console.log('Processed Data:', processedData[0]); // Debugging the formatted data
-            
-//             // Now initialize the DataTable with the processed data
-//             $('#categoryTable').DataTable({
-//                 data: processedData, // Pass the formatted data directly
-//                 columns: [
-//                     { data: 'id' },  // Display category ID
-//                     { data: 'name' }, // Display category name
-//                     {
-//                         data: null,
-//                         render: function (data, type, row) {
-//                             // Render buttons with category ID for edit/delete actions
-//                             return `<button class="editCategory" data-id="${row.id}">Edit</button> 
-//                                     <button class="deleteCategory" data-id="${row.id}">Delete</button>`;
-//                         }
-//                     }
-//                 ]
-//             });
-//         },
-//         error: function (jqXHR, textStatus, errorThrown) {
-//             console.error('Error in AJAX call:', textStatus, errorThrown); // Debugging error
-//         }
-//     });
-// });
-
-
-
-//     // Test if the AJAX call is successful
-//     $.ajax({
-//         url: "/api/categories", // The same API route
-//         method: 'GET',
-//         success: function(data) {
-//             console.log('API Response:', data[0].categories); // Check if data is being received
-//         },
-//         error: function(jqXHR, textStatus, errorThrown) {
-//             console.error('Error in API call:', textStatus, errorThrown);
-//         }
-//     });
-// });
-//     
-
-    // // Initialize DataTables for Items
-    // const itemTable = $('#itemTable').DataTable({
-    //     ajax: '/api/items',
+    //      // Initialize DataTable for Categories
+    // const table = $('#itemsTable').DataTable({
+    //     ajax: {
+    //         url: '/api/items',
+    //         dataSrc: ''
+    //     },
     //     columns: [
     //         { data: 'id' },
     //         { data: 'name' },
-    //         { data: 'category.category_name' },
-    //         { data: 'details', render: function(data) { 
-    //             return data.map(detail => `${detail.detail_name}: ${detail.detail_value}`).join('<br>'); 
-    //         }},
-    //         { data: 'stock' },
+    //         { data: 'category' },
+    //         { data: 'details' },
+    //         { data: 'stock'},
     //         {
     //             data: null,
-    //             render: function (data, type, row) {
-    //                 return `<button class="editItem" data-id="${row._id}">Edit</button> 
-    //                         <button class="deleteItem" data-id="${row._id}">Delete</button>`;
+    //             render: function(data, type, row) {
+    //                 return `
+    //                     <i class="fas fa-edit edit-item" data-id="${row.id}" title="Edit"></i>
+    //                     <i class="fas fa-trash delete-item" data-id="${row.id}" title="Delete"></i>
+    //                 `;
     //             }
     //         }
-    //     ]
+    //     ],
+        
+        
     // });
 
-    // // File upload logic for Categories
-    // $('#uploadCategoryJson').on('change', function() {
-    //     const formData = new FormData();
-    //     formData.append('jsonFile', this.files[0]);
+//     $('#importBtn').on('click', function () {
+//     const inputFile = $('#importFile')[0].files[0];
+
+//     if (!inputFile) {
+//         alert('Please select a file to import');
+//         return;
+//     }
+
+//     const formData = new FormData();
+//     formData.append('file', inputFile);
+
+//     $.ajax({
+//         url: '/api/items/import',  // Update with the correct endpoint
+//         type: 'POST',
+//         data: formData,
+//         contentType: false,  // Required for file uploads
+//         processData: false,  // Prevent jQuery from processing the data
+//         success: function (response) {
+//             alert(response.message);
+//             table.ajax.reload();  // Reload the DataTable to reflect new data
+//         },
+//         error: function (xhr) {
+//             alert('Error: ' + xhr.responseJSON.error);
+//         }
+//     });
+// });
+
+// // Handle the "Edit" button click - using event delegation
+// $('#itemsTable').on('click', '.edit-item', function(e) {
+//   const itemId = $(this).data('id');
+
+//   $.ajax({
+//     url: `/api/items/${itemId}`,
+//     method: 'GET',
+//     success: function(itemData) {
+//       // Open an edit form pre-populated with item data
+//       $('#editItemModal').modal('show');
+//       $('#editItemName').val(itemData.name);
+//       $('#editItemDetails').val(itemData.details);
+//       $('#editItemStock').val(itemData.stock);
+//       $('#editItemId').val(itemId); // Store item ID for submission
+//     },
+//     error: function(error) {
+//       console.error('Error fetching item data:', error);
+//       alert('Error fetching item data. Please try again.');
+//     }
+//   });
+// });
+
+// // Handle form submission for editing
+// $('#editItemForm').submit(function(e) {
+//   e.preventDefault();
+//   const itemId = $('#editItemId').val();
+//   const updatedData = {
+//     name: $('#editItemName').val(),
+//     details: $('#editItemDetails').val(),
+//     stock: $('#editItemStock').val()
+//   };
+
+//   $.ajax({
+//     url: `/api/items/${itemId}`,
+//     method: 'PUT',
+//     data: JSON.stringify(updatedData),
+//     contentType: 'application/json',
+//     success: function(response) {
+//       $('#editItemModal').modal('hide');
+//       $('#itemsTable').DataTable().ajax.reload(); // Reload data table
+//       alert('Item updated successfully!');
+//     },
+//     error: function(error) {
+//       console.error('Error updating item:', error);
+//       alert('Error updating item. Please try again.');
+//     }
+//   });
+// });
+
+// // Open the edit modal and populate with the current item data
+// $('#itemsTable').on('click', '.edit-item', function () {
+//   const id = $(this).data('id');  // Get the item ID from the button's data attribute
+
+//   // Fetch the current data for this item
+//   $.get('/api/items/' + id, function (data) {
+//     $('#itemName').val(data.name);
+//     $('#itemDetails').val(data.details);
+//     $('#itemStock').val(data.stock);
+
+//     // Store the item ID in the modal's data attribute
+//     $('#editModal').data('item-id', id).modal('show');
+//   });
+// });
+
+// // Handle the click event for the edit button dynamically
+// $('#itemsTable').on('click', '.edit-category', function () {
+//     const id = $(this).data('id');  // Get the ID of the item
+
+//     // Fetch current item details from the DataTable row
+//     const itemData = table.row($(this).parents('tr')).data();
+
+//     if (!itemData) {
+//         alert('No item data found');
+//         return;
+//     }
+
+//     // Pre-fill modal inputs with existing item data
+//     $('#editModal #itemName').val(itemData.name);
+//     $('#editModal #itemCategory').val(itemData.category);
+//     $('#editModal #itemDetails').val(itemData.details);  // Assuming details is a string
+//     $('#editModal #itemStock').val(itemData.stock);
+
+//     // Show the edit modal
+//     $('#editModal').modal('show');
+
+//     // Handle the save action
+//     $('#saveEditBtn').off('click').on('click', function () {
+//         const updatedData = {
+//             name: $('#editModal #itemName').val(),
+//             category: $('#editModal #itemCategory').val(),
+//             details: $('#editModal #itemDetails').val(),  // Adjust as necessary
+//             stock: $('#editModal #itemStock').val()
+//         };
+
+//         // Make the AJAX PUT request to update the item
+//         $.ajax({
+//             url: '/api/items/' + id,  // Use correct PUT endpoint
+//             type: 'PUT',
+//             data: JSON.stringify(updatedData),
+//             contentType: 'application/json',
+//             success: function (response) {
+//                 alert(response.message);
+//                 $('#editModal').modal('hide');  // Hide the modal on success
+//                 table.ajax.reload();  // Reload the DataTable to reflect the updated data
+//             },
+//             error: function (xhr) {
+//                 alert('Error: ' + (xhr.responseJSON ? xhr.responseJSON.error : 'Unknown error'));
+//             }
+//         });
+//     });
+// });
+
+// Handle the delete button click
+// $('#itemsTable').on('click', '.delete-item', function(e) {
+//   const itemId = $(this).data('id');
+
+//   if (confirm('Are you sure you want to delete this item?')) {
+//     $.ajax({
+//       url: `/api/items/${itemId}`,
+//       method: 'DELETE',
+//       success: function(response) {
+//         $('#itemsTable').DataTable().ajax.reload(); // Reload data table
+//         alert('Item deleted successfully!');
+//       },
+//       error: function(error) {
+//         console.error('Error deleting item:', error);
+//         alert('Error deleting item. Please try again.');
+//       }
+//     });
+//   }
+// });
+
+  
+
+
+////////////////////////////ANNOUNCEMENTS//////////////////////////////////
+    // $('#createAnnouncement').on('submit', function (e) {
+    //     e.preventDefault();
+
+    //     const date = $('#date').val();
+    //     const announcement = $('#announcement').val();
+    //     const items = $('#items').val();
 
     //     $.ajax({
-    //         url: '/api/upload/categories',
-    //         type: 'POST',
-    //         data: formData,
-    //         contentType: false,
-    //         processData: false,
+    //         url: '/api/users/create-announcement', // Ensure this matches the route on the server
+    //         method: 'POST',
+    //         data: {
+    //             date: date,
+    //             announcement: announcement,
+    //             items: items
+    //         },
     //         success: function (response) {
-    //             alert(response.message);
-    //             categoryTable.ajax.reload();
+    //             alert('Announcement added successfully!');
+    //             // Optionally, reset the form or take some action
+    //             $('#createAnnouncement')[0].reset();
+    //         },
+    //         error: function (xhr, status, error) {
+    //             console.error('Error:', error);
+    //             alert('There was an error submitting the announcement.');
     //         }
     //     });
     // });
 
-    // // File upload logic for Items
-    // $('#uploadItemJson').on('change', function() {
-    //     const formData = new FormData();
-    //     formData.append('jsonFile', this.files[0]);
+/////////////////////////ALERTS FOR ITEMS ///////////////////////////
+// function fetchStockAlerts() {
+//       $.ajax({
+//         url: '/api/items/low-stock-alerts',
+//         method: 'GET',
+//         success: function (lowStockItems) {
+//           const alertsContainer = $('#stock-alerts');
+          
+//           if (lowStockItems.length > 0) {
+//             alertsContainer.html('<h2>Low Stock Alerts:</h2>');
+//             lowStockItems.forEach(function(item) {
+//               const itemDiv = $('<div>')
+//                 .addClass('alert-item')
+//                 .text(`${item.name} (ID: ${item.id}) - Stock: ${item.stock}`);
+//               alertsContainer.append(itemDiv);
+//             });
+//           } else {
+//             alertsContainer.text('No low stock items.');
+//           }
+//         },
+//         error: function (xhr, status, error) {
+//           console.error('Error fetching stock alerts:', error);
+//           $('#stock-alerts').text('Error fetching stock alerts.');
+//         }
+//       });
+//     }
 
-    //     $.ajax({
-    //         url: '/api/upload/items',
-    //         type: 'POST',
-    //         data: formData,
-    //         contentType: false,
-    //         processData: false,
-    //         success: function (response) {
-    //             alert(response.message);
-    //             itemTable.ajax.reload();
-    //         }
-    //     });
-    // });
+//     fetchStockAlerts();
 
-    // // Toggle between sections
-    // $('.menu-item').on('click', function() {
-    //     const section = $(this).data('section');
-    //     $('.main-content > div').hide();
-    //     $(`#${section}`).show();
-    // });
-       
-    //     // // Leaflet Map Initialization
-    //     // let map = L.map('map').setView([51.505, -0.09], 13);
-    //     // L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    //     //     attribution: '© OpenStreetMap contributors'
-    //     // }).addTo(map); 
-    
-    //     // Switch between sections
-    //     $('.menu-item').on('click', function () {
-    //         $('.menu-item').removeClass('active');
-    //         $(this).addClass('active');
-    
-    //         let section = $(this).data('section');
-    //         $('.main-content > div').hide();
-    //         $('#' + section).show();
-    //     });
-    
-    //     // Initially show the dashboard
-    //     $('#dashboard').show(); 
+//  });
+
 
 </script>
 </body>

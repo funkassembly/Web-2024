@@ -1,0 +1,347 @@
+{
+    "items": [
+      {
+        "id": "316",
+        "name": "Green Tea",
+        "category": "6",
+        "details": [
+          {
+            "detail_name": "volume",
+            "detail_value": "500ml"
+          },
+          {
+            "detail_name": "pack size",
+            "detail_value": "10"
+          }
+        ],
+        "stock": 213
+      },
+      {
+        "id": "317",
+        "name": "Chocolate Milk",
+        "category": "6",
+        "details": [
+          {
+            "detail_name": "volume",
+            "detail_value": "1l"
+          },
+          {
+            "detail_name": "pack size",
+            "detail_value": "8"
+          }
+        ],
+        "stock": 342
+      },
+      {
+        "id": "318",
+        "name": "Almonds",
+        "category": "29",
+        "details": [
+          {
+            "detail_name": "weight",
+            "detail_value": "200g"
+          },
+          {
+            "detail_name": "pack size",
+            "detail_value": "1"
+          }
+        ],
+        "stock": 129
+      },
+      {
+        "id": "319",
+        "name": "Cat Food",
+        "category": "49",
+        "details": [
+          {
+            "detail_name": "weight",
+            "detail_value": "1.5kg"
+          },
+          {
+            "detail_name": "pack size",
+            "detail_value": "5"
+          }
+        ],
+        "stock": 87
+      },
+      {
+        "id": "320",
+        "name": "Novel Book",
+        "category": "59",
+        "details": [
+          {
+            "detail_name": "pages",
+            "detail_value": "320"
+          },
+          {
+            "detail_name": "author",
+            "detail_value": "John Doe"
+          }
+        ],
+        "stock": 415
+      },
+      {
+        "id": "321",
+        "name": "Baby Shampoo",
+        "category": "25",
+        "details": [
+          {
+            "detail_name": "volume",
+            "detail_value": "300ml"
+          },
+          {
+            "detail_name": "pack size",
+            "detail_value": "1"
+          }
+        ],
+        "stock": 196
+      },
+      {
+        "id": "322",
+        "name": "Energy Drink",
+        "category": "6",
+        "details": [
+          {
+            "detail_name": "volume",
+            "detail_value": "250ml"
+          },
+          {
+            "detail_name": "pack size",
+            "detail_value": "12"
+          }
+        ],
+        "stock": 230
+      },
+      {
+        "id": "323",
+        "name": "Dog Toy",
+        "category": "49",
+        "details": [
+          {
+            "detail_name": "size",
+            "detail_value": "Medium"
+          },
+          {
+            "detail_name": "material",
+            "detail_value": "Rubber"
+          }
+        ],
+        "stock": 142
+      },
+      {
+        "id": "324",
+        "name": "Sports Drink",
+        "category": "6",
+        "details": [
+          {
+            "detail_name": "volume",
+            "detail_value": "600ml"
+          },
+          {
+            "detail_name": "pack size",
+            "detail_value": "6"
+          }
+        ],
+        "stock": 374
+      },
+      {
+        "id": "325",
+        "name": "Kids Puzzle",
+        "category": "25",
+        "details": [
+          {
+            "detail_name": "pieces",
+            "detail_value": "100"
+          },
+          {
+            "detail_name": "age group",
+            "detail_value": "3-6"
+          }
+        ],
+        "stock": 55
+      },
+      {
+        "id": "326",
+        "name": "Juice Box",
+        "category": "6",
+        "details": [
+          {
+            "detail_name": "volume",
+            "detail_value": "200ml"
+          },
+          {
+            "detail_name": "pack size",
+            "detail_value": "24"
+          }
+        ],
+        "stock": 489
+      },
+      {
+        "id": "327",
+        "name": "Dog Food",
+        "category": "29",
+        "details": [
+          {
+            "detail_name": "weight",
+            "detail_value": "2kg"
+          },
+          {
+            "detail_name": "pack size",
+            "detail_value": "4"
+          }
+        ],
+        "stock": 291
+      },
+      {
+        "id": "328",
+        "name": "Milk",
+        "category": "6",
+        "details": [
+          {
+            "detail_name": "volume",
+            "detail_value": "1l"
+          },
+          {
+            "detail_name": "pack size",
+            "detail_value": "6"
+          }
+        ],
+        "stock": 178
+      },
+      {
+        "id": "329",
+        "name": "Fishing Rod",
+        "category": "49",
+        "details": [
+          {
+            "detail_name": "length",
+            "detail_value": "2.5m"
+          },
+          {
+            "detail_name": "material",
+            "detail_value": "Fiberglass"
+          }
+        ],
+        "stock": 62
+      },
+      {
+        "id": "330",
+        "name": "Cooking Book",
+        "category": "59",
+        "details": [
+          {
+            "detail_name": "pages",
+            "detail_value": "150"
+          },
+          {
+            "detail_name": "author",
+            "detail_value": "Jane Smith"
+          }
+        ],
+        "stock": 347
+      },
+      {
+        "id": "331",
+        "name": "Laundry Detergent",
+        "category": "25",
+        "details": [
+          {
+            "detail_name": "volume",
+            "detail_value": "1.5l"
+          },
+          {
+            "detail_name": "pack size",
+            "detail_value": "2"
+          }
+        ],
+        "stock": 213
+      },
+      {
+        "id": "332",
+        "name": "Granola Bars",
+        "category": "6",
+        "details": [
+          {
+            "detail_name": "weight",
+            "detail_value": "250g"
+          },
+          {
+            "detail_name": "pack size",
+            "detail_value": "12"
+          }
+        ],
+        "stock": 377
+      },
+      {
+        "id": "333",
+        "name": "Cat Litter",
+        "category": "49",
+        "details": [
+          {
+            "detail_name": "weight",
+            "detail_value": "5kg"
+          },
+          {
+            "detail_name": "pack size",
+            "detail_value": "1"
+          }
+        ],
+        "stock": 98
+      },
+      {
+        "id": "334",
+        "name": "Baby Bottle",
+        "category": "25",
+        "details": [
+          {
+            "detail_name": "volume",
+            "detail_value": "250ml"
+          },
+          {
+            "detail_name": "pack size",
+            "detail_value": "2"
+          }
+        ],
+        "stock": 421
+      },
+      {
+        "id": "335",
+        "name": "Soda",
+        "category": "6",
+        "details": [
+          {
+            "detail_name": "volume",
+            "detail_value": "330ml"
+          },
+          {
+            "detail_name": "pack size",
+            "detail_value": "24"
+          }
+        ],
+        "stock": 284
+      }
+    ],
+    "categories": [
+      {
+        "id": "6",
+        "category_name": "Beverages"
+      },
+      {
+        "id": "29",
+        "category_name": "Animal Food"
+      },
+      {
+        "id": "49",
+        "category_name": "Pet Supplies"
+      },
+      {
+        "id": "25",
+        "category_name": "Baby Essentials"
+      },
+      {
+        "id": "59",
+        "category_name": "Books"
+      }
+    ]
+  }
+  
