@@ -32,12 +32,12 @@
     <div class="modal-content">
         <span class="close-modal">&times;</span>
         <h2>Οδηγίες</h2>
-        <p>1. Σύρε το όχημα <img src="/icons/transport.png" style="width: 3%; height: 3%;"> στην Τοποθεσία σου.</p>
+        <p>1. Σύρε το όχημα <img src="/maptry/icons/transport.png" style="width: 3%; height: 3%;"> στην Τοποθεσία σου.</p>
         <p>2. Επέλεξε το κουμπί 'Φόρτωση' ή 'Εκφόρτωση' όταν βρίσκεσαι σε απόσταση μέχρι 100m από τη Γενική Αποθήκη για την παραλαβή προμηθειών.</p>
-        <p>3. Επέλεξε μέχρι 4 πολίτες <img src="/icons/peoplePending.png" style="width: 3%; height: 3%;"> για να εξυπηρετήσεις.</p>
+        <p>3. Επέλεξε μέχρι 4 πολίτες <img src="/maptry/icons/peoplePending.png" style="width: 3%; height: 3%;"> για να εξυπηρετήσεις.</p>
         <p>4. Για να επιθεωρήσεις το τρέχον φορτίο του οχήματος επέλεξε το κουμπί 'Τρέχον Φορτίο'.</p>
         <p>5. Υπομνήματα Χάρτη: </p>
-        <p>    *<img src="/icons/donate.png" style="width: 2%; height: 2%;">: Δωρεά Αγαθών</p>
+        <p>    *<img src="/maptry/icons/donate.png" style="width: 2%; height: 2%;">: Δωρεά Αγαθών</p>
     </div>
 </div>
 
@@ -140,20 +140,23 @@
     </div>
     
 
-    <button id="filterToggleButton" class="filter-button">Φίλτρα Χάρτη</button>
+    <button id="filterToggleButton" class="filter-button">Map Filters</button>
 
     <div id="filters" class="filter-container">
         <h3>Tasks</h3>
+        <label>
+            <input type="checkbox" id="routeFilter" class="route-filter" disabled> Route
+        </label>
         
         <label>
-            <input type="checkbox" class="main-filter" value="pending"> Pending
+            <input type="checkbox" class="main-filter" value="pending" checked> Pending
         </label>
         <label>
-            <input type="checkbox" class="main-filter" value="served"> Served
+            <input type="checkbox" class="main-filter" value="served" checked> Served
         </label>
-
+    
         <h4>Type</h4>
-        
+    
         <label>
             <input type="checkbox" class="sub-filter" value="request"> Request
         </label>
@@ -161,6 +164,7 @@
             <input type="checkbox" class="sub-filter" value="donation"> Donation
         </label>
     </div>
+    
 
 </body>
 

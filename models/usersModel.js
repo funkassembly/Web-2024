@@ -49,8 +49,8 @@ const taskSchema = new mongoose.Schema({
         zip: String,
         country: String,
     },
-    item: { type: mongoose.Schema.Types.ObjectId, ref: 'Item', required: true },
-    itemCategory: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: true }, // Reference to Category
+    item: { type: String, ref: 'Item', required: true },
+    itemCategory: { type: String, ref: 'Category', required: true }, // Reference to Category
     quantity: { type: Number, required: true },
     dateSubmitted: { type: Date, default: Date.now },
     rescuerUsername: { type: mongoose.Schema.Types.ObjectId, ref: 'User'}, // Filled when processed
@@ -76,8 +76,8 @@ const civilianSchema = new mongoose.Schema({
 const rescuerSchema = new mongoose.Schema({
     cargo: [
         {
-            item: { type: mongoose.Schema.Types.ObjectId, ref: 'Data', required: true },
-            itemCategory: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: true },
+            item: { type:String, ref: 'Data', required: true },
+            itemCategory: { type: String, ref: 'Category', required: true },
             quantity: { type: Number, required: true }
         }
     ],

@@ -368,7 +368,9 @@ document.getElementById('instructionsLink').addEventListener('click', function(e
 document.querySelectorAll('.close-modal').forEach(closeBtn => {
     closeBtn.addEventListener('click', function() {
         closeAllModals();
+        document.getElementById('filterToggleButton').style.zIndex=4020;
         document.getElementById('map').style.zIndex= 2005;
+        
     });
 });
 
@@ -376,6 +378,7 @@ document.querySelectorAll('.close-modal').forEach(closeBtn => {
 function showStorageModals() {
     console.log('Showing storage modals'); // Debugging log
     document.getElementById('map').style.zIndex= 1000;
+    document.getElementById('filterToggleButton').style.zIndex=1000;
     closeAllModals();  // Close any open modals first
     document.getElementsByClassName('modal-container')[0].style.display = 'block';
     const itemsModal = document.getElementById('itemsModal');

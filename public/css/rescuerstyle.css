@@ -175,7 +175,7 @@ body {
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    z-index: 999;
+    z-index: 2005;
 }
 
 .filter-button:hover {
@@ -183,7 +183,7 @@ body {
 }
 
 .filter-container {
-    display: none;
+    
     position: absolute;
     bottom: 70px;
     left: 20px;
@@ -191,7 +191,7 @@ body {
     color: white;
     padding: 15px;
     border-radius: 8px;
-    z-index: 1000;
+    z-index: 2005;
 }
 
 .filter-container.visible {

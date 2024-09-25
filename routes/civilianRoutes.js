@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { Civilian, User, Task, Admin } = require('../models/usersModel');
+const { Civilian, User, Task, Admin, Rescuer} = require('../models/usersModel');
 const { Item, Category, Data } = require('../models/dataModel');
 
 // Reverse geocoding function to get address from lat/lng
 const reverseGeocodeNominatim = async (lat, lng) => {
     const apiUrl = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1`;
+    console.log(`apiURl: ${apiUrl}`);
     
     try {
         // Use node-fetch to make the API call
@@ -108,6 +109,7 @@ router.post('/updateLocation', async (req, res) => {
         // Update user's location and address
         user.location.coordinates = [lat, lng]; 
         user.address = newAddress;
+        console.log(`address: ${newAddress}`);
         
 
         // Save the updated user
@@ -221,6 +223,42 @@ router.get('/loadtasks', async (req, res) => {
         res.status(500).json({ message: 'Error fetching tasks' });
     }
 });
+
+// router.get('/loadtasks', async (req, res) => {
+//     try {
+//         const userId = req.session.userId; 
+//         console.log('Fetching tasks for civilian ID:', userId);
+
+//         if (!userId) {
+//             return res.status(401).json({ message: 'User not authenticated' });
+//         }
+
+//         // Find the civilian by their ID and populate the tasks
+//         // Populate the rescuerUsername field with the rescuer's username if it's a valid ObjectId
+//         const civilian = await Civilian.findById(userId)
+//             .select('tasks')  // Select only tasks
+//             .populate({
+//                 path: 'tasks.rescuerUsername',  // Assuming rescuerUsername is an ObjectId referencing the Rescuer model
+//                 select: 'username',             // Select only the username field from the Rescuer
+//                 match: { _id: { $ne: null } }   // Ensure the rescuerUsername is not null
+//             });
+
+//         // Check if civilian or tasks were found
+//         if (!civilian || !civilian.tasks || civilian.tasks.length === 0) {
+//             return res.status(404).json({ message: 'No tasks found' });
+//         }
+
+//         console.log(`Tasks: ${civilian.tasks}`);
+
+//         // Send the tasks as the response
+//         res.json(civilian.tasks);
+//     } catch (error) {
+//         console.error('Error fetching tasks:', error);
+//         res.status(500).json({ message: 'Error fetching tasks' });
+//     }
+// });
+
+
 
 // router.get('/announcements', async (req, res) => {
 //     try {

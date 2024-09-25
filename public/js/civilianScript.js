@@ -540,6 +540,8 @@ function renderTaskTable(tasks) {
 
     // Loop through the tasks and create rows for each task
     tasks.forEach((task, index) => {
+        const rescuerName = task.rescuerUsername?.username || 'N/A';  // task.rescuerUsername will contain the username if populated
+
         tableHTML += `
             <tr>
                 <td>${index+1}</td>

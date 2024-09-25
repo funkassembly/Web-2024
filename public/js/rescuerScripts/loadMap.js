@@ -9,6 +9,12 @@ const StorageIcon = L.icon({
     iconAnchor: [15,8],
     popupAnchor: [0, 0]
 });
+const RequestIcon = L.icon({
+    iconUrl: '/maptry/icons/req.png', 
+    iconSize: [40, 40],
+    iconAnchor: [15,8],
+    popupAnchor: [0, 0]
+});
 const RescuerIcon = L.icon({
     iconUrl: '/maptry/icons/transport.png',
     iconSize: [40, 40],
@@ -36,6 +42,7 @@ document.addEventListener("DOMContentLoaded", async function() {
             console.error('Failed to fetch current rescuer ID');
             return;
         }
+        
         currentRescuerId = data.rescuerId; // Store the current rescuer's ID globally
         console.log(currentRescuerId);
     } catch (error) {
@@ -48,7 +55,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         maxZoom: 19,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
-
+    
     var markerStorage = L.marker([38.24600, 21.73500], {icon: StorageIcon}).addTo(map);    
     let markerRescuer = L.marker([38.24600, 21.73450], {
         icon: RescuerIcon,
@@ -56,9 +63,105 @@ document.addEventListener("DOMContentLoaded", async function() {
     }).addTo(map);
     markerRescuer.bindPopup('Drag and Drop me to your location!').openPopup();
     updateUnloadButtonState();
-    fetchCivilianLocations();
-    fetchCivilianInfo();
+    const filterToggleButton = document.getElementById('filterToggleButton');
+    const filterContainer = document.getElementById('filters');
+    const mainFilters = document.querySelectorAll('.main-filter');
+    const routeFilter = document.getElementById('routeFilter'); 
     
+    fetchCivilianInfo();
+    // Toggle the visibility of the filters when the button is clicked
+    filterToggleButton.addEventListener('click', function () {
+        if (filterContainer.style.display === 'none' || filterContainer.style.display === '') {
+            filterContainer.style.display = 'block';  // Show filters
+        } else {
+            filterContainer.style.display = 'none';  // Hide filters
+        }
+    });
+    // Function to apply the filter logic
+    function applyFilter() {
+        const isPendingChecked = document.querySelector('.main-filter[value="pending"]').checked;
+        const isServedChecked = document.querySelector('.main-filter[value="served"]').checked;
+
+        // Enable or disable the Route filter based on the "Served" filter state
+        routeFilter.disabled = !isServedChecked;
+        if (!isServedChecked) {
+            routeFilter.checked = false; // Uncheck and disable route filter if "Served" is unchecked
+        }
+
+        // Hide all markers if neither "Pending" nor "Served" is checked
+        if (!isPendingChecked && !isServedChecked) {
+            for (let civilianId in civilianMarkers) {
+                const { marker } = civilianMarkers[civilianId];
+                marker.remove();
+            }
+            return;
+        }
+
+        const servedCivilianLocations = [];
+
+        // Loop through civilian markers to show/hide based on filters
+        for (let civilianId in civilianMarkers) {
+            const { marker, tasks } = civilianMarkers[civilianId];
+            
+            if (!tasks || tasks.length === 0) {
+                marker.remove();
+                continue;
+            }
+
+            const isTaskServed = tasks.some(task => task.status === 'processed');
+            const isTaskPending = tasks.some(task => task.status === 'pending');
+
+            // Show or hide based on the status and filter
+            if (isPendingChecked && isTaskPending) {
+                marker.addTo(map);  // Show marker if pending filter is checked
+            } else if (isServedChecked && isTaskServed) {
+                marker.addTo(map);  // Show marker if served filter is checked
+                const civilianLatLng = marker.getLatLng();
+                servedCivilianLocations.push([civilianLatLng.lng, civilianLatLng.lat]);  // Collect served civilian locations
+            } else {
+                marker.remove();  // Hide marker if it doesn't match the criteria
+            }
+        }
+
+        // Handle the Route filter if it's checked
+        if (routeFilter.checked && isServedChecked && servedCivilianLocations.length > 0) {
+            drawRouteBetweenMarkers(servedCivilianLocations);  // Draw routes between markers
+        } else if (routingControl) {
+            map.removeControl(routingControl);  // Remove route if Route filter is unchecked
+        }
+    }
+    // Function to draw the route between served civilian markers
+    function drawRouteBetweenMarkers(locations) {
+        if (routingControl) {
+            map.removeControl(routingControl); // Remove existing route
+        }
+
+        // Use the rescuer's marker location as the starting point
+        const rescuerLatLng = markerRescuer.getLatLng();
+        const waypoints = [
+            L.latLng(rescuerLatLng.lat, rescuerLatLng.lng),  // Rescuer's location
+            ...locations.map(loc => L.latLng(loc[1], loc[0]))  // Civilians' locations
+        ];
+
+        // Draw route between rescuer and civilians
+        routingControl = L.Routing.control({
+            waypoints: waypoints,
+            routeWhileDragging: true,
+            show: false,
+            createMarker: function() { return null; }  // Prevent creating extra markers
+        }).addTo(map);
+    }
+    mainFilters.forEach(filter => {
+        filter.addEventListener('change', applyFilter);
+    });
+
+    routeFilter.addEventListener('change', applyFilter);  // Apply filter when the route filter is changed
+
+    // Initial filter application (with both filters checked)
+    applyFilter();
+
+    // Ensure filters are hidden by default (optional)
+    filterContainer.style.display = 'none';
     // markerStorage on Click event *Trigger*
     markerStorage.on('click', async function() {
         console.log('markerStorage on click Event Triggered!')
@@ -98,12 +201,11 @@ document.addEventListener("DOMContentLoaded", async function() {
     // markerRescuer on Drag event *Trigger*
     markerRescuer.on('drag', function() {
         updateUnloadButtonState();
-        // fetchTasks();
+       
     });
     // Event listener for when the marker is dragged and dropped
     markerRescuer.on('dragend', function(event) {
-        fetchCivilianLocations();
-        updateRouteForSelectedTasks();
+       
         var position = markerRescuer.getLatLng();
         console.log('Rescuer\'s location: ', position.lat, position.lng);
 
@@ -124,7 +226,7 @@ document.addEventListener("DOMContentLoaded", async function() {
         .then(data => {
             if (data.success) {
                 console.log('Location updated successfully.');
-                updateRouteForSelectedTasks();
+                
             } else {
                 console.error('Failed to update location:', data.message);
             }
@@ -156,56 +258,8 @@ function updateUnloadButtonState() {
     }, '*');
 }
 
-// Function to update the route based on selected tasks and the rescuer's location
-// Function to update the route based on selected tasks and the rescuer's location
-// Function to update the route based on civilians with tasks assigned to the current rescuer
-async function updateRouteForSelectedTasks() {
-    const rescuerLatLng = markerRescuer.getLatLng();
-    const selectedCivilianLocations = [];
 
-    try {
-        // Fetch the current rescuer's ID from the backend
-        const response = await fetch('/api/rescuer/current');
-        const data = await response.json();
 
-        if (!data.success) {
-            console.error('Failed to fetch current rescuer ID');
-            return;
-        }
-
-        const currentRescuerId = data.rescuerId; // Get the current rescuer's ID from the backend
-
-        // Loop through each civilian marker and check if the conditions match
-        for (let civilianId in civilianMarkers) {
-            const { marker, tasks } = civilianMarkers[civilianId]; // Retrieve both marker and tasks
-            
-            // Ensure tasks are defined before filtering
-            if (tasks && Array.isArray(tasks)) {
-                const matchingTasks = tasks.filter(task => task.status === 'processed' && task.rescuerUsername === currentRescuerId);
-                
-                // If civilian has any task with 'processed' status assigned to this rescuer, add their location
-                if (matchingTasks.length > 0) {
-                    const civilianLatLng = marker.getLatLng();
-                    selectedCivilianLocations.push([civilianLatLng.lng, civilianLatLng.lat]);
-                }
-            } else {
-                console.error(`Tasks not found for civilian ID: ${civilianId}`);
-            }
-        }
-
-        // Draw route if there are selected civilians
-        if (selectedCivilianLocations.length > 0) {
-            drawRoute(rescuerLatLng, selectedCivilianLocations);
-        } else {
-            if (routingControl) {
-                map.removeControl(routingControl);  // Remove the route if no tasks match
-            }
-        }
-
-    } catch (error) {
-        console.error('Error fetching current rescuer ID:', error);
-    }
-}
 
 // Fetch civilian locations and add them to the map
 async function fetchCivilianInfo() {
@@ -280,8 +334,6 @@ async function fetchCivilianInfo() {
                     civilianMarkers[civilian._id] = {marker, tasks};
                 }
             });
-            // Draw the route connecting the rescuer to the civilians
-            updateRouteForSelectedTasks();
 
         } else {
             console.log(civilians.message || 'No civilians found');
@@ -295,75 +347,12 @@ async function fetchCivilianInfo() {
 
 
 
-
-
-
-// When task checkboxes are clicked, update the route accordingly
-document.addEventListener('change', function(e) {
-    if (e.target.classList.contains('task-checkbox')) {
-        updateRouteForSelectedTasks();  // Re-draw the route based on selected tasks
-    }
-
-
-});
-
     
     
         
 });
 
-// Function to fetch civilian locations and draw the route
-async function fetchCivilianLocations() {
-    if (!markerRescuer) {
-        console.error('MarkerRescuer is undefined.');
-        return;  // Return early if markerRescuer is not defined
-    }
-    
-    const rescuerLatLng = markerRescuer.getLatLng(); // Safely call getLatLng only if markerRescuer is defined
 
-    try {
-        const response = await fetch(`/api/rescuer/civilian-locations/${currentRescuerId}`);
-        const data = await response.json();
-
-        if (data.success) {
-            const civilianLocations = data.civilianLocations.map(loc => loc.location);
-
-            // Draw the route based on the rescuer and civilian locations
-            if (civilianLocations.length > 0) {
-                drawRoute(rescuerLatLng, civilianLocations);
-            } else {
-                if (routingControl) {
-                    map.removeControl(routingControl);  // Remove the route if no tasks match
-                }
-            }
-        } else {
-            console.error('No civilians found or error fetching civilians');
-        }
-    } catch (error) {
-        console.error('Error fetching civilian locations:', error);
-    }
-}
-
-
-// Function to draw a route between the rescuer and selected civilians
-function drawRoute(rescuerLatLng, civilianLocations) {
-    if (routingControl) {
-        map.removeControl(routingControl); // Remove existing route
-    }
-
-    const waypoints = [
-        L.latLng(rescuerLatLng.lat, rescuerLatLng.lng),   // Start with rescuer's location
-        ...civilianLocations.map(loc => L.latLng(loc[1], loc[0]))  // Add selected civilian locations
-    ];
-
-    routingControl = L.Routing.control({
-        waypoints: waypoints,
-        routeWhileDragging: false,
-        show: true,
-        addWaypoints: false,
-        createMarker: function() { return null; }  // Don't create markers on the route itself
-    }).addTo(map);
-}
 
 
 
@@ -399,3 +388,53 @@ async function serveTasks(civilianId) {
 }
 
 
+
+
+// Function to generate a random location within a 5km radius
+function getRandomLocation(lat, lng, radiusInMeters = 5000) {
+    const earthRadius = 6371000; // Earth's radius in meters
+
+    const randomAngle = Math.random() * 2 * Math.PI; // Random angle in radians
+    const randomDistance = Math.random() * radiusInMeters; // Random distance within the radius
+
+    const deltaLat = randomDistance * Math.cos(randomAngle) / earthRadius;
+    const deltaLng = randomDistance * Math.sin(randomAngle) / (earthRadius * Math.cos((Math.PI / 180) * lat));
+
+    const newLat = lat + deltaLat * (180 / Math.PI);
+    const newLng = lng + deltaLng * (180 / Math.PI);
+
+    return [newLat, newLng];
+}
+
+// Function to check if the random location is on land using OpenStreetMap Nominatim API
+async function isLand(lat, lng) {
+    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10`);
+    const data = await response.json();
+
+    // Check if the location has an address or road, indicating it is on land
+    return data && data.address && data.address.road ? true : false;
+}
+
+// Function to initialize the rescuer at a random location
+async function initRandomRescuerLocation(storageLat, storageLng, maxAttempts = 10) {
+    let attempts = 0;
+    let randomLocation;
+
+    while (attempts < maxAttempts) {
+        // Generate random location within 5km of storage
+        randomLocation = getRandomLocation(storageLat, storageLng);
+
+        // Check if the generated location is on land
+        const isOnLand = await isLand(randomLocation[0], randomLocation[1]);
+
+        if (isOnLand) {
+            console.log(`Valid land location found: ${randomLocation}`);
+            return randomLocation;
+        }
+
+        attempts++;
+    }
+
+    console.error("Failed to find valid land location after multiple attempts.");
+    return null; // In case no valid land location is found
+}

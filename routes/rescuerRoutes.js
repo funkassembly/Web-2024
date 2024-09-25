@@ -471,35 +471,48 @@ router.post('/deliverTasks', async (req, res) => {
     }
 });
 
-// Route to get civilians with tasks assigned to the current rescuer
-router.get('civilian-locations/:rescuerId', async (req, res) => {
-    const rescuerId = req.session.rescuerId;
+// // Route to get civilians with tasks assigned to the current rescuer
+// router.get('/civilian-locations/:rescuerId', async (req, res) => {
+//     const { rescuerId } = req.params;  // Get rescuer ID from the route parameter
 
-    try {
-        // Find civilians with tasks that have 'rescuerUsername' set to the rescuerId
-        const civilians = await User.find({
-            'tasks.rescuerUsername': rescuerId,
-            'tasks.status': 'processed'  // You can adjust the status filter here if needed
-        }, 'location tasks');  // Fetch only the necessary fields: location and tasks
+//     try {
+//         // 1. Find the rescuer's location
+//         const rescuer = await User.findById(rescuerId, 'location');
+//         if (!rescuer || !rescuer.location || !rescuer.location.coordinates) {
+//             return res.status(404).json({ success: false, message: 'Rescuer location not found' });
+//         }
 
-        // Filter civilians to include only those who have at least one task with rescuerUsername = current rescuer
-        const filteredCivilians = civilians.filter(civilian => {
-            return civilian.tasks.some(task => task.rescuerUsername.toString() === rescuerId && task.status === 'processed');
-        });
+//         // 2. Find civilians who have tasks assigned to this rescuer (tasks.rescuerUsername == rescuerId)
+//         const civilians = await User.find({
+//             role: 'civilian',  // Ensure we are only looking at civilians
+//             'tasks.rescuerUsername': rescuerId,
+//             'tasks.status': 'processed'  // Filter for processed tasks only
+//         }, 'location tasks');  // Select location and tasks fields only
 
-        // Extract the locations of the filtered civilians
-        const civilianLocations = filteredCivilians.map(civilian => ({
-            location: civilian.location.coordinates,
-            civilianId: civilian._id  // Include the civilian's ID in case you need to reference them
-        }));
+//         if (!civilians || civilians.length === 0) {
+//             return res.status(404).json({ success: false, message: 'No civilians with tasks assigned to this rescuer' });
+//         }
 
-        // Send back the civilian locations
-        res.json({ success: true, civilianLocations });
-    } catch (error) {
-        console.error('Error fetching civilian locations:', error);
-        res.status(500).json({ success: false, message: 'Error fetching civilian locations' });
-    }
-});
+//         // 3. Filter tasks to ensure we are only looking at tasks for the current rescuer
+//         const civilianLocations = civilians.map(civilian => ({
+//             location: civilian.location.coordinates,
+//             civilianId: civilian._id
+//         }));
+
+//         // 4. Respond with the rescuer's location and the civilians' locations
+//         res.json({
+//             success: true,
+//             rescuerLocation: rescuer.location.coordinates,  // <-- This may be where the problem is
+//             civilianLocations
+//         });
+
+//     } catch (error) {
+//         console.error('Error fetching civilian locations:', error);
+//         res.status(500).json({ success: false, message: 'Error fetching civilian locations' });
+//     }
+// });
+
+
 
 
 
