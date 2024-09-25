@@ -1,7 +1,7 @@
 $(document).ready(function () {
     function checkLowStock() {
         $.ajax({
-            url: '/api/low-stock',  // The backend route for low stock items
+            url: '/api/items/low-stock',  // The backend route for low stock items
             type: 'GET',
             success: function(response) {
                 // If there are low stock items, display an alert

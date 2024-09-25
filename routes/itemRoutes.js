@@ -236,59 +236,65 @@ router.get('/categories/:categoryId', async (req, res) => {
 
 
 
+// POST route to create a new category and an item
 router.post('/categories', async (req, res) => {
   try {
-    const { category_name, item_name, item_details, item_stock } = req.body;
+      const { category_name, item_name, item_details, item_stock } = req.body;
 
-    // Find the existing Data document first
-    const data = await Data.findOne();
+      // Find the existing Data document first
+      const data = await Data.findOne();
 
-    if (!data) {
-      return res.status(404).json({ error: 'Data not found' });
-    }
+      if (!data) {
+          return res.status(404).json({ error: 'Data not found' });
+      }
 
-    // Find the latest item and category to increment the ID
-    const latestItem = data.items.length > 0
-      ? parseInt(data.items[data.items.length - 1].id, 10) + 1
-      : 1;
+      // Find the latest item and category to increment the ID
+      const latestItem = data.items.length > 0
+          ? parseInt(data.items[data.items.length - 1].id, 10) + 1
+          : 1;
 
-    const latestCategory = data.categories.length > 0
-      ? parseInt(data.categories[data.categories.length - 1].id, 10) + 1
-      : 1;
+      const latestCategory = data.categories.length > 0
+          ? parseInt(data.categories[data.categories.length - 1].id, 10) + 1
+          : 1;
 
-    // Create a new category object
-    const newCategory = {
-      id: latestCategory.toString(), // Increment the category ID
-      category_name,
-    };
+      // Create a new category object
+      const newCategory = {
+          id: latestCategory.toString(),
+          category_name,
+      };
 
-    // Parse item details (if any)
-    const detailsArray = item_details.split(',').map(detail => {
-      const [detail_name, detail_value] = detail.split(':').map(str => str.trim());
-      return { detail_name, detail_value };
-    });
+      // Parse item details (ensure they are saved as an array of objects)
+      const detailsArray = item_details ? item_details.split(',').map(detail => {
+          const [detail_name, detail_value] = detail.split(':').map(str => str.trim());
+          return { detail_name, detail_value };
+      }).filter(detail => detail.detail_name && detail.detail_value) : [];
 
-    // Create a new item object
-    const newItem = {
-      id: latestItem.toString(), // Increment the item ID
-      name: item_name,
-      category: newCategory.id, // Reference the new category ID
-      details: detailsArray,
-      stock: Number(item_stock), // Ensure stock is a number
-    };
+      // Log details array for debugging
+      console.log('Parsed Details:', detailsArray);
 
-    // Push the new category and item to their respective arrays
-    data.categories.push(newCategory);
-    data.items.push(newItem);
+      // Create a new item object
+      const newItem = {
+          id: latestItem.toString(),
+          name: item_name,
+          category: newCategory.id,
+          details: detailsArray, // Save as array of objects
+          stock: Number(item_stock),
+      };
 
-    // Save the updated Data document
-    await data.save();
+      // Push the new category and item to their respective arrays
+      data.categories.push(newCategory);
+      data.items.push(newItem);
 
-    res.status(201).json({ message: 'Category and Item added successfully' });
+      // Save the updated Data document
+      await data.save();
+
+      res.status(201).json({ message: 'Category and Item added successfully' });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+      res.status(500).json({ error: err.message });
   }
 });
+
+
 
 
 
@@ -445,19 +451,13 @@ router.delete('/:id', async (req, res) => {
 });
 
 
-
-
-
-
-
-
-
-// Route to check for low stock items
-// Route to check for low stock items
+// GET low stock items
 router.get('/low-stock', async (req, res) => {
   try {
-    const data = await Data.findOne(); // Fetch the single document
-    console.log('Fetched data:', data); // Log the fetched data
+    const data = await Data.findOne();  // Fetch a single document
+
+    // Log the retrieved data
+    console.log('Retrieved data:', data);
 
     if (!data) {
       console.error('No data found in the collection');
@@ -466,23 +466,31 @@ router.get('/low-stock', async (req, res) => {
 
     if (!data.items || !Array.isArray(data.items)) {
       console.error('Items array is missing or not an array');
-      return res.status(500).json({ error: 'Items data format is incorrect' });
+      return res.status(500).json({ error: 'Data format is incorrect' });
     }
 
-    // Filter out low stock items
+    // Filter for low stock items (stock <= 5)
     const lowStockItems = data.items.filter(item => item.stock <= 5);
-    console.log('Low stock items:', lowStockItems); // Log the low stock items
 
+    // Log the low stock items
+    console.log('Low stock items:', lowStockItems);
+
+    // Check if any low stock items were found
     if (lowStockItems.length === 0) {
       return res.json({ message: 'No low stock items found.' });
     }
 
-    res.json({ lowStockItems });
-  } catch (error) {
-    console.error('Error fetching low stock items:', error);
+    // Respond with the low stock items
+    res.json(lowStockItems);
+  } catch (err) {
+    console.error('Error fetching low stock items:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+
+
+
 
 
 
