@@ -77,50 +77,92 @@ router.get('/rescuerDashboard', isAuthenticated, (req, res) => {
 
 // POST request for signing up new users
 router.post('/signup', async (req, res) => {
-    const { username, email, password, role } = req.body;
+    // Extract the form data
+    console.log(req.body);
+    const { username, name, email, cellphone, password, street, number, city, country, zip, role = 'civilian' } = req.body;
 
+    // Password validation (example)
     if (!passwordValidator(password)) {
         return res.render('signup', { error: 'Password does not meet security requirements.' });
     }
 
-    
-    
     try {
-        const newUser = await User.create({ username, email, password, role });
+        const {lng, lat} = await getCoordinates(street, number, city);
+        
+        // Create the new user with all the fields
+        const newUser = await Civilian.create({
+            username,
+            name,
+            email,
+            cellphone,
+            password,
+            role,  // Role is fixed to 'civilian' or can be dynamically chosen
+            address: {
+                street,
+                number,
+                city,
+                country,
+                zip
+            },
+            location: {
+                type: 'Point',
+                coordinates: [lat, lng] // GeoJSON standard, longitude first
+            }
+        });
+
+        // Redirect to login after successful signup
         res.redirect('/login');
     } catch (err) {
+        // Handle any errors and show the signup page with an error message
         res.render('signup', { error: 'Error in signup: ' + err.message });
     }
 });
 
 
-// POST request for logging in users
+
 router.post('/login', async (req, res) => {
     const { login, password } = req.body;
 
     try {
+        console.log(`Finding user with username or email: ${login}`);
+        // Look for the user in the base model (User) which includes all roles
         const user = await User.findOne({
-            $or: [{ email: login }, { username: login }]
+            $or: [{ username: login }, { email: login }] // Search by either username or email
         });
-
-        if (!user || !(await user.correctPassword(password, user.password))) {
-            return res.render('login', { error: 'Incorrect email or password' });
+        
+        console.log(user);
+        
+        // If user is not found, return error
+        if (!user) {
+            return res.render('login', { error: 'Invalid username or password.' });
         }
 
+        // Check if the entered password matches the hashed password
+        const isPasswordCorrect = await user.correctPassword(password, user.password);
+        if (!isPasswordCorrect) {
+            return res.render('login', { error: 'Invalid username or password.' });
+        }
         req.session.userId = user._id;
-
-        if (user.role === 'admin') {
-            res.redirect('/adminDashboard');
-        } else if (user.role === 'civilian') {
-            res.redirect('/civilianDashboard');
+        // Redirect based on the user's role
+        if (user.role === 'civilian') {
+            // Redirect to civilian dashboard
+            return res.redirect('/civilianDashboard');
         } else if (user.role === 'rescuer') {
-            res.redirect('/rescuerDashboard');
+            // Redirect to rescuer dashboard
+            return res.redirect('/rescuerDashboard');
+        } else if (user.role === 'admin') {
+            // Redirect to admin dashboard
+            return res.redirect('/adminDashboard');
         }
+
+        // Handle case if no matching role is found
+        return res.render('login', { error: 'User role not recognized.' });
+
     } catch (err) {
-        res.render('login', { error: 'Error in login: ' + err.message });
+        // Handle any errors
+        return res.render('login', { error: 'Error in login: ' + err.message });
     }
 });
-
 
 // Logout route
 router.get('/logout', (req, res) => {
