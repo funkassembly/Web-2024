@@ -389,6 +389,42 @@ th, td {
     color: darkred;
 }
 
+#filters {
+    display: none; /* Hidden by default */
+    background-color: #ff9900;
+    color: white;
+    padding: 10px;
+    border: 1px solid white;
+    border-radius: 5px;
+    position: static;
+    bottom: 10px; /* Adjust as needed */
+    right: 10px; /* Adjust as needed */
+    z-index: 2009;
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+}
+
+/* Filter Toggle Button */
+#filterToggleButton {
+    background-color: #ff9900; /* Button background color */
+    color: white; /* Button text color */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    position: static;
+    bottom: 10px; /* Adjust the position as necessary */
+    right: 1px; /* Adjust the position as necessary */
+    
+    z-index: 2009;
+    font-size: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+}
+
+/* Add hover effect for the button */
+#filterToggleButton:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
 
 /* Media Query for Responsive Design */
 @media (max-width: 768px) {

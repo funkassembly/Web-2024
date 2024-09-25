@@ -1,3 +1,4 @@
+let civilianMarkers = {}; 
 // --- Icons Initialization ---
 const StorageIcon = L.icon({
     iconUrl: '/maptry/icons/Storage.png',
@@ -33,6 +34,33 @@ const CivilianServedIcon = L.icon({
     iconAnchor: [15, 30],
     popupAnchor: [0, -30]
 });
+const RequestIcon = L.icon({
+    iconUrl: '/maptry/icons/req.png',
+    iconSize: [40, 40],
+    iconAnchor: [15, 8],
+    popupAnchor: [0, 0]
+});
+const DonateIcon = L.icon({
+    iconUrl: '/maptry/icons/donate.png',
+    iconSize: [40, 40],
+    iconAnchor: [15, 8],
+    popupAnchor: [0, 0]
+});
+// Combined Icon Function (similar to loadMap.js)
+function createCombinedIcon(baseIcon, overlayIcon) {
+    return L.divIcon({
+        className: 'custom-div-icon',
+        html: `
+            <div style="position: relative;">
+                <img src="${baseIcon.options.iconUrl}" style="width: ${baseIcon.options.iconSize[0]}px; height: ${baseIcon.options.iconSize[1]}px;">
+                <img src="${overlayIcon}" style="position: absolute; top: -5px; right: -5px; width: 20px; height: 20px;"> <!-- Adjusted position -->
+            </div>
+        `,
+        iconSize: baseIcon.options.iconSize,
+        iconAnchor: baseIcon.options.iconAnchor,
+        popupAnchor: baseIcon.options.popupAnchor
+    });
+}
 
 // --- Initialize Map when DOM is fully loaded ---
 document.addEventListener("DOMContentLoaded", async function () {
@@ -50,6 +78,14 @@ document.addEventListener("DOMContentLoaded", async function () {
     // --- Marker for Storage (Static) ---
     var markerStorage = L.marker([38.24600, 21.73500], { icon: StorageIcon }).addTo(map);
     markerStorage.bindPopup("Storage Location");
+    document.getElementById('filterToggleButton').addEventListener('click', function () {
+        const filterContainer = document.getElementById('filters');
+        if (filterContainer.style.display === 'none' || filterContainer.style.display === '') {
+            filterContainer.style.display = 'block';  // Show the filters
+        } else {
+            filterContainer.style.display = 'none';  // Hide the filters
+        }
+    });
 
     // --- Fetch and Display Rescuers on the Map ---
     try {
@@ -109,68 +145,103 @@ document.addEventListener("DOMContentLoaded", async function () {
         try {
             const response = await fetch('/api/civilian/all');
             const data = await response.json();
-
+    
             if (!data.success) {
                 console.error('Failed to fetch civilian data');
                 return;
             }
-
+    
             const civilians = data.civilians;
-
             civilians.forEach(civilian => {
-                const { location, name, surname, cellphone, tasks } = civilian;
-
-                // Ensure location is valid
+                const { location, tasks } = civilian;
                 if (!location || !Array.isArray(location.coordinates) || location.coordinates.length < 2) {
                     console.warn('Invalid location for civilian:', civilian);
-                    return; // Skip this civilian if location is invalid
+                    return;
                 }
-
+    
                 const [latitude, longitude] = location.coordinates;
-
-                // Choose the icon based on the task type
-                let icon = CivilianPendingIcon; // Default to pending icon
-                let taskDetails = '';
-
-                // Identify the icon and details based on tasks
-                if (tasks.length > 0) {
-                    tasks.forEach(task => {
-                        if (task.type === 'donation') {
-                            icon = CivilianDonationIcon; // Use your donation icon
-                            taskDetails = `Donation Request:<br>Item: ${task.item || 'Unknown'}<br>Quantity: ${task.quantity || 0}<br>Date Submitted: ${new Date(task.dateSubmitted).toLocaleString() || 'N/A'}`;
-                        } else if (task.type === 'request' && task.status === 'pending') {
-                            icon = CivilianPendingIcon; // Use your pending icon
-                            taskDetails = `Pending Request:<br>Item: ${task.item || 'Unknown'}<br>Quantity: ${task.quantity || 0}<br>Date Submitted: ${new Date(task.dateSubmitted).toLocaleString() || 'N/A'}`;
-                        } else if (task.status === 'processed') {
-                            icon = CivilianServedIcon; // Use your served icon
-                            taskDetails = `Served Request:<br>Item: ${task.item || 'Unknown'}<br>Quantity: ${task.quantity || 0}<br>Date Submitted: ${new Date(task.dateSubmitted).toLocaleString() || 'N/A'}<br>Served by: ${task.rescuerUsername || 'Unknown'}<br>Date Served: ${task.dateServed ? new Date(task.dateServed).toLocaleString() : 'N/A'}`;
-                        }
-                    });
-                }
-
-                // Create a marker for each civilian
-                const marker = L.marker([latitude, longitude], {
-                    icon: icon,
-                    draggable: false
-                }).addTo(map);
-
-                // Bind a popup to each civilian marker displaying their info
+    
+                // Create the default marker icon based on task status
+                let baseIcon = CivilianPendingIcon;  // Default to pending
+                tasks.forEach(task => {
+                    if (task.status === 'processed') {
+                        baseIcon = CivilianServedIcon;
+                    } else if (task.type === 'donation') {
+                        baseIcon = CivilianDonationIcon;
+                    }
+                });
+    
+                // Add the civilian marker to the map
+                const marker = L.marker([latitude, longitude], { icon: baseIcon }).addTo(map);
+    
+                // Store the marker and tasks in the civilianMarkers object for filtering
+                civilianMarkers[civilian._id] = { marker, tasks };
+    
+                // Optionally, add a popup with more details
                 marker.bindPopup(`
-                    <strong>Civilian: ${name || 'Unknown'} ${surname || 'N/A'}</strong><br>
-                    <strong>Cellphone:</strong> ${cellphone || 'N/A'}<br>
-                    ${taskDetails || 'No Tasks'}
-                `).openPopup();
+                    <strong>Civilian:</strong> ${civilian.name || 'Unknown'}<br>
+                    <strong>Tasks:</strong> ${tasks.length || 'No tasks available'}
+                `);
             });
-
         } catch (error) {
             console.error('Error fetching civilians:', error);
         }
     }
+    
 
     // Call the function to fetch and display civilians
     fetchAndDisplayCivilians();
+    // Filter Application Logic (based on loadMap.js)
+    function applyFilter() {
+        const isPendingChecked = document.querySelector('.main-filter[value="pending"]').checked;
+        const isServedChecked = document.querySelector('.main-filter[value="served"]').checked;
+        const isRequestChecked = document.querySelector('.sub-filter[value="request"]').checked;
+        const isDonationChecked = document.querySelector('.sub-filter[value="donation"]').checked;
 
-    // Optional: Force the map to revalidate its size if it renders incorrectly
+        for (let civilianId in civilianMarkers) {
+            const { marker, tasks } = civilianMarkers[civilianId];
+
+            let showMarker = false;
+            let baseIcon = CivilianPendingIcon;  // Default to Pending Icon
+
+            tasks.forEach(task => {
+                if (task.status === 'processed') {
+                    baseIcon = CivilianServedIcon;
+                } else if (task.type === 'donation') {
+                    baseIcon = CivilianDonationIcon;
+                }
+
+                if (isRequestChecked && task.type === 'request') {
+                    baseIcon = createCombinedIcon(baseIcon, '/maptry/icons/req.png');
+                    showMarker = true;
+                } else if (isDonationChecked && task.type === 'donation') {
+                    baseIcon = createCombinedIcon(baseIcon, '/maptry/icons/donate.png');
+                    showMarker = true;
+                }
+
+                if ((isPendingChecked && task.status === 'pending') || (isServedChecked && task.status === 'processed')) {
+                    showMarker = true;
+                }
+            });
+
+            // Update marker icon and visibility
+            marker.setIcon(baseIcon);
+            if (showMarker) {
+                marker.addTo(map);
+            } else {
+                marker.remove();
+            }
+        }
+    }
+
+    // Attach event listeners to filter checkboxes
+    const mainFilters = document.querySelectorAll('.main-filter');
+    const subFilters = document.querySelectorAll('.sub-filter');
+
+    mainFilters.forEach(filter => filter.addEventListener('change', applyFilter));
+    subFilters.forEach(filter => filter.addEventListener('change', applyFilter));
+
+    // Optional: Ensure map size is correctly calculated
     setTimeout(() => {
         map.invalidateSize();
     }, 100);

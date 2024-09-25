@@ -379,6 +379,7 @@ function showStorageModals() {
     console.log('Showing storage modals'); // Debugging log
     document.getElementById('map').style.zIndex= 1000;
     document.getElementById('filterToggleButton').style.zIndex=1000;
+    document.getElementById('filters').style.zIndex=1000;
     closeAllModals();  // Close any open modals first
     document.getElementsByClassName('modal-container')[0].style.display = 'block';
     const itemsModal = document.getElementById('itemsModal');
