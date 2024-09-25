@@ -2,7 +2,37 @@ const express = require('express');
 const router = express.Router();
 const { Rescuer, User, Civilian } = require('../models/usersModel');
 const { Item, Category, Data } = require('../models/dataModel');
-
+const fs = require('fs');
+const turf = require('@turf/turf');
+// // Load your land boundary GeoJSON data
+// let landGeoJson;
+// try {
+//     const data = fs.readFileSync('C:\\Users\\nozix\\Desktop\\webbb\\geo\\geo.geojson', 'utf8');
+//     landGeoJson = JSON.parse(data);
+//     console.log("Land GeoJSON loaded:", landGeoJson);
+// } catch (error) {
+//     console.error('Error reading GeoJSON file:', error);
+// }
+// // Function to generate random coordinates within a specified radius from a central point
+// function getRandomCoordinates(center, radius) {
+//     const earthRadius = 6371; // Radius of the Earth in km
+//     const radiusInRadians = radius / earthRadius;
+//     const randomAngle = Math.random() * 2 * Math.PI; // Random angle in radians
+//     const randomDistance = radiusInRadians * Math.sqrt(Math.random()); // Random distance in radians
+//     const latitude = center[0] + (randomDistance * Math.cos(randomAngle)) * (180 / Math.PI);
+//     const longitude = center[1] + (randomDistance * Math.sin(randomAngle)) * (180 / Math.PI) / Math.cos(center[0] * Math.PI / 180);
+//     return [latitude, longitude];
+// }
+// // Function to check if a coordinate is over land
+// async function isLand(coordinate) {
+//     const point = turf.point(coordinate); // Create a Turf point from the coordinate
+//     for (const feature of landGeoJson.features) {
+//         if (turf.booleanPointInPolygon(point, feature)) {
+//             return true; // Coordinate is on land
+//         }
+//     }
+//     return false; // Coordinate is not on land
+// }
 // Utility function to calculate haversine distance between two coordinates
 const haversineDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371e3; // Earth's radius in meters
@@ -471,46 +501,72 @@ router.post('/deliverTasks', async (req, res) => {
     }
 });
 
-// // Route to get civilians with tasks assigned to the current rescuer
-// router.get('/civilian-locations/:rescuerId', async (req, res) => {
-//     const { rescuerId } = req.params;  // Get rescuer ID from the route parameter
+// Route to get civilians with tasks assigned to the current rescuer
+router.get('civilian-locations/:rescuerId', async (req, res) => {
+    const rescuerId = req.session.rescuerId;
 
-//     try {
-//         // 1. Find the rescuer's location
-//         const rescuer = await User.findById(rescuerId, 'location');
-//         if (!rescuer || !rescuer.location || !rescuer.location.coordinates) {
-//             return res.status(404).json({ success: false, message: 'Rescuer location not found' });
-//         }
+    try {
+        // Find civilians with tasks that have 'rescuerUsername' set to the rescuerId
+        const civilians = await User.find({
+            'tasks.rescuerUsername': rescuerId,
+            'tasks.status': 'processed'  // You can adjust the status filter here if needed
+        }, 'location tasks');  // Fetch only the necessary fields: location and tasks
+        // Filter civilians to include only those who have at least one task with rescuerUsername = current rescuer
+        const filteredCivilians = civilians.filter(civilian => {
+            return civilian.tasks.some(task => task.rescuerUsername.toString() === rescuerId && task.status === 'processed');
+        });
 
-//         // 2. Find civilians who have tasks assigned to this rescuer (tasks.rescuerUsername == rescuerId)
-//         const civilians = await User.find({
-//             role: 'civilian',  // Ensure we are only looking at civilians
-//             'tasks.rescuerUsername': rescuerId,
-//             'tasks.status': 'processed'  // Filter for processed tasks only
-//         }, 'location tasks');  // Select location and tasks fields only
+        // Extract the locations of the filtered civilians
+        const civilianLocations = filteredCivilians.map(civilian => ({
+            location: civilian.location.coordinates,
+            civilianId: civilian._id  // Include the civilian's ID in case you need to reference them
+        }));
 
-//         if (!civilians || civilians.length === 0) {
-//             return res.status(404).json({ success: false, message: 'No civilians with tasks assigned to this rescuer' });
-//         }
+        // Send back the civilian locations
+        res.json({ success: true, civilianLocations });
+    } catch (error) {
+        console.error('Error fetching civilian locations:', error);
+        res.status(500).json({ success: false, message: 'Error fetching civilian locations' });
+    }
+});
+//////////////////////////////////////////////////////
+// Route to get all rescuers
+// Route to get all rescuers
+router.get('/all', async (req, res) => {
+    try {
+        // Find all users with the 'rescuer' role, including cargo and pending tasks
+        const rescuers = await Rescuer.find({}, 'username location cargo pendingTasks'); // Fetch username, location, cargo, and pending tasks
+        if (!rescuers || rescuers.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'No rescuers found'
+            });
+        }
 
-//         // 3. Filter tasks to ensure we are only looking at tasks for the current rescuer
-//         const civilianLocations = civilians.map(civilian => ({
-//             location: civilian.location.coordinates,
-//             civilianId: civilian._id
-//         }));
+        // Map the rescuers into a format suitable for the frontend
+        const rescuerData = rescuers.map(rescuer => ({
+            id: rescuer._id,
+            username: rescuer.username,
+            latitude: rescuer.location.coordinates[0],
+            longitude: rescuer.location.coordinates[1],
+            cargo: rescuer.cargo || [], // Include cargo, default to empty array
+            pendingTasks: rescuer.pendingTasks || [] // Include pending tasks, default to empty array
+        }));
+        return res.status(200).json({
+            success: true,
+            rescuers: rescuerData
+        });
 
-//         // 4. Respond with the rescuer's location and the civilians' locations
-//         res.json({
-//             success: true,
-//             rescuerLocation: rescuer.location.coordinates,  // <-- This may be where the problem is
-//             civilianLocations
-//         });
+    } catch (error) {
+        console.error('Error fetching rescuers:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'An error occurred while fetching rescuers',
+            error: error.message
+        });
+    }
+});
 
-//     } catch (error) {
-//         console.error('Error fetching civilian locations:', error);
-//         res.status(500).json({ success: false, message: 'Error fetching civilian locations' });
-//     }
-// });
 
 
 

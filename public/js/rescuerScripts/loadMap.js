@@ -33,6 +33,22 @@ const peoplePendingIcon = L.icon({
     iconAnchor: [15, 30],
     popupAnchor: [0, -30]
 });
+// Function to create a combined icon
+function createCombinedIcon(baseIcon, overlayIcon) {
+    return L.divIcon({
+        className: 'custom-div-icon',
+        html: `
+            <div style="position: relative;">
+                <img src="${baseIcon.options.iconUrl}" style="width: ${baseIcon.options.iconSize[0]}px; height: ${baseIcon.options.iconSize[1]}px;">
+                <img src="${overlayIcon}" style="position: absolute; top: -5px; right: -5px; width: 20px; height: 20px;">  <!-- Adjusted top and right -->
+            </div>
+        `,
+        iconSize: baseIcon.options.iconSize,
+        iconAnchor: baseIcon.options.iconAnchor,
+        popupAnchor: baseIcon.options.popupAnchor
+    });
+}
+
 document.addEventListener("DOMContentLoaded", async function() {
     console.log('DOM completed - Map is LOADING ...');
     try {
@@ -63,10 +79,13 @@ document.addEventListener("DOMContentLoaded", async function() {
     }).addTo(map);
     markerRescuer.bindPopup('Drag and Drop me to your location!').openPopup();
     updateUnloadButtonState();
+    // Filter initialization
     const filterToggleButton = document.getElementById('filterToggleButton');
     const filterContainer = document.getElementById('filters');
     const mainFilters = document.querySelectorAll('.main-filter');
+    const subFilters = document.querySelectorAll('.sub-filter');
     const routeFilter = document.getElementById('routeFilter'); 
+
     
     fetchCivilianInfo();
     // Toggle the visibility of the filters when the button is clicked
@@ -77,17 +96,35 @@ document.addEventListener("DOMContentLoaded", async function() {
             filterContainer.style.display = 'none';  // Hide filters
         }
     });
+
+    // Function to calculate the number of donations and requests
+    function calculateDonationsAndRequests(tasks) {
+        let donationCount = 0;
+        let requestCount = 0;
+        
+        tasks.forEach(task => {
+            if (task.type === 'donation') {
+                donationCount++;
+            } else if (task.type === 'request') {
+                requestCount++;
+            }
+        });
+        
+        return { donationCount, requestCount };
+    }
     // Function to apply the filter logic
     function applyFilter() {
         const isPendingChecked = document.querySelector('.main-filter[value="pending"]').checked;
         const isServedChecked = document.querySelector('.main-filter[value="served"]').checked;
-
+        const isRequestChecked = document.querySelector('.sub-filter[value="request"]').checked;
+        const isDonationChecked = document.querySelector('.sub-filter[value="donation"]').checked;
+    
         // Enable or disable the Route filter based on the "Served" filter state
         routeFilter.disabled = !isServedChecked;
         if (!isServedChecked) {
             routeFilter.checked = false; // Uncheck and disable route filter if "Served" is unchecked
         }
-
+    
         // Hide all markers if neither "Pending" nor "Served" is checked
         if (!isPendingChecked && !isServedChecked) {
             for (let civilianId in civilianMarkers) {
@@ -96,33 +133,54 @@ document.addEventListener("DOMContentLoaded", async function() {
             }
             return;
         }
-
+    
         const servedCivilianLocations = [];
-
+    
         // Loop through civilian markers to show/hide based on filters
         for (let civilianId in civilianMarkers) {
             const { marker, tasks } = civilianMarkers[civilianId];
-            
+            const { donationCount, requestCount } = calculateDonationsAndRequests(tasks);
+    
             if (!tasks || tasks.length === 0) {
                 marker.remove();
                 continue;
             }
-
+    
             const isTaskServed = tasks.some(task => task.status === 'processed');
             const isTaskPending = tasks.some(task => task.status === 'pending');
-
-            // Show or hide based on the status and filter
-            if (isPendingChecked && isTaskPending) {
-                marker.addTo(map);  // Show marker if pending filter is checked
-            } else if (isServedChecked && isTaskServed) {
-                marker.addTo(map);  // Show marker if served filter is checked
+            let showMarker = false;
+    
+            // Base icon setup
+            let baseIcon = peoplePendingIcon;  // Default to Pending Icon
+            if (isTaskServed) {
+                baseIcon = peopleServedIcon;  // Switch to Served Icon if processed task exists
                 const civilianLatLng = marker.getLatLng();
                 servedCivilianLocations.push([civilianLatLng.lng, civilianLatLng.lat]);  // Collect served civilian locations
+            }
+    
+            // Icon combination based on sub-filters
+            if (isRequestChecked && requestCount >= donationCount) {
+                baseIcon = createCombinedIcon(baseIcon, '/maptry/icons/req.png');  // Add request overlay
+            } else if (isDonationChecked && donationCount > requestCount) {
+                baseIcon = createCombinedIcon(baseIcon, '/maptry/icons/donate.png');  // Add donation overlay
+            }
+    
+            // Show or hide based on the task and main filter logic
+            if (isPendingChecked && isTaskPending) {
+                showMarker = true;
+            } else if (isServedChecked && isTaskServed) {
+                showMarker = true;
+            }
+    
+            // Update marker icon and visibility based on the combined logic
+            marker.setIcon(baseIcon);
+            if (showMarker) {
+                marker.addTo(map);
             } else {
-                marker.remove();  // Hide marker if it doesn't match the criteria
+                marker.remove();
             }
         }
-
+    
         // Handle the Route filter if it's checked
         if (routeFilter.checked && isServedChecked && servedCivilianLocations.length > 0) {
             drawRouteBetweenMarkers(servedCivilianLocations);  // Draw routes between markers
@@ -152,6 +210,9 @@ document.addEventListener("DOMContentLoaded", async function() {
         }).addTo(map);
     }
     mainFilters.forEach(filter => {
+        filter.addEventListener('change', applyFilter);
+    });
+    subFilters.forEach(filter => {
         filter.addEventListener('change', applyFilter);
     });
 

@@ -224,56 +224,7 @@ router.get('/loadtasks', async (req, res) => {
     }
 });
 
-// router.get('/loadtasks', async (req, res) => {
-//     try {
-//         const userId = req.session.userId; 
-//         console.log('Fetching tasks for civilian ID:', userId);
 
-//         if (!userId) {
-//             return res.status(401).json({ message: 'User not authenticated' });
-//         }
-
-//         // Find the civilian by their ID and populate the tasks
-//         // Populate the rescuerUsername field with the rescuer's username if it's a valid ObjectId
-//         const civilian = await Civilian.findById(userId)
-//             .select('tasks')  // Select only tasks
-//             .populate({
-//                 path: 'tasks.rescuerUsername',  // Assuming rescuerUsername is an ObjectId referencing the Rescuer model
-//                 select: 'username',             // Select only the username field from the Rescuer
-//                 match: { _id: { $ne: null } }   // Ensure the rescuerUsername is not null
-//             });
-
-//         // Check if civilian or tasks were found
-//         if (!civilian || !civilian.tasks || civilian.tasks.length === 0) {
-//             return res.status(404).json({ message: 'No tasks found' });
-//         }
-
-//         console.log(`Tasks: ${civilian.tasks}`);
-
-//         // Send the tasks as the response
-//         res.json(civilian.tasks);
-//     } catch (error) {
-//         console.error('Error fetching tasks:', error);
-//         res.status(500).json({ message: 'Error fetching tasks' });
-//     }
-// });
-
-
-
-// router.get('/announcements', async (req, res) => {
-//     try {
-//         const admin = await Admin.findOne({ role: 'admin' }, 'announcements').select('announcements');  // Fetch only the first admin's announcements field
-//         console.log(`data: ${JSON.stringify(admin)}`);
-//         const type = admin.announcements;
-//         console.log(`Type: ${type}`);
-
-
-//         res.json(type);  // Send the announcements back to the client
-//     } catch (error) {
-//         console.error('Error fetching announcements:', error);
-//         res.status(500).json({ message: 'Error fetching announcements' });
-//     }
-// });
 
 router.get('/announcements', async (req, res) => {
     try {
@@ -294,5 +245,38 @@ router.get('/announcements', async (req, res) => {
     }
 });
 
+
+// Fetch all civilians with their tasks
+router.get('/all', async (req, res) => {
+    try {
+        const civilians = await Civilian.find()
+            .populate('tasks.rescuerUsername') // Populate rescuer's username
+            .select('-password'); // Exclude password field
+        const formattedCivilians = civilians.map(civilian => ({
+            _id: civilian._id,
+            username: civilian.username,
+            name: civilian.name,
+            surname: civilian.surname,
+            cellphone: civilian.cellphone,
+            location: civilian.location, // Ensure this has coordinates
+            tasks: civilian.tasks.map(task => ({
+                type: task.type,
+                status: task.status,
+                item: task.item,
+                quantity: task.quantity,
+                dateSubmitted: task.dateSubmitted,
+                rescuerUsername: task.rescuerUsername ? task.rescuerUsername.username : null, // Get rescuer's username
+                dateServed: task.dateServed
+            }))
+        }));
+        res.status(200).json({
+            success: true,
+            civilians: formattedCivilians
+        });
+    } catch (error) {
+        console.error('Error fetching civilians:', error);
+        res.status(500).json({ success: false, message: 'Server Error' });
+    }
+});
 
 module.exports = router;

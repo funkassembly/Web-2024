@@ -10,68 +10,104 @@ body {
     overflow: hidden;
 }
 
-.background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
+/* Flexbox container to hold both left and right sections */
+.form-container {
+    display: flex;
+    justify-content: center;
+    width: 100%; /* Control the width of the entire form */
+    max-width: 1500px;
+    gap: 50px; /* Space between the two sections */
 }
 
-.shape {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 50%;
-    position: absolute;
+/* Styling for the left section (user info form) */
+.form-left {
+    display: inline-block;
+    justify-content: space-between;
+    flex-direction: column;
+    width: 65%;
+    flex: 1; /* Take up equal space */
+    padding: 10px;
 }
 
-/* Create some interesting shapes */
-.shape:nth-child(1) {
-    width: 200px;
-    height: 200px;
-    top: -50px;
-    right: -50px;
+/* Style the container */
+.address-container {
+    display: -webkit-inline-flex;
+    flex-direction: row;
+    gap: 5px; /* Adds spacing between the label-input pairs */
 }
 
-.shape:nth-child(2) {
-    width: 300px;
-    height: 300px;
-    bottom: -100px;
-    left: -100px;
+/* General style for all inputs */
+.address-container input {
+    padding: 10px;
+    border: 2px solid #ff9900;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #333;
+    transition: box-shadow 0.3s, background-color 0.3s;
 }
 
-/* Center the form and style it */
+/* Street input should take up most of the width */
+.address-container input#street {
+    width: 100%; /* Adjust as needed */
+}
+
+/* Number input should be smaller */
+.address-container input#number {
+    width: 10%; /* Adjust as needed */
+}
+
+/* City input should be of moderate size */
+.address-container input#city {
+    width: 60%; /* Adjust as needed */
+}
+
+/* Country input can also be wider */
+.address-container input#country {
+    width: 30%; /* Adjust as needed */
+}
+
+/* Zip input can be smaller */
+.address-container input#zip {
+    width: 50%; /* Adjust as needed */
+}
+
+/* Focus state to highlight the input */
+.address-container input:focus {
+    box-shadow: 0 0 10px 2px #ff9900;
+    background-color: #fff;
+}
+
+
+/* Form styling (shared by both left and right sections) */
 form {
     background: rgba(255, 255, 255, 0.7);
     padding: 40px;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(10px);
+    width: 50%;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    width: 320px;
 }
 
-/* Form heading */
-form h3 {
-    margin-bottom: 20px;
+h1 {
+    padding: 10px;
     color: #333;
 }
 
-/* Labels for form fields */
+/* Form field styling */
 form label {
-    width: 100%;
     margin-top: 10px;
+    padding: 10px;
     font-weight: bold;
     color: #333;
 }
 
-/* Style the input fields */
 form input[type="text"],
 form input[type="email"],
 form input[type="password"],
-form select {
+form select,
+form input[type="text"] {
     width: 100%;
     padding: 10px;
     margin-top: 5px;
@@ -86,22 +122,24 @@ form select {
 form input[type="text"]:focus,
 form input[type="email"]:focus,
 form input[type="password"]:focus,
-form select:focus {
+form select:focus,
+form input[type="text"]:focus {
     box-shadow: 0 0 10px 2px #ff9900;
     background-color: #fff;
 }
 
-/* Style the button */
+/* Styling for submit button */
 form button {
     padding: 10px 20px;
     border: none;
+    align-self: center;
     border-radius: 5px;
     background-color: #ff9900;
     color: #fff;
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s;
-    width: 100%;
+    width: 40%;
 }
 
 form button:hover {
@@ -115,7 +153,7 @@ p {
     margin-bottom: 20px;
 }
 
-/* Style for the login link section */
+/* Login link section */
 .login-section {
     margin-top: 20px;
     text-align: center;
@@ -135,4 +173,20 @@ p {
 
 .login-section a:hover {
     color: #e68a00;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+    .form-container {
+        flex-direction: column; /* Stack the forms vertically */
+        width: 90%; /* Reduce the width to fit smaller screens */
+    }
+
+    .form-left, .address-container {
+        width: 100%; /* Full width for each section */
+    }
+
+    .address-container {
+        margin-top: 20px; /* Add some space between the sections */
+    }
 }
