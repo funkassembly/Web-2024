@@ -1,0 +1,612 @@
+h1 {
+    align-self: center;
+}
+
+/* Base styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #ff9900, #ffffff); /* Gradient background from signup page */
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* Container for the whole dashboard */
+.dashboard-container {
+    display: flex;
+    justify-content: space-between;
+    height: calc(100vh - 60px);
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: rgba(255, 255, 255, 0.8); /* Transparent white for a clean look */
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Soft shadow */
+}
+
+/* Map section */
+.map-container {
+    flex: 3;
+    margin-right: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
+
+/* Cargo and task section */
+.cargo-container {
+    flex: 1;
+    background-color: rgba(255, 255, 255, 0.7); /* Transparent white for consistency */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Header links */
+.header-links {
+    width: 100%;
+    background-color: #ff9900; /* Primary orange background */
+    padding: 10px 20px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #fff;
+}
+
+.header-links a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* Modal styling */
+/* Initially hide all modals */
+.modal {
+    display: none;
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.9); /* Slight transparency */
+    border-radius: 5px;
+    z-index: 2000;
+    padding: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+#itemsModal .items-list {
+    max-height: 70vh; /* Adjust this value depending on the screen size, can also use media queries */
+    overflow-y: auto; /* Enable vertical scroll if content exceeds the height */
+    padding-right: 5px; /* To prevent horizontal scroll from appearing */
+}
+
+#itemsModal {
+    width: 70%; /* Ensure it takes up a percentage of the screen */
+    max-width: 900px; /* Set a maximum width for larger screens */
+    height: auto; /* Let it adjust height based on content */
+    max-height: 90vh; /* Set max height to make it responsive to screen size */
+    overflow: hidden; /* Avoid content overflow */
+}
+
+/* Ensure the modal container behaves responsively */
+.modal-container {
+    display: flex;
+    flex-wrap: wrap; /* Ensure it wraps if the screen gets smaller */
+    justify-content: space-between; /* Space between the two modals */
+    gap: 1px; /* Reduce the gap between modal sections */
+    padding: 5px;
+    width: 90%; /* Adjust the container width to fit within the viewport */
+    max-width: 1200px;
+    margin: 0 auto; /* Center the container */
+    overflow: hidden;
+}
+
+/* Specific styles for search and selected items on top of the cargo container */
+.modal-left-container {
+    display: flex;
+    flex-direction: column;
+    width: 60%;
+    height: 60%;
+    position: absolute;
+    z-index: 2000;
+    gap: 1px;
+}
+
+/* Search modal: Top half of the cargo container */
+#searchModal {
+    width: 80%; /* Full width of the cargo container */
+    height: 50%; /* Top half */
+    position: relative;
+    z-index: 2000;
+    border-bottom: 1px solid #ddd; /* Divider between search and items list */
+}
+
+/* Selected items modal: Bottom half of the cargo container */
+#selectedItemsList {
+    width: 80%; /* Full width */
+    height: 50%; /* Bottom half */
+    position: relative;
+    z-index: 2000;
+    overflow-y: auto;
+    padding: 5px;
+    border-top: 1px solid #ddd;
+    box-sizing: border-box;
+}
+
+/* General modal content styles */
+.modal-content {
+    position: relative;
+    z-index: 2000;
+}
+
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 2000;
+}
+
+/* Styling for search input */
+#searchInput {
+    width: 90%;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+
+
+/* Filter button and container */
+.filter-button {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    padding: 10px 20px;
+    background-color: #ff9900;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 999;
+}
+
+.filter-button:hover {
+    background-color: #e68a00; /* Hover color */
+}
+
+.filter-container {
+    display: none;
+    position: absolute;
+    bottom: 70px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    z-index: 1000;
+}
+
+.filter-container.visible {
+    display: block;
+}
+
+.filter-container h3, .filter-container label {
+    margin: 0 0 10px;
+}
+
+.filter-container input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+/* Updated Tabs Section */
+/* Updated Tabs Section */
+.tabs {
+    display: flex;
+    justify-content: center; /* Center the tabs */
+    background-color: #f1f1f1; /* Light background */
+    border-bottom: 2px solid #ddd;
+    border-radius: 10px 10px 0 0;
+    overflow: hidden;
+    padding: 10px; /* Add padding around the tab container */
+    margin-bottom: 20px;
+}
+.tabs {
+    display: flex;
+    justify-content: center; /* Center the tab buttons horizontally */
+    margin-bottom: 20px;
+}
+
+.tab-button {
+    flex: none; /* Ensure buttons don't stretch */
+    margin: 0 10px; /* Add some horizontal margin between the buttons */
+    padding: 12px 20px; /* Padding around the buttons */
+    background-color: #e0e0e0; /* Light gray for unselected tabs */
+    font-size: 16px;
+    text-align: center;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+}
+
+.tab-button:hover {
+    background-color: #ccc; /* Slightly darker gray on hover */
+}
+
+.tab-button.active {
+    background-color: #ff9900; /* Orange background for active tab */
+    color: white;
+    font-weight: bold;
+}
+
+
+/* Button styles */
+button {
+    background-color: #ff9900;
+    color: white;
+    padding: 10px 20px;
+    margin: 10px 50px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #e68a00;
+}
+
+button:disabled {
+    background-color: #ddd;
+    cursor: not-allowed;
+}
+
+
+/* Modal button positioning */
+.modal-buttons {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+
+.checkmark-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    margin-left: 5px;
+}
+
+.delete-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    margin-left: 5px;
+}
+
+/* Style for the checkmark and delete buttons */
+.checkmark-button,
+.delete-button {
+    background-color: white;  /* White background */
+    border: 1px solid black;   /* Black border */
+    color: black;              /* Black text */
+    cursor: pointer;           /* Pointer on hover */
+    font-size: 16px;           /* Button font size */
+    margin-left: 5px;          /* Slight margin for spacing */
+    padding: 5px;              /* Padding for the buttons */
+    border-radius: 50%;        /* Rounded button */
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Hover effect for delete button (X) */
+.delete-button:hover {
+    background-color: red;     /* Red background on hover */
+    color: white;              /* White X on hover */
+    border-color: red;         /* Change border to red */
+}
+
+/* Hover effect for checkmark button (✓) */
+.checkmark-button:hover {
+    background-color: green;   /* Green background on hover */
+    color: white;              /* White checkmark on hover */
+    border-color: green;       /* Change border to green */
+}
+
+/* Style for task details row */
+.task-details-row {
+    display: none; /* Initially hidden */
+}
+
+.task-details {
+    background-color: #f9f9f9;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+/* Styling the alternating row color */
+.task-row {
+    cursor: pointer;
+}
+
+.task-row:nth-child(odd) {
+    background-color: #f2f2f2;
+}
+
+.task-row:nth-child(even) {
+    background-color: #fff;
+}
+
+/* Ensure the table inside the modal is displayed correctly */
+#itemsTable {
+    width: 100%; /* Make the table take up full width */
+    border-collapse: collapse; /* Collapse borders to avoid gaps */
+}
+
+#itemsTable th, #itemsTable td {
+    border: 1px solid #ddd; /* Add a border to cells */
+    padding: 8px; /* Add padding inside cells */
+    text-align: left; /* Align text to the left */
+}
+
+#itemsTable th {
+    background-color: #f2f2f2; /* Add a background color for headers */
+    font-weight: bold;
+}
+
+#selectedItemsList th, #selectedItemsList td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+#selectedItemsList th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+/* Leaflet Popup Styles */
+.leaflet-popup-content {
+    font-size: 1em;
+    line-height: 1.5em;
+    overflow-x: auto; /* Allow horizontal scrolling for large tables */
+}
+
+.leaflet-popup-content-wrapper {
+    width: auto !important;
+    max-width: 100% !important;
+    white-space: nowrap; /* Prevent content from breaking into new lines */
+}
+
+/* Responsive table inside Leaflet popup */
+.leaflet-popup-content table {
+    width: 100%; /* Ensure table takes full width */
+    border-collapse: collapse;
+    margin-top: 10px;
+    table-layout: auto; /* Allow table to auto adjust based on content */
+}
+
+.leaflet-popup-content th, 
+.leaflet-popup-content td {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.leaflet-popup-content thead {
+    background-color: #ff9900; /* Accent color */
+    color: white;
+}
+
+.leaflet-popup-content tbody tr:nth-child(even) {
+    background-color: rgba(0, 0, 0, 0.05); /* Alternating row background */
+}
+
+/* Ensure the popup adjusts to its content dynamically */
+.leaflet-popup {
+    max-width: none !important; /* Remove default Leaflet popup width limit */
+    width: auto;
+}
+
+.leaflet-popup-content table th,
+.leaflet-popup-content table td {
+    word-wrap: break-word; /* Ensure long text breaks into new lines within cells */
+}
+
+/* Base Table Styles for Both Cargo and Tasks Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: rgba(255, 255, 255, 0.8); /* Transparent white background */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden; /* Make sure long content is contained */
+}
+
+/* Table Header Styling */
+table thead {
+    background-color: #ff9900; /* Solid orange color */
+    color: white;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+table thead th {
+    padding: 12px 15px;
+    border-bottom: 2px solid #ddd;
+    text-align: left;
+    white-space: nowrap;
+}
+
+/* Table Body Styling */
+table tbody tr {
+    border-bottom: 1px solid #ddd;
+}
+
+/* Alternating Row Color */
+table tbody tr:nth-child(even) {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+table tbody tr:nth-child(odd) {
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+/* Table Cell Padding and Text Alignment */
+table td {
+    padding: 12px 15px;
+    text-align: left;
+    word-wrap: break-word; /* Prevent text overflow */
+}
+
+/* Hover Effect for Table Rows */
+table tbody tr:hover {
+    background-color: rgba(255, 153, 0, 0.1); /* Subtle hover effect */
+}
+
+/* Responsive Table - Ensure the table fits within smaller screens */
+@media screen and (max-width: 768px) {
+    table {
+        font-size: 0.9em; /* Slightly smaller font for smaller screens */
+    }
+    
+    table thead th, table td {
+        padding: 8px 10px; /* Reduce padding for smaller screens */
+    }
+}
+
+/* Specific Styles for Cargo Tab */
+#cargoTab table {
+    background-color: rgba(255, 255, 255, 0.85); /* Slightly more opaque for cargo tab */
+}
+
+#cargoTab table thead {
+    background-color: #ff9900; /* Solid orange for cargo tab */
+}
+
+#taskTab {
+    z-index: 2002;
+}
+
+/* Specific Styles for Task Tab */
+#taskTab table {
+    background-color: rgba(255, 255, 255, 0.85); /* Slightly more opaque for tasks tab */
+}
+
+#taskTab table thead {
+    background-color: #ff9900; /* Solid orange for tasks tab */
+}
+
+/* Button Styles */
+.button-active, .button-inactive {
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+.button-active {
+    background-color: #ff9900;
+    color: white;
+}
+
+.button-inactive {
+    background-color: #ddd;
+    color: #666;
+}
+
+/* Center Content Within Table Cells */
+table td {
+    vertical-align: middle;
+}
+
+#unloadButton {
+    background-color: #ff9900;
+    color: white;
+    border: none;
+    
+    padding: 15px 30px;      /* Make the button bigger */
+    font-size: 1em;        /* Increase font size */
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+}
+
+/* Add hover effect to the unload button */
+#unloadButton:hover {
+    background-color: #e68a00; /* Slightly darker orange on hover */
+}
+/* Style for the table headers */
+#itemsTable thead th, 
+#selectedItemsBody thead th,
+#selectedItemsList thead th {
+    background-color: #ff9900; /* Your orange color */
+    color: white;  /* White text for contrast */
+    font-weight: bold;
+    padding: 10px;
+    text-align: left; /* Align the text to the left */
+    border-bottom: 2px solid #ddd; /* Add a subtle border at the bottom */
+}
+
+.cancel-button {
+    background-color: #ff9900;
+    color: white;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.deliver-button {
+    background-color: #ff9900;
+    color: white;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#deliveryButton:hover {
+    background-color: #e68a00;
+}
+
+
+/* Adjusted for better mobile responsiveness */
+@media (max-width: 768px) {
+    .dashboard-container {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .map-container, .cargo-container {
+        margin-right: 0;
+        margin-bottom: 20px;
+        width: 100%;
+    }
+    .modal-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .modal {
+        width: 95%;
+    }
+}

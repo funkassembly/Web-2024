@@ -4,25 +4,25 @@ let currentRescuerId = null;  // Declare a global variable
 
 // Icons Init
 const StorageIcon = L.icon({
-    iconUrl: '/icons/Storage.png', 
+    iconUrl: '/maptry/icons/Storage.png', 
     iconSize: [40, 40],
     iconAnchor: [15,8],
     popupAnchor: [0, 0]
 });
 const RescuerIcon = L.icon({
-    iconUrl: '/icons/transport.png',
+    iconUrl: '/maptry/icons/transport.png',
     iconSize: [40, 40],
     iconAnchor: [15, 30],
     popupAnchor: [0, -30]
 });
 const peopleServedIcon = L.icon({
-    iconUrl: '/icons/peopleServed.png',
+    iconUrl: '/maptry/icons/peopleServed.png',
     iconSize: [35, 35],
     iconAnchor: [15, 30],
     popupAnchor: [0, -30]
 });
 const peoplePendingIcon = L.icon({
-    iconUrl: '/icons/peoplePending.png',
+    iconUrl: '/maptry/icons/peoplePending.png',
     iconSize: [35, 35],
     iconAnchor: [15, 30],
     popupAnchor: [0, -30]

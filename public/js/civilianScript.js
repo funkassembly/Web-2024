@@ -10,19 +10,19 @@ function debounce(func, wait) {
 //-------------------------------------------------------------------------------------
 // Map Init
 const StorageIcon = L.icon({
-    iconUrl: '/icons/Storage.png', 
+    iconUrl: '/maptry/icons/Storage.png', 
     iconSize: [40, 40],
     iconAnchor: [15,8],
     popupAnchor: [0, 0]
 });
 const peopleServedIcon = L.icon({
-    iconUrl: '/icons/peoplePending.png',
+    iconUrl: '/maptry/icons/peoplePending.png',
     iconSize: [40, 40],
     iconAnchor: [15, 30],
     popupAnchor: [0, -30]
 });
 const DonateIcon = L.icon({
-    iconUrl: '/icons/donate.png',
+    iconUrl: '/maptry/icons/donate.png',
     iconSize: [30, 30],
     iconAnchor: [15, 30],
     popupAnchor: [0, -30]
