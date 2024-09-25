@@ -3,12 +3,335 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="/css/rescuerstyle.css">
+    <link rel="icon" href="/maptry/icons/favicon.ico" type="image/x-icon">
+    <title>Rescuer Dashboard</title>
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    
+    <style>
+        #map {
+            width: 100%;
+            height: 100vh; /* Fill the entire iframe */
+            z-index: 2001;
+        }
+    </style>
 </head>
 <body>
-  
+
+<div class="header-links">
+    <a href="#" id="instructionsLink" class="left-link">Οδηγίες</a>
+    <a href="/logout" class="right-link">Logout</a>
+</div>
+
+<!-- Instructions Modal -->
+<div id="instructionsModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h2>Οδηγίες</h2>
+        <p>1. Σύρε το όχημα <img src="/icons/transport.png" style="width: 3%; height: 3%;"> στην Τοποθεσία σου.</p>
+        <p>2. Επέλεξε το κουμπί 'Φόρτωση' ή 'Εκφόρτωση' όταν βρίσκεσαι σε απόσταση μέχρι 100m από τη Γενική Αποθήκη για την παραλαβή προμηθειών.</p>
+        <p>3. Επέλεξε μέχρι 4 πολίτες <img src="/icons/peoplePending.png" style="width: 3%; height: 3%;"> για να εξυπηρετήσεις.</p>
+        <p>4. Για να επιθεωρήσεις το τρέχον φορτίο του οχήματος επέλεξε το κουμπί 'Τρέχον Φορτίο'.</p>
+        <p>5. Υπομνήματα Χάρτη: </p>
+        <p>    *<img src="/icons/donate.png" style="width: 2%; height: 2%;">: Δωρεά Αγαθών</p>
+    </div>
+</div>
+
+<div class="modal-container">
+    <div class="modal-left-container">
+        <!-- Existing Search Modal (on the left) -->
+        <div id="searchModal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2>Search Products</h2>
+                <!-- Search Input -->
+                <input type="text" id="searchInput" placeholder="Search by item name or category" />
+                
+                <!-- Load Button (Moved here) -->
+                <button id="loadButton" class="active">Load</button>
+            </div>
+        </div>
+            <!-- Selected Items List under search modal -->
+        <div id="selectedItemsList" class="modal">
+            <h3>Selected Items:</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item Name</th>
+                        <th>Category</th>
+                        <th>Quantity</th>
+                    </tr>
+                </thead>
+                <tbody id="selectedItemsBody">
+                    <!-- Rows will be populated by JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <!-- Existing Items Modal (on the right) -->
+    <div id="itemsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Available Items in General Storage</h2>
+            <div class="items-list">
+                <table id="itemsTable">
+                    <!-- Table will be populated by JavaScript -->
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 <h1>Rescuer Dashboard</h1>
-<a href="/logout">Logout</a>
+
+<div class="dashboard-container">
+    
+    <div class="map-container">
+        <div id="map"></div>
+    </div>
+
+    <div class="cargo-container">
+        <!-- Tabs for switching between Cargo and Tasks -->
+        <div class="tabs">
+            <button id="cargoTabBtn" class="button-active" onclick="openTab('cargoTab', this)">Cargo</button>
+            <button id="taskTabBtn" class="button-inactive" onclick="openTab('taskTab', this)">Tasks</button>
+
+        </div>
+    
+        <!-- Content for Cargo tab -->
+        <div id="cargoTab" class="tab-content active">
+            <button id="unloadButton" class="inactive">Unload</button>
+            <div id="loadedItems" ></div> <!-- Placeholder for loaded products style="display: none;" -->
+        </div>
+    
+        <!-- Content for Tasks tab -->
+        <div id="taskTab" class="tab-content">
+            <h3>Your Tasks</h3>
+            <button id="cancelTasksButton" class="cancel-button">❌ Cancel</button>
+            <button id="deliverTasksButton" class="deliver-button">✅ Deliver</button>
+            <table id="rescuerTasksTable">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="selectAllTasks"></th>
+                        <th>No</th>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Item</th>
+                        <th>Quantity</th>
+                        <th>Date Served</th>
+                    </tr>
+                </thead>
+                <tbody id="rescuerTasksContent">
+                    <!-- Task rows will be dynamically added here -->
+                </tbody>
+            </table>
+        </div>
+
+            
+        </div>
+    </div>
+    
+
+    <button id="filterToggleButton" class="filter-button">Φίλτρα Χάρτη</button>
+
+    <div id="filters" class="filter-container">
+        <h3>Tasks</h3>
+        
+        <label>
+            <input type="checkbox" class="main-filter" value="pending"> Pending
+        </label>
+        <label>
+            <input type="checkbox" class="main-filter" value="served"> Served
+        </label>
+
+        <h4>Type</h4>
+        
+        <label>
+            <input type="checkbox" class="sub-filter" value="request"> Request
+        </label>
+        <label>
+            <input type="checkbox" class="sub-filter" value="donation"> Donation
+        </label>
+    </div>
 
 </body>
+
+<script src="/js/rescuerScripts/loadMap.js"></script>
+<script src="/js/rescuerScripts/loadModals.js"></script>
+
+
+<script>
+    function openTab(tabName, element) {
+        console.log('openTab called with tabName:', tabName);
+
+        var i, tabcontent, tabbuttons;
+
+        // Hide all tab content
+        tabcontent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+            tabcontent[i].classList.remove('active');
+        }
+
+        // Remove the active class from all tab buttons
+        tabbuttons = document.querySelectorAll("#cargoTabBtn, #taskTabBtn");
+        for (i = 0; i < tabbuttons.length; i++) {
+            tabbuttons[i].classList.remove("button-active");
+            tabbuttons[i].classList.add("button-inactive");
+        }
+
+        // Show the specific tab content
+        var tabContentElement = document.getElementById(tabName);
+        if (tabContentElement) {
+            tabContentElement.style.display = "block";
+            tabContentElement.classList.add('active');
+
+            // Fetch rescuer tasks if the "Tasks" tab is opened
+            if (tabName === 'taskTab') {
+                fetchRescuerTasks(); // Fetch the tasks when "Tasks" tab is clicked
+            }
+
+        } else {
+            console.error('Tab content element not found for:', tabName);
+        }
+
+        // Add the active class to the button that opened the tab
+        if (element) {
+            element.classList.add("button-active");
+            element.classList.remove("button-inactive");
+        } else {
+            console.error('Element is undefined in openTab function');
+        }
+    }
+
+    // Default to opening the Cargo tab when the page loads
+    var activeTabButton = document.getElementById('cargoTabBtn'); // Default to Cargo tab
+    if (activeTabButton) {
+        openTab('cargoTab', activeTabButton);
+    } else {
+        console.error('No default tab button found');
+    }
+
+    // Function to enable/disable buttons based on checkbox selection
+    function updateActionButtons() {
+        const checkboxes = document.querySelectorAll('.task-checkbox:checked');
+        const cancelBtn = document.getElementById('cancelTasksButton');
+        const deliverBtn = document.getElementById('deliverTasksButton');
+
+        if (checkboxes.length > 0) {
+            cancelBtn.disabled = false;
+            deliverBtn.disabled = false;
+        } else {
+            cancelBtn.disabled = true;
+            deliverBtn.disabled = true;
+        }
+    }
+
+    // Listen for changes on checkboxes
+    document.addEventListener('change', function(e) {
+        if (e.target.classList.contains('task-checkbox')) {
+            updateActionButtons();
+            updateRouteForSelectedTasks();
+        }
+    });
+
+    // Select/Deselect all tasks
+    document.getElementById('selectAllTasks').addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('.task-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
+        });
+        updateActionButtons();
+    });
+
+
+    // Cancel Selected Tasks
+    document.getElementById('cancelTasksButton').addEventListener('click', async function() {
+        const selectedTasks = getSelectedTasks();
+
+        if (selectedTasks.length === 0) {
+            alert('No tasks selected.');
+            return;
+        }
+
+        const confirmed = confirm('Are you sure you want to cancel the selected tasks?');
+        if (confirmed) {
+            try {
+                const response = await fetch('/api/rescuer/cancelTasks', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ taskIds: selectedTasks })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    alert('Tasks canceled successfully.');
+                    // Optionally, reload the task table
+                    fetchRescuerTasks(); // Reload tasks
+                } else {
+                    alert('Failed to cancel tasks: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error canceling tasks:', error);
+                alert('An error occurred while canceling tasks.');
+            }
+        }
+    });
+
+    // Deliver Selected Tasks
+    document.getElementById('deliverTasksButton').addEventListener('click', async function() {
+        const selectedTasks = getSelectedTasks();
+        document.querySelectorAll('.task-checkbox:checked').forEach(checkbox => {
+            selectedTasks.push(checkbox.value); // Collect the task IDs
+        });
+
+
+        if (selectedTasks.length === 0) {
+            alert('No tasks selected.');
+            return;
+        }
+ 
+
+        const confirmed = confirm('Are you sure you want to deliver the selected tasks?');
+        if (confirmed) {
+            try {
+                const response = await fetch('/api/rescuer/deliverTasks', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        taskIds: selectedTasks
+                        
+                    })
+                });
+            
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('Tasks successfully delivered!');
+                } else {
+                    alert('Failed to deliver tasks: ' + result.message);
+                }
+    
+            } catch (error) {
+                console.error('Error delivering tasks:', error);
+                alert('An error occurred while delivering tasks.');
+            }
+        }
+});
+
+    // Helper function to get selected task IDs
+    function getSelectedTasks() {
+        const checkboxes = document.querySelectorAll('.task-checkbox:checked');
+        return Array.from(checkboxes).map(checkbox => checkbox.value);
+    }
+
+</script>
 </html>

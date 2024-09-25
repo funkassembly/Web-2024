@@ -3,13 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="/css/civilianstyle.css">
+    <link rel="icon" href="/maptry/icons/favicon.ico" type="image/x-icon">
+    <title>Civilian's Dashboard</title>
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    <style>
+        #map {
+            width: 100%;
+            height: 100vh; /* Fill the entire iframe */
+        }
+    </style>
 </head>
 <body>
+
+    <div class="header-links">
+        <a href="#" id="instructionsLink" class="left-link">Instructions</a>
+        <a href="/logout" class="right-link">Logout</a>
+    </div>
+
+    <!-- Instructions Modal -->
+    <div id="instructionsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Instructions</h2>
+            <p>1. Use the map to view your location and nearby resources.</p>
+            <p>2. In the 'Request' tab, specify your needs for essential items.</p>
+            <p>3. In the 'History' tab, view your previous requests and their statuses.</p>
+        </div>
+    </div>
+
+    <!-- Items Modal -->
+<div id="itemsModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h2>Available Products in General Storage</h2>
+        <input type="text" id="searchInput" placeholder="Search items..." />
+        <div class="items-list">
+            <table id="itemsTable">
+                <thead>
+                    <tr>
+                        <th>Item Name</th>
+                        <th>Category</th>
+                        <th>Details</th>
+                        <th>In Stock?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Table will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+    <h1>Dashboard Civilian</h1>
+    <div class="dashboard-container">
+        
+        <div class="map-container" id="map"></div>
+
+        <div class="request-history-container">
+            <div class="checkbox-container">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="requestCheckbox" checked> Request
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="donateCheckbox"> Donate
+                </label>
+            </div>
+
+            <div class="tabs">
+                <button id="requestTabBtn" class="tab-button active" onclick="openTab('requestTab', this)">Request</button>
+                <button id="historyTabBtn" class="tab-button" onclick="openTab('historyTab', this)">History</button>
+                <button id="announcementTabBtn" class="tab-button" onclick="openTab('announcementTab', this)">Announcements</button>
+            </div>
+        
+            <div id="requestTab" class="tab-content">
+                <!-- Dynamic Form -->
+                <form id="dynamicForm">
+                    <!-- Content will be populated by JavaScript -->
+                </form>
+            </div>
+        
+            <div id="historyTab" class="tab-content"> 
+                <h3>Your Tasks History</h3>
+                <div id="taskHistoryTable"></div>
+                <!-- <table id="taskHistoryTable"> 
+                    <tbody id="taskHistoryContent"> 
+                        
+                    </tbody>
+                </table> -->
+            </div>
+            <div id="announcementTab" class="tab-content">
+                <h3>Announcements</h3>
+                <table id="announcementTable">
+                <tbody id="announcementContent">
+                </tbody>
+                </table>
+                </div>
+        </div>
+
+    </div>
+ 
+</body>
+
+<script src="/js/civilianScript.js"></script>
+<script>
+    function openTab(tabId, element) {
+        // Hide all tab contents
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabContents.forEach(tabContent => tabContent.style.display = 'none');
+
+        // Remove active class from all tab buttons
+        const tabButtons = document.querySelectorAll('.tab-button');
+        tabButtons.forEach(tabButton => tabButton.classList.remove('active'));
+
+        // Show the clicked tab's content and mark the button as active
+        document.getElementById(tabId).style.display = 'block';
+        element.classList.add('active');
+
+        // Check if it's the request tab and call generateTaskForm if it is
+        if (tabId === 'requestTab') {
+            generateTaskForm();  
+        }
+        else if (tabId === 'historyTab') {
+            fetchTasks(); 
+        }
+        // Handle the announcements tab if needed
+        else if (tabId === 'announcementTab') {
+            fetchAnnouncements();
+        }
+    }
+
+    // Open the Request tab by default and generate the form
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('requestCheckbox').checked = true;  // Default to checked
+        openTab('requestTab', document.getElementById('requestTabBtn'));  // Open Request tab
+    });
     
-<h1>Civilian Dashboard</h1>
-<a href="/logout">Logout</a>
 
     
-</body>
+</script>
+
 </html>
