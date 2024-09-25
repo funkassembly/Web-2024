@@ -499,6 +499,10 @@ table tbody tr:hover {
     background-color: #ff9900; /* Solid orange for cargo tab */
 }
 
+#taskTab {
+    z-index: 2002;
+}
+
 /* Specific Styles for Task Tab */
 #taskTab table {
     background-color: rgba(255, 255, 255, 0.85); /* Slightly more opaque for tasks tab */
@@ -560,6 +564,30 @@ table td {
     text-align: left; /* Align the text to the left */
     border-bottom: 2px solid #ddd; /* Add a subtle border at the bottom */
 }
+
+.cancel-button {
+    background-color: #ff9900;
+    color: white;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.deliver-button {
+    background-color: #ff9900;
+    color: white;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#deliveryButton:hover {
+    background-color: #e68a00;
+}
+
 
 /* Adjusted for better mobile responsiveness */
 @media (max-width: 768px) {

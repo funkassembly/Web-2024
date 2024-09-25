@@ -1,4 +1,7 @@
-let map, markerStorage, markerRescuer;
+let map, markerStorage, markerRescuer, routingControl;  
+let civilianMarkers = {}; 
+let currentRescuerId = null;  // Declare a global variable
+
 // Icons Init
 const StorageIcon = L.icon({
     iconUrl: '/icons/Storage.png', 
@@ -24,8 +27,20 @@ const peoplePendingIcon = L.icon({
     iconAnchor: [15, 30],
     popupAnchor: [0, -30]
 });
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", async function() {
     console.log('DOM completed - Map is LOADING ...');
+    try {
+        const response = await fetch('/api/rescuer/current');
+        const data = await response.json();
+        if (!data.success) {
+            console.error('Failed to fetch current rescuer ID');
+            return;
+        }
+        currentRescuerId = data.rescuerId; // Store the current rescuer's ID globally
+        console.log(currentRescuerId);
+    } catch (error) {
+        console.error('Error fetching current rescuer ID:', error);
+    }
     // map init
     const map = L.map('map').setView([38.2462420, 21.7350847], 16);
             
@@ -41,6 +56,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }).addTo(map);
     markerRescuer.bindPopup('Drag and Drop me to your location!').openPopup();
     updateUnloadButtonState();
+    fetchCivilianLocations();
     fetchCivilianInfo();
     
     // markerStorage on Click event *Trigger*
@@ -86,6 +102,8 @@ document.addEventListener("DOMContentLoaded", function() {
     });
     // Event listener for when the marker is dragged and dropped
     markerRescuer.on('dragend', function(event) {
+        fetchCivilianLocations();
+        updateRouteForSelectedTasks();
         var position = markerRescuer.getLatLng();
         console.log('Rescuer\'s location: ', position.lat, position.lng);
 
@@ -106,6 +124,7 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(data => {
             if (data.success) {
                 console.log('Location updated successfully.');
+                updateRouteForSelectedTasks();
             } else {
                 console.error('Failed to update location:', data.message);
             }
@@ -137,6 +156,57 @@ function updateUnloadButtonState() {
     }, '*');
 }
 
+// Function to update the route based on selected tasks and the rescuer's location
+// Function to update the route based on selected tasks and the rescuer's location
+// Function to update the route based on civilians with tasks assigned to the current rescuer
+async function updateRouteForSelectedTasks() {
+    const rescuerLatLng = markerRescuer.getLatLng();
+    const selectedCivilianLocations = [];
+
+    try {
+        // Fetch the current rescuer's ID from the backend
+        const response = await fetch('/api/rescuer/current');
+        const data = await response.json();
+
+        if (!data.success) {
+            console.error('Failed to fetch current rescuer ID');
+            return;
+        }
+
+        const currentRescuerId = data.rescuerId; // Get the current rescuer's ID from the backend
+
+        // Loop through each civilian marker and check if the conditions match
+        for (let civilianId in civilianMarkers) {
+            const { marker, tasks } = civilianMarkers[civilianId]; // Retrieve both marker and tasks
+            
+            // Ensure tasks are defined before filtering
+            if (tasks && Array.isArray(tasks)) {
+                const matchingTasks = tasks.filter(task => task.status === 'processed' && task.rescuerUsername === currentRescuerId);
+                
+                // If civilian has any task with 'processed' status assigned to this rescuer, add their location
+                if (matchingTasks.length > 0) {
+                    const civilianLatLng = marker.getLatLng();
+                    selectedCivilianLocations.push([civilianLatLng.lng, civilianLatLng.lat]);
+                }
+            } else {
+                console.error(`Tasks not found for civilian ID: ${civilianId}`);
+            }
+        }
+
+        // Draw route if there are selected civilians
+        if (selectedCivilianLocations.length > 0) {
+            drawRoute(rescuerLatLng, selectedCivilianLocations);
+        } else {
+            if (routingControl) {
+                map.removeControl(routingControl);  // Remove the route if no tasks match
+            }
+        }
+
+    } catch (error) {
+        console.error('Error fetching current rescuer ID:', error);
+    }
+}
+
 // Fetch civilian locations and add them to the map
 async function fetchCivilianInfo() {
     try {
@@ -149,12 +219,24 @@ async function fetchCivilianInfo() {
                     const lat = civilian.location.coordinates[0];
                     const lng = civilian.location.coordinates[1];
                     const name = civilian.name;
+                    const tasks = civilian.tasks;
                     const phone = civilian.cellphone;
                     const address = `${civilian.address.street}, ${civilian.address.number}, ${civilian.address.city}, ${civilian.address.zip}, ${civilian.address.country}`;
-                    const tasks = civilian.tasks;
-
-                    const hasProcessedTask = tasks.some(task => task.status === 'processed');
-                    const icon = hasProcessedTask ? peopleServedIcon : peoplePendingIcon;
+                    
+                    const hasProcessedTask = tasks.some(task => task.status === 'processed' && task.rescuerUsername === currentRescuerId);
+                    const hasPendingOnly = tasks.every(task => task.status === 'pending');
+                    console.log(`hasProcessedTasks: ${hasProcessedTask}\nhasPendingOnly: ${hasPendingOnly}`);
+                    // Set the appropriate icon based on task status
+                    let icon;
+                    if (hasProcessedTask) {
+                        icon = peopleServedIcon; // Use peopleServedIcon if there is any processed task
+                    } else if (hasPendingOnly) {
+                        icon = peoplePendingIcon; // Use peoplePendingIcon if all tasks are pending
+                    } else {
+                        icon = peoplePendingIcon; // Default to peoplePendingIcon
+                    }
+                    
+                    
                     
                     let tasksTable = `<table>
                                         <thead>
@@ -184,10 +266,8 @@ async function fetchCivilianInfo() {
                     // Add the "Serve" button at the bottom of the popup
                     
 
-
-
                     // Add a marker for each civilian on the map with a popup showing their info
-                    L.marker([lat, lng], { icon: icon }).addTo(map)
+                    const marker = L.marker([lat, lng], { icon: icon }).addTo(map)
                       .bindPopup(`
                           <b>Name:</b> ${name}<br>
                           <b>Phone:</b> ${phone}<br>
@@ -196,8 +276,13 @@ async function fetchCivilianInfo() {
                           ${tasksTable}
                           <button onclick="serveTasks('${civilian._id}')">Select</button>
                     `);
+                        // Store the marker in the civilianMarkers object
+                    civilianMarkers[civilian._id] = {marker, tasks};
                 }
             });
+            // Draw the route connecting the rescuer to the civilians
+            updateRouteForSelectedTasks();
+
         } else {
             console.log(civilians.message || 'No civilians found');
         }
@@ -209,10 +294,76 @@ async function fetchCivilianInfo() {
 
 
 
+
+
+
+
+// When task checkboxes are clicked, update the route accordingly
+document.addEventListener('change', function(e) {
+    if (e.target.classList.contains('task-checkbox')) {
+        updateRouteForSelectedTasks();  // Re-draw the route based on selected tasks
+    }
+
+
+});
+
     
     
         
 });
+
+// Function to fetch civilian locations and draw the route
+async function fetchCivilianLocations() {
+    if (!markerRescuer) {
+        console.error('MarkerRescuer is undefined.');
+        return;  // Return early if markerRescuer is not defined
+    }
+    
+    const rescuerLatLng = markerRescuer.getLatLng(); // Safely call getLatLng only if markerRescuer is defined
+
+    try {
+        const response = await fetch(`/api/rescuer/civilian-locations/${currentRescuerId}`);
+        const data = await response.json();
+
+        if (data.success) {
+            const civilianLocations = data.civilianLocations.map(loc => loc.location);
+
+            // Draw the route based on the rescuer and civilian locations
+            if (civilianLocations.length > 0) {
+                drawRoute(rescuerLatLng, civilianLocations);
+            } else {
+                if (routingControl) {
+                    map.removeControl(routingControl);  // Remove the route if no tasks match
+                }
+            }
+        } else {
+            console.error('No civilians found or error fetching civilians');
+        }
+    } catch (error) {
+        console.error('Error fetching civilian locations:', error);
+    }
+}
+
+
+// Function to draw a route between the rescuer and selected civilians
+function drawRoute(rescuerLatLng, civilianLocations) {
+    if (routingControl) {
+        map.removeControl(routingControl); // Remove existing route
+    }
+
+    const waypoints = [
+        L.latLng(rescuerLatLng.lat, rescuerLatLng.lng),   // Start with rescuer's location
+        ...civilianLocations.map(loc => L.latLng(loc[1], loc[0]))  // Add selected civilian locations
+    ];
+
+    routingControl = L.Routing.control({
+        waypoints: waypoints,
+        routeWhileDragging: false,
+        show: true,
+        addWaypoints: false,
+        createMarker: function() { return null; }  // Don't create markers on the route itself
+    }).addTo(map);
+}
 
 
 

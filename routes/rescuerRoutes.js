@@ -19,6 +19,15 @@ const haversineDistance = (lat1, lon1, lat2, lon2) => {
     return R * c; // Distance in meters
 };
 
+router.get('/current', (req, res) => {
+    const currentRescuerId = req.session.userId; // Assuming `req.user` contains the logged-in user's information
+    if (currentRescuerId) {
+        res.json({ success: true, rescuerId: currentRescuerId });
+    } else {
+        res.status(401).json({ success: false, message: 'Rescuer not found' });
+    }
+});
+
 // Update Rescuer's Location
 router.post('/updateRescuerLocation', async (req, res) => {
     let { lat, lng } = req.body;
@@ -462,7 +471,35 @@ router.post('/deliverTasks', async (req, res) => {
     }
 });
 
+// Route to get civilians with tasks assigned to the current rescuer
+router.get('civilian-locations/:rescuerId', async (req, res) => {
+    const rescuerId = req.session.rescuerId;
 
+    try {
+        // Find civilians with tasks that have 'rescuerUsername' set to the rescuerId
+        const civilians = await User.find({
+            'tasks.rescuerUsername': rescuerId,
+            'tasks.status': 'processed'  // You can adjust the status filter here if needed
+        }, 'location tasks');  // Fetch only the necessary fields: location and tasks
+
+        // Filter civilians to include only those who have at least one task with rescuerUsername = current rescuer
+        const filteredCivilians = civilians.filter(civilian => {
+            return civilian.tasks.some(task => task.rescuerUsername.toString() === rescuerId && task.status === 'processed');
+        });
+
+        // Extract the locations of the filtered civilians
+        const civilianLocations = filteredCivilians.map(civilian => ({
+            location: civilian.location.coordinates,
+            civilianId: civilian._id  // Include the civilian's ID in case you need to reference them
+        }));
+
+        // Send back the civilian locations
+        res.json({ success: true, civilianLocations });
+    } catch (error) {
+        console.error('Error fetching civilian locations:', error);
+        res.status(500).json({ success: false, message: 'Error fetching civilian locations' });
+    }
+});
 
 
 
