@@ -580,6 +580,10 @@ async function fetchAnnouncements() {
 }
 
 // Function to render announcements in the table
+// Function to render announcements in the table
+// Function to render announcements in the table
+// Function to render announcements in the table
+// Function to render announcements in the table
 function renderAnnouncementsTable(announcements) {
     let tableHTML = `
         <table>
@@ -593,17 +597,15 @@ function renderAnnouncementsTable(announcements) {
             <tbody>
     `;
 
-    // Loop through the announcements and create rows for each announcement
+    // Loop through the flat announcements array
     announcements.forEach((announcementObj) => {
-        announcementObj.type.forEach(announcement => {
-            tableHTML += `
-                <tr>
-                    <td>${announcement.date}</td>
-                    <td>${announcement.announcement}</td>
-                    <td>${announcement.items}</td>
-                </tr>
-            `;
-        });
+        tableHTML += `
+            <tr>
+                <td>${announcementObj.date || 'N/A'}</td>
+                <td>${announcementObj.announcement || 'No announcement'}</td>
+                <td>${announcementObj.items || 'No items'}</td>
+            </tr>
+        `;
     });
 
     // Close the table
@@ -612,9 +614,14 @@ function renderAnnouncementsTable(announcements) {
         </table>
     `;
 
-    // Insert the table into the DOM (you need to specify where to insert the tableHTML)
+    // Insert the table into the DOM
     document.getElementById('announcementContent').innerHTML = tableHTML;
 }
+
+
+
+
+
 
 
 

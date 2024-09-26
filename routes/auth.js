@@ -41,6 +41,14 @@ const getCoordinates = async (street, number, city) => {
     }
 };
 
+const isAuthenticated = (req, res, next) => {
+    if (req.session.userId) {
+        return next(); // User is authenticated, proceed to the next middleware or route handler
+    }
+    res.redirect('/login'); // User not logged in, redirect to the login page
+};
+
+
 router.get('/', (req, res) => {
     res.render('login');
 });
@@ -53,15 +61,16 @@ router.get('/login', (req, res) => {
     res.render('login');
 });
 
-router.get('/adminDashboard', (req, res) => {
+// Apply isAuthenticated middleware to the dashboard routes
+router.get('/adminDashboard', isAuthenticated, (req, res) => {
     res.render('adminDashboard');
 });
 
-router.get('/civilianDashboard', (req, res) => {
+router.get('/civilianDashboard', isAuthenticated, (req, res) => {
     res.render('civilianDashboard');
 });
 
-router.get('/rescuerDashboard', (req, res) => {
+router.get('/rescuerDashboard', isAuthenticated, (req, res) => {
     res.render('rescuerDashboard');
 });
 
@@ -74,8 +83,6 @@ router.post('/signup', async (req, res) => {
     if (!passwordValidator(password)) {
         return res.render('signup', { error: 'Password does not meet security requirements.' });
     }
-
-    
     
     try {
         const {lng, lat} = await getCoordinates(street, number, city);

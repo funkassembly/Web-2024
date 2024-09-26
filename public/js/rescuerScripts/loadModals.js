@@ -715,7 +715,7 @@ window.addEventListener('message', function(event) {
         const distance = event.data.distance;
 
         if (unloadButton) {
-            if (distance <= 100) {
+            if (distance <= 10000) {
                 unloadButton.classList.remove('inactive');
                 unloadButton.classList.add('active');
                 unloadButton.disabled = false;

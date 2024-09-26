@@ -4,6 +4,8 @@ $(document).ready(function () {
     const startDateDefault = new Date(today.getFullYear(), today.getMonth(), 1).toISOString(); // First day of the current month
     const endDateDefault = today.toISOString(); // Today
     
+    let chartInstance = null;  // Global variable to store the chart instance
+    
     fetchChartData(startDateDefault, endDateDefault);
     
     // Function to fetch chart data
@@ -24,7 +26,14 @@ $(document).ready(function () {
     // Function to render chart
     function renderChart(data) {
         const ctx = document.getElementById('task-chart').getContext('2d');
-        new Chart(ctx, {
+        
+        // Check if a chart instance exists and destroy it before creating a new one
+        if (chartInstance) {
+            chartInstance.destroy();
+        }
+        
+        // Create new chart instance
+        chartInstance = new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: ['Total Requests', 'Total Donations', 'Completed Requests', 'Completed Donations'],
@@ -57,16 +66,14 @@ $(document).ready(function () {
     }
 
     // Event listener for updating chart based on selected date range
-    $('#update-chart').on('click', function () {
-        const startDate = $('#start-date').val();
-        const endDate = $('#end-date').val();
+    $('#updateChart').on('click', function () {
+        const startDate = $('#startDate').val(); // Corrected ID
+        const endDate = $('#endDate').val();     // Corrected ID
         
         if (startDate && endDate) {
-            // Convert selected dates to ISO format
             const startISO = new Date(startDate).toISOString();
             const endISO = new Date(endDate).toISOString();
             
-            // Fetch new chart data based on selected date range
             fetchChartData(startISO, endISO);
         } else {
             alert('Please select both start and end dates.');

@@ -228,22 +228,27 @@ router.get('/loadtasks', async (req, res) => {
 
 router.get('/announcements', async (req, res) => {
     try {
-        const admin = await Admin.findOne({ role: 'admin' }, 'announcements').select('announcements');  // Fetch only the first admin's announcements field
-        console.log(`data: ${JSON.stringify(admin)}`);
-        
-        // Flatten the nested announcements structure
-        const flattenedAnnouncements = admin.announcements.flat();  // Assuming there's just one level of nesting
-        
-        if (!flattenedAnnouncements || flattenedAnnouncements.length === 0) {
+        // Find the admin and fetch only the announcements
+        const admin = await Admin.findOne({ role: 'admin' }).select('announcements');
+
+        if (!admin || !admin.announcements || admin.announcements.length === 0) {
             return res.status(404).json({ message: 'No announcements found' });
         }
 
-        res.json(flattenedAnnouncements);  // Send the flattened announcements back to the client
+        // Flatten the announcements array to remove the unnecessary nested arrays
+        const flattenedAnnouncements = admin.announcements.flat();
+
+        console.log(`/nFlattened Announcements:`, flattenedAnnouncements);
+
+        // Send the flattened announcements
+        res.json(flattenedAnnouncements);
     } catch (error) {
         console.error('Error fetching announcements:', error);
         res.status(500).json({ message: 'Error fetching announcements' });
     }
 });
+
+
 
 
 // Fetch all civilians with their tasks
